@@ -213,7 +213,7 @@ const Superadmin: React.FC = () => {
             <AddAdmin
                 open={open}
                 onClose={onClose}
-                showDetaillistData={getAdmins(token)}
+                showDetaillistData={() => getAdmins(token)}
             />
 
         </div>
