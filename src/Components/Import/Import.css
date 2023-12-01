@@ -1,0 +1,22 @@
+.Step2Main{
+    margin: 20px 50px 20px 50px;
+}
+.Step2Dropdown{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 25px;
+    column-gap: 100px;
+    margin-top: 30px;
+}
+.Step2Note{
+    text-align: center;
+}
+.DropdownMaindiv{
+    /* display: flex; */
+    align-items: center;
+}
+.Dropdown{
+    width: 100%;
+    /* width: 300px; */
+    margin: 8px;
+}
