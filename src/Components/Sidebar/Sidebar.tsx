@@ -17,8 +17,9 @@ const Sidebar = () => {
                 <SidebarMenu />
             </Sider>
             <Layout className="site-layout">
-                <div style={{ background: 'gray', color: 'white', padding: '16px', textAlign: 'center', width: '100%' }}>
+                <div style={{ background: "#ffffff", padding: '16px', width: '100%', borderBottom: "1px solid #dcd2d2" }}>
                     {/* Your header content goes here */}
+  
                     Universal Header
                 </div>
                 <Content style={{ margin: '16px' }}>

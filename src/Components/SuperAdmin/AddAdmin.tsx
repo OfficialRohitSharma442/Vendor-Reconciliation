@@ -4,31 +4,27 @@ import axios from 'axios';
 import React, { ChangeEvent } from "react";
 import { Context } from '../Context/Context';
 const { Option } = Select;
-const AddAdmin: React.FC = ({ open, onClose }: any) => {
+const AddAdmin: React.FC = ({ open, onClose, showDetaillistData }: any) => {
     const { token } = React.useContext(Context);
 
     const [messageApi, contextHolder] = message.useMessage();
     const [admindata, setadmindata] = React.useState({
-        name: "",
+        username: "",
         email: "",
         password: "",
-        fullname:""
+        fullName: ""
     });
+    const [loading, setloading] = React.useState(false);
 
     const handleaddadmin = async () => {
-
-
         try {
-
-            // setloading(true);
-
+            setloading(true);
             let response = await axios.post("https://concerned-plum-crayfish.cyclic.app/api/user/signup", admindata, {
                 headers: {
-                    token: token,
+                    'Authorization': `Bearer ${token}`
                 },
             });
-
-            if (response?.status == 200) {
+            if (response.status === 201) {
                 // Update the state with the response data
                 console.log(response);
                 messageApi.open({
@@ -36,7 +32,6 @@ const AddAdmin: React.FC = ({ open, onClose }: any) => {
                     content: 'User Added Successfully',
                 });
                 messageApi.destroy()
-
                 // }, 2000)
             } else {
                 messageApi.open({
@@ -51,17 +46,19 @@ const AddAdmin: React.FC = ({ open, onClose }: any) => {
             // console.log(error.response.status);
             const { status } = error;
 
-            messageApi.open({
-                type: 'warning',
-                content: `${status == 400 ? "user Not found" : "invalid user name or Password "}`,
-            });
-            setTimeout(() => {
-                messageApi.destroy()
+            // messageApi.open({
+            //     type: 'warning',
+            //     content: `${status == 400 ? "user Not found" : "invalid user name or Password "}`,
+            // });
+            // setTimeout(() => {
+            //     messageApi.destroy()
 
-            }, 2000)
+            // }, 2000)
 
         } finally {
-            // setloading(false)
+            setloading(false)
+            showDetaillistData()
+            onClose()
         }
     };
     const handleOnChangeEventHandler = (ev: ChangeEvent<HTMLInputElement>): void => {
@@ -95,11 +92,11 @@ const AddAdmin: React.FC = ({ open, onClose }: any) => {
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
-                                name="name"
+                                name="fullName"
                                 label="Name"
                                 rules={[{ required: true, message: 'Please enter user name' }]}
                             >
-                                <Input name="name" placeholder="Please enter user name" onChange={handleOnChangeEventHandler} />
+                                <Input name="fullName" placeholder="Please enter user name" onChange={handleOnChangeEventHandler} />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -121,15 +118,21 @@ const AddAdmin: React.FC = ({ open, onClose }: any) => {
                         <Col span={12}>
                             <Form.Item
                                 name="user Name"
-                                label="License type"
-                                rules={[{ required: false, message: 'license type' }]}
+                                label="User Name"
+                                rules={[{ required: true, message: 'please Enter User Name' }]}
                             >
-                                <Select placeholder="Please select license typer" disabled>
+                                <Input
+                                    style={{ width: '100%' }}
+                                    name="username"
+                                    placeholder="Please enter Username"
+                                    onChange={handleOnChangeEventHandler}
+                                />
+                                {/* <Select placeholder="Please select license typer" disabled>
                                     <Option value="P1">P1</Option>
                                     <Option value="P2">P2</Option>
                                     <Option value="P3">P3</Option>
                                     <Option value="P4">P4</Option>
-                                </Select>
+                                </Select> */}
                             </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -188,7 +191,7 @@ const AddAdmin: React.FC = ({ open, onClose }: any) => {
                                 <Input.TextArea rows={3} placeholder="please enter url description" />
                             </Form.Item>
                             <Space>
-                                <Button onClick={handleaddadmin} type="primary">
+                                <Button loading={loading} onClick={handleaddadmin} type="primary">
                                     Submit
                                 </Button>
                                 <Button onClick={onClose}>Cancel</Button>

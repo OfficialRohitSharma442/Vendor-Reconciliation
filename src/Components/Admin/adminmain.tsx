@@ -250,15 +250,19 @@ const Adminmain: React.FC = () => {
 
     return (
         <div className='Admin_main' style={{ flexGrow: "1" }}>
-            <div className="Admin_page_cta" style={{ display: "flex", justifyContent: "space-between", marginRight: "3px" }}>
+            <div className="Admin_page_cta" style={{ display: "flex", justifyContent: "space-between", marginRight: "3px", marginBottom: "10px" }}>
                 <Button size="middle" onClick={showDrawer} type="primary">Add User</Button>
                 <Button size="middle" type="primary">All User Report</Button>
             </div>
             <Table
                 bordered={true}
+
                 // loading={true}
                 size="middle"
-                columns={columns} dataSource={data} />
+                columns={columns}
+                dataSource={data}
+
+            />
 
             <Adduser
                 open={open}

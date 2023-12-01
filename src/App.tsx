@@ -9,12 +9,13 @@ const App = () => {
   let context = useContext(Context);
   const [role, setRole] = useState<any>("ADMIN");
   const [loading, setloading] = React.useState(true);
-  const [Token, setToken] = React.useState("");
+  const [token, setToken] = React.useState("");
 
   React.useEffect(() => {
     const fetchRole = async () => {
       const storedRole = localStorage.getItem("VR-user_Role");
       if (storedRole) {
+        
         const parsedData = JSON.parse(storedRole);
         const role = parsedData?.role;
         const token = parsedData?.token;
@@ -37,7 +38,7 @@ const App = () => {
       value={{
         role,
         setRole,
-        Token
+        token
       }}
     >
       {loading ? (
