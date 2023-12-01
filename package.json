@@ -1,6 +1,6 @@
 {
   "name": "vendor-reconciliation",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -30,6 +30,6 @@
     "eslint-plugin-react-refresh": "^0.4.4",
     "sass": "^1.69.5",
     "typescript": "^5.2.2",
-    "vite": "^5.0.0"
+    "vite": "^5.0.3"
   }
 }

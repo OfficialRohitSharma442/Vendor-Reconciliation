@@ -1,135 +1,65 @@
-import { Button, Input, Space, Table } from 'antd';
+import { Button, Input, Pagination, Space, Switch, Table } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import React, { useRef, useState } from 'react';
 import type { InputRef } from 'antd';
 import type { ColumnType, ColumnsType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
-import Adduser from './Adduser';
-
+import AddAdmin from './AddAdmin';
+import { Context } from '../Context/Context';
+// import { getAllUsers } from '../utils/getallusers';
+import { CloseOutlined, CheckOutlined } from '@ant-design/icons'
+import axios from 'axios';
 interface DataType {
     key: string;
     name: string;
     age: number;
     address: string;
 }
-
 type DataIndex = keyof DataType;
-
-const Adminmain: React.FC = () => {
+const Superadmin: React.FC = () => {
+    const { token } = React.useContext(Context);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef<InputRef>(null);
+    const [open, setOpen] = useState<any>(false);
+    const [bulkVenderOpen, setbulkVenderOpen] = React.useState(false)
+    const [allusers, setAllusers] = React.useState<any>([]);
 
-    const [open, setOpen] = useState(false);
+
+
+    React.useEffect(() => {
+
+
+
+        getAdmins(token);
+
+
+    }, [])
+    async function getAdmins(token: string) {
+        try {
+            const response = await axios.get("https://concerned-plum-crayfish.cyclic.app/api/user/getAllUser", {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            setAllusers(response.data)
+        } catch (error) {
+            throw error; // You might want to handle the error or remove this line based on your use case
+        }
+    }
 
     const showDrawer = () => {
         setOpen(true);
     };
+
 
     const onClose = () => {
         setOpen(false);
     };
 
 
-    const data: DataType[] = [
-        {
-            key: '1',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '2',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '3',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '4',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-        {
-            key: '5',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '6',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '7',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '8',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-        {
-            key: '9',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '10',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '11',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '12',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-        {
-            key: '13',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '13',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '14',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '15',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-    ];
 
     const handleSearch = (
         selectedKeys: string[],
@@ -224,52 +154,70 @@ const Adminmain: React.FC = () => {
     });
 
     const columns: ColumnsType<DataType> = [
+
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'fullName',
+            key: 'email',
+            width: '35%',
+            // sorter: (a, b) => a.name.localeCompare(b.name),
+            ...getColumnSearchProps('fullName'),
+
+        },
+        {
+            title: 'User Name',
+            dataIndex: 'username',
+            key: 'username',
+            width: '35%',
+            ...getColumnSearchProps('username'),
+            // sorter: (a, b) => a.address.length - b.address.length,
+            // sortDirections: ['descend', 'ascend'],
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+            width: '35%',
+            ...getColumnSearchProps('email'),
+        },
+        {
+            title: 'Active',
+            // dataIndex: 'email',
+            // key: 'email',
             width: '30%',
-            ...getColumnSearchProps('name'),
-        },
-        {
-            title: 'Age',
-            dataIndex: 'age',
-            key: 'age',
-            width: '20%',
-            ...getColumnSearchProps('age'),
-        },
-        {
-            title: 'Address',
-            dataIndex: 'address',
-            key: 'address',
-            ...getColumnSearchProps('address'),
-            sorter: (a, b) => a.address.length - b.address.length,
-            sortDirections: ['descend', 'ascend'],
+            // ...getColumnSearchProps('email'),
+            render: () => {
+                return <div><Switch
+                    checkedChildren={<CheckOutlined />}
+                    unCheckedChildren={<CloseOutlined />}
+                    defaultChecked
+                /></div>
+            }
         },
     ];
 
     return (
-        <div className='Admin_main' style={{ flexGrow: "1" }}>
-            <div className="Admin_page_cta" style={{ display: "flex", justifyContent: "space-between", marginRight: "3px", marginBottom: "10px" }}>
-                <Button size="middle" onClick={showDrawer} type="primary">Add User</Button>
-                <Button size="middle" type="primary">All User Report</Button>
+        <div style={{ flexGrow: "1" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginRight: "3px", marginBottom: "10px" }}>
+                <Button size="middle" type="primary" onClick={showDrawer}>Add Admin</Button>
+                {/* <Button size="middle" type="primary" onClick={() => setbulkVenderOpen(true)}>Add BulkVendor</Button> */}
             </div>
             <Table
                 bordered={true}
-
-                // loading={true}
+                loading={!allusers?.data}
                 size="middle"
                 columns={columns}
-                dataSource={data}
+                dataSource={allusers?.data} />
 
-            />
 
-            <Adduser
+            <AddAdmin
                 open={open}
                 onClose={onClose}
+                showDetaillistData={getAdmins(token)}
             />
+
         </div>
     );
 }
 
-export default Adminmain;
+export default Superadmin;
