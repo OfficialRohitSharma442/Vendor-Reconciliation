@@ -525,12 +525,13 @@ async function detailedFileHeaderChanged(){
     console.log(transformedData);
     transformedData = transformedData.slice(1);
     setdetailedFileJson(transformedData);
+    let newArray = transformedData.flatMap((items:any) => Array(3).fill(items));
 
     const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
       let data1 = {
         user: "6568b9ad12f8f60df1b89211",
         fileName: "masterfile",
-        data: transformedData
+        data: newArray
       }
        const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllCompleteDetailsData";
 
