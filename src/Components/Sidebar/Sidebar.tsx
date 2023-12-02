@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import React, { useState } from 'react';
 import { Button, Layout } from 'antd';
-import { MenuFoldOutlined, MenuUnfoldOutlined, PoweroffOutlined } from '@ant-design/icons';
+import { MenuFoldOutlined, ArrowLeftOutlined, ArrowRightOutlined, PoweroffOutlined, CloseOutlined } from '@ant-design/icons';
 import SidebarHeader from './Sidebarheader';
 import SidebarMenu from './SidebarMenu';
 import RoutesPage from './RoutesPage';
@@ -20,15 +20,32 @@ const Sidebar = () => {
         <Layout style={{ minHeight: '100vh' }}>
             {/* Universal Header */}
 
-            <Sider collapsible collapsed={collapsed} onCollapse={() => setCollapsed(!collapsed)} theme='light'>
+            <Sider collapsible collapsed={collapsed} trigger={null} reverseArrow={true} onCollapse={() => setCollapsed(!collapsed)} collapsedWidth="70" theme='light'>
                 <SidebarHeader collapsed={collapsed} />
                 <SidebarMenu />
 
 
             </Sider>
             <Layout className="site-layout">
-                <div style={{ background: "#ffffff", padding: '16px', width: '100%', borderBottom: "1px solid #dcd2d2", display: "flex", flexDirection: "row-reverse" }}>
+                <div style={{ background: "#ffffff", padding: '16px', width: '100%', borderBottom: "1px solid #dcd2d2", display: "flex", justifyContent: "space-between" }}>
                     {/* Your header content goes here */}
+                    <div>
+                        {collapsed ?
+
+                            <Button onClick={() => setCollapsed(!collapsed)}>
+                                <MenuFoldOutlined />
+                                {/* <ArrowLeftOutlined /> */}
+                            </Button>
+
+                            :
+                            <Button onClick={() => setCollapsed(!collapsed)}>
+                                <CloseOutlined />
+                            </Button>
+
+                        }
+                    </div>
+
+
                     <Button
                         type="primary"
                         icon={<PoweroffOutlined />}
