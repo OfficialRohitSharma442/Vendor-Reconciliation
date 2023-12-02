@@ -26,7 +26,7 @@ const SidebarMenu = () => {
         >
             {
                 (role === "MASTER" ? masteritems : items).map((item, index) => (
-                    <Menu.Item key={item?.path} icon={item.icon}>
+                    <Menu.Item key={item?.path} icon={item.icon} >
                         {item?.label}
                     </Menu.Item>
                 ))

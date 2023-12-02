@@ -1,5 +1,5 @@
 
-import { Space } from 'antd';
+import { Button, Space } from 'antd';
 
 const SidebarHeader = ({ collapsed }: any) => (
     <div style={{ background: '#fff', padding: 25, display: 'flex', alignItems: 'center', transition: 'width 0.2s' }}>
