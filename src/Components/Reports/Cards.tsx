@@ -27,7 +27,7 @@ const Cards: React.FC = () => {
                 <img
                     alt="Excel File Cover"
                     src="https://www.tapsmart.com/wp-content/uploads/2019/06/Excel-featured.jpg"
-                    style={{ height: 120, objectFit: 'cover' }}
+                    style={{ height: 100, objectFit: 'cover' }}
                 />
             }
             actions={[
@@ -48,6 +48,7 @@ const Cards: React.FC = () => {
                         <p>This is the Excel file description.</p>
                     </>
                 }
+                style={{ padding: 0, height: 100, }}
             />
         </Card>
     );

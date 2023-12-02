@@ -6,6 +6,7 @@ import type { InputRef } from 'antd';
 import type { ColumnType, ColumnsType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import Adduser from './Adduser';
+import axios from 'axios';
 
 interface DataType {
     key: string;
@@ -19,6 +20,8 @@ type DataIndex = keyof DataType;
 const Adminmain: React.FC = () => {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
+    const [allusers, setAllusers] = React.useState([]);
+
     const searchInput = useRef<InputRef>(null);
 
     const [open, setOpen] = useState(false);
@@ -31,105 +34,134 @@ const Adminmain: React.FC = () => {
         setOpen(false);
     };
 
+    React.useEffect(() => {
 
-    const data: DataType[] = [
-        {
-            key: '1',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '2',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '3',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '4',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-        {
-            key: '5',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '6',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '7',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '8',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-        {
-            key: '9',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '10',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '11',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '12',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-        {
-            key: '13',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        },
-        {
-            key: '13',
-            name: 'Joe Black',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        },
-        {
-            key: '14',
-            name: 'Jim Green',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-        },
-        {
-            key: '15',
-            name: 'Jim Red',
-            age: 32,
-            address: 'London No. 2 Lake Park',
-        },
-    ];
+
+        getAdmins();
+
+
+    }, [])
+    async function getAdmins() {
+        try {
+            let userdata = localStorage.getItem("VR-user_Role");
+            let token;
+            if (userdata) {
+
+                const parsedData = JSON.parse(userdata);
+                token = parsedData.token;
+
+            }
+
+            const response = await axios.get("https://concerned-plum-crayfish.cyclic.app/api/user/getAllUser", {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            setAllusers(response.data)
+        } catch (error) {
+            throw error; // You might want to handle the error or remove this line based on your use case
+        }
+    }
+
+    // const data: DataType[] = [
+    //     {
+    //         key: '1',
+    //         name: 'John Brown',
+    //         age: 32,
+    //         address: 'New York No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '2',
+    //         name: 'Joe Black',
+    //         age: 42,
+    //         address: 'London No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '3',
+    //         name: 'Jim Green',
+    //         age: 32,
+    //         address: 'Sydney No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '4',
+    //         name: 'Jim Red',
+    //         age: 32,
+    //         address: 'London No. 2 Lake Park',
+    //     },
+    //     {
+    //         key: '5',
+    //         name: 'John Brown',
+    //         age: 32,
+    //         address: 'New York No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '6',
+    //         name: 'Joe Black',
+    //         age: 42,
+    //         address: 'London No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '7',
+    //         name: 'Jim Green',
+    //         age: 32,
+    //         address: 'Sydney No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '8',
+    //         name: 'Jim Red',
+    //         age: 32,
+    //         address: 'London No. 2 Lake Park',
+    //     },
+    //     {
+    //         key: '9',
+    //         name: 'John Brown',
+    //         age: 32,
+    //         address: 'New York No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '10',
+    //         name: 'Joe Black',
+    //         age: 42,
+    //         address: 'London No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '11',
+    //         name: 'Jim Green',
+    //         age: 32,
+    //         address: 'Sydney No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '12',
+    //         name: 'Jim Red',
+    //         age: 32,
+    //         address: 'London No. 2 Lake Park',
+    //     },
+    //     {
+    //         key: '13',
+    //         name: 'John Brown',
+    //         age: 32,
+    //         address: 'New York No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '13',
+    //         name: 'Joe Black',
+    //         age: 42,
+    //         address: 'London No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '14',
+    //         name: 'Jim Green',
+    //         age: 32,
+    //         address: 'Sydney No. 1 Lake Park',
+    //     },
+    //     {
+    //         key: '15',
+    //         name: 'Jim Red',
+    //         age: 32,
+    //         address: 'London No. 2 Lake Park',
+    //     },
+    // ];
 
     const handleSearch = (
         selectedKeys: string[],
@@ -226,25 +258,25 @@ const Adminmain: React.FC = () => {
     const columns: ColumnsType<DataType> = [
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'fullName',
+            key: 'fullName',
             width: '30%',
-            ...getColumnSearchProps('name'),
+            ...getColumnSearchProps('fullName'),
         },
         {
-            title: 'Age',
-            dataIndex: 'age',
-            key: 'age',
+            title: 'User Name',
+            dataIndex: 'username',
+            key: 'username',
             width: '20%',
-            ...getColumnSearchProps('age'),
+            ...getColumnSearchProps('username'),
         },
         {
-            title: 'Address',
-            dataIndex: 'address',
-            key: 'address',
-            ...getColumnSearchProps('address'),
-            sorter: (a, b) => a.address.length - b.address.length,
-            sortDirections: ['descend', 'ascend'],
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+            ...getColumnSearchProps('email'),
+            // sorter: (a, b) => a.address.length - b.address.length,
+            // sortDirections: ['descend', 'ascend'],
         },
     ];
 
@@ -256,17 +288,18 @@ const Adminmain: React.FC = () => {
             </div>
             <Table
                 bordered={true}
-
-                // loading={true}
+                loading={!allusers?.data}
                 size="middle"
                 columns={columns}
-                dataSource={data}
+                dataSource={allusers?.data}
 
             />
 
             <Adduser
                 open={open}
                 onClose={onClose}
+                getuserdata={() => getAdmins()}
+
             />
         </div>
     );

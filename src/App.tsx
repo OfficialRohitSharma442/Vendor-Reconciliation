@@ -10,12 +10,13 @@ const App = () => {
   const [role, setRole] = useState<any>("ADMIN");
   const [loading, setloading] = React.useState(true);
   const [token, setToken] = React.useState("");
+  const [reload, setReload] = React.useState(false);
 
   React.useEffect(() => {
     const fetchRole = async () => {
       const storedRole = localStorage.getItem("VR-user_Role");
       if (storedRole) {
-        
+
         const parsedData = JSON.parse(storedRole);
         const role = parsedData?.role;
         const token = parsedData?.token;
@@ -31,14 +32,16 @@ const App = () => {
       }
     };
     fetchRole();
-  }, [])
+  }, [reload])
 
   return (
     <Context.Provider
       value={{
         role,
         setRole,
-        token
+        token,
+        setReload,
+        reload
       }}
     >
       {loading ? (

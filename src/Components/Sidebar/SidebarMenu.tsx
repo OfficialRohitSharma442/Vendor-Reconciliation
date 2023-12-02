@@ -8,7 +8,7 @@ const SidebarMenu = () => {
     const navigate = useNavigate();
 
     const items = [
-        { label: 'Home', path: '/', icon: <HomeOutlined /> },
+        { label: 'Home', path: '/Home', icon: <HomeOutlined /> },
         { label: 'Import', path: '/Import', icon: <ImportOutlined /> },
         { label: 'Add Vendor', path: '/VenderPage', icon: <UserAddOutlined /> },
         { label: 'Reports', path: '/Reports', icon: <FileTextOutlined /> },

@@ -3,7 +3,15 @@ import Cards from './Cards'
 
 const Reports = () => {
     return (
-        <Cards />
+        <div className='' style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+
+            <Cards />
+            <Cards />
+            <Cards />
+            <Cards />
+            <Cards />
+            <Cards />
+        </div>
     )
 }
 

@@ -39,7 +39,7 @@ const Login = () => {
                     content: 'User Added Successfully',
                 });
                 messageApi.destroy()
-                navigate('/');
+                navigate('/home');
                 // }, 2000)
             } else {
                 messageApi.open({

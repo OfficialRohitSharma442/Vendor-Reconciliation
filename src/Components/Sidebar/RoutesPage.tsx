@@ -6,6 +6,7 @@ import Import from "../Import/Import"
 import Superadmin from '../SuperAdmin/Superadmin'
 import Reports from '../Reports/Reports'
 import { Context } from '../Context/Context'
+import Login from '../Login/Login'
 
 
 const RoutesPage = () => {
@@ -13,12 +14,13 @@ const RoutesPage = () => {
 
     return (
         <Routes>
-            <Route path="/" element={<div>home page</div>} ></Route>
-            <Route path="/Import" element={<Import/>} ></Route>
+            <Route path="/Home" element={<div>home page</div>} ></Route>
+            <Route path="/Import" element={<Import />} ></Route>
             <Route path="/VenderPage" element={<Vendor />} ></Route>
             <Route path="/Reports" element={<Reports />} ></Route>
             {(role == "ADMIN" || role == "MASTER") && <Route path="/Settings" element={<Adminmain />} ></Route>}
             {role == "MASTER" && <Route path="/admin" element={<Superadmin />} ></Route>}
+            {/* <Route path="/login" element={<Login />} ></Route> */}
         </Routes>
     )
 }

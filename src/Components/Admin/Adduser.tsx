@@ -6,7 +6,7 @@ import React, { ChangeEvent } from "react";
 
 const { Option } = Select;
 // import { , Space } from 'antd';
-const Adduser: React.FC = ({ open, onClose }: any) => {
+const Adduser: React.FC = ({ open, onClose, getuserdata }: any) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [userdata, setuserdata] = React.useState({
         username: "",
@@ -25,8 +25,9 @@ const Adduser: React.FC = ({ open, onClose }: any) => {
     //         messageApi.destroy()
     //     }, 2000)
     // };
-    const handleaddadmin = async () => {
+    const handleOnCreateUser = async () => {
         try {
+            console.log(userdata);
             let alldata: any = localStorage.getItem("VR-user_Role");
             let token = JSON.parse(alldata).token;
             setloading(true);
@@ -67,9 +68,10 @@ const Adduser: React.FC = ({ open, onClose }: any) => {
             // }, 2000)
 
         } finally {
-            // setloading(false)
+            setloading(false)
             // showDetaillistData()
-            // onClose()
+            getuserdata()
+            onClose()
         }
     };
     const handleOnChangeEventHandler = (ev: ChangeEvent<HTMLInputElement>): void => {
@@ -79,6 +81,9 @@ const Adduser: React.FC = ({ open, onClose }: any) => {
             [name]: value,
         }));
     };
+
+
+
     return (
         <>
             {contextHolder}
@@ -108,14 +113,17 @@ const Adduser: React.FC = ({ open, onClose }: any) => {
                         </Col>
                         <Col span={12}>
                             <Form.Item
-                                label="NA"
-                                rules={[{ required: true, message: 'Please enter url' }]}
+                                label="User Name"
+                                name="username"
+                                rules={[{ required: true, message: 'Please enter User Name' }]}
                             >
                                 <Input
                                     style={{ width: '100%' }}
-                                    addonBefore="http://"
-                                    addonAfter=".com"
-                                    placeholder="Please enter url"
+                                    // addonBefore="http://"
+                                    name="username"
+                                    // addonAfter=".com"
+                                    onChange={handleOnChangeEventHandler}
+                                    placeholder="Please Enter User Name"
                                 />
                             </Form.Item>
                         </Col>
@@ -123,30 +131,46 @@ const Adduser: React.FC = ({ open, onClose }: any) => {
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
-                                name="owner"
-                                label="Owner"
-                                rules={[{ required: true, message: 'Please select an owner' }]}
+                                name="email"
+                                label="Email"
+                                rules={[{ required: true, message: 'Please Enter Email' }]}
                             >
-                                <Select placeholder="Please select an owner">
+                                <Input
+                                    style={{ width: '100%' }}
+                                    // addonBefore="http://"
+                                    name="email"
+                                    // addonAfter=".com"
+                                    onChange={handleOnChangeEventHandler}
+                                    placeholder="Please Email Name"
+                                />
+                                {/* <Select placeholder="Please select an owner">
                                     <Option value="xiao">Xiaoxiao Fu</Option>
                                     <Option value="mao">Maomao Zhou</Option>
-                                </Select>
+                                </Select> */}
                             </Form.Item>
                         </Col>
                         <Col span={12}>
                             <Form.Item
-                                name="type"
-                                label="Type"
-                                rules={[{ required: true, message: 'Please choose the type' }]}
+                                name="password"
+                                label="Password"
+                                rules={[{ required: true, message: 'Please Enter the Password' }]}
                             >
-                                <Select placeholder="Please choose the type">
+                                {/* <Select placeholder="Please choose the type">
                                     <Option value="private">Private</Option>
                                     <Option value="public">Public</Option>
-                                </Select>
+                                </Select> */}
+                                <Input.Password
+                                    style={{ width: '100%' }}
+                                    // addonBefore="http://"
+                                    name="password"
+                                    onChange={handleOnChangeEventHandler}
+                                    // addonAfter=".com"
+                                    placeholder="Please Enter the Password"
+                                />
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Row gutter={16}>
+                    {/* <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
                                 name="approver"
@@ -171,8 +195,8 @@ const Adduser: React.FC = ({ open, onClose }: any) => {
                                 />
                             </Form.Item>
                         </Col>
-                    </Row>
-                    <Row gutter={16}>
+                    </Row> */}
+                    {/* <Row gutter={16}>
                         <Col span={24}>
                             <Form.Item
                                 name="description"
@@ -186,16 +210,17 @@ const Adduser: React.FC = ({ open, onClose }: any) => {
                             >
                                 <Input.TextArea rows={4} placeholder="please enter url description" />
                             </Form.Item>
-                            <Space>
-                                <Button onClick={() => { }} type="primary">
-                                    Submit
-                                </Button>
-                                <Button onClick={onClose}>Cancel</Button>
-                            </Space>
-                        </Col>
-                    </Row>
+                       
+                    </Col>
+                </Row> */}
+                    <Space>
+                        <Button loading={loading} onClick={handleOnCreateUser} type="primary">
+                            Submit
+                        </Button>
+                        <Button onClick={onClose}>Cancel</Button>
+                    </Space>
                 </Form>
-            </Drawer>
+            </Drawer >
         </>
     );
 };
