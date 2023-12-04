@@ -254,6 +254,8 @@ const Vendor: React.FC = () => {
     ];
 
     return (
+        <div style={{ margin: '16px' }}>
+
         <div style={{ flexGrow: "1" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginRight: "3px" ,marginBottom:"10px" }}>
                 <Button size="middle" type="primary" onClick={showDrawer}>Add Vendor</Button>
@@ -269,12 +271,13 @@ const Vendor: React.FC = () => {
             <Addvendor
                 open={open}
                 onClose={onClose}
-            />
+                />
             <Bulkaddvendor
                 bulkVenderOpen={bulkVenderOpen}
                 bulkVendorOpenClose={bulkVendorOpenClose}
-            />
+                />
         </div>
+    </div>
     );
 }
 

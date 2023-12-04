@@ -589,6 +589,7 @@ async function detailedFileHeaderChanged(){
       setConfirmLoading(false);
     }, 2000);
   };
+
   const handleCancel = () => {
     console.log('Clicked cancel button');
     setOpen(false);
@@ -596,16 +597,27 @@ async function detailedFileHeaderChanged(){
 
 
   const next = () => {
-    if (current == 1) {
+    if(current == 0){
+
+    }
+    else if (current == 1 && companyFile.length >0 && companyFileJson.length >0) {
       companyFileHeaderChanged();
+      setCurrent(current + 1);
     }
-    if(current == 3){
+    else if(current == 2){
+
+    }
+    else if(current == 3){
       vendorFileHeaderChanged();
+      setCurrent(current + 1);
     }
-    if(current == 5){
+    else if(current == 4){
+
+    }
+    else if(current == 5){
       detailedFileHeaderChanged();
+      setCurrent(current + 1);
     }
-    setCurrent(current + 1);
   };
   // const prev = () => {
   //   setCurrent(current - 1);

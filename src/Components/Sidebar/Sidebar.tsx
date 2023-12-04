@@ -51,7 +51,7 @@ const Sidebar = () => {
                         Logout
                     </Button>
                 </div>
-                <Content style={{ margin: '16px' }}>
+                <Content>
                     {/* Universal Header */}
                     <RoutesPage />
                 </Content>

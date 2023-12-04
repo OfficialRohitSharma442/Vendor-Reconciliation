@@ -3,6 +3,8 @@ import Cards from './Cards'
 
 const Reports = () => {
     return (
+        <div style={{ margin: '16px' }}>
+            
         <div className='' style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
 
             <Cards />
@@ -11,6 +13,7 @@ const Reports = () => {
             <Cards />
             <Cards />
             <Cards />
+        </div>
         </div>
     )
 }

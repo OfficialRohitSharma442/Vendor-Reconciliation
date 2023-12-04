@@ -281,6 +281,8 @@ const Adminmain: React.FC = () => {
     ];
 
     return (
+    <div style={{ margin: '16px' }}>
+
         <div className='Admin_main' style={{ flexGrow: "1" }}>
             <div className="Admin_page_cta" style={{ display: "flex", justifyContent: "space-between", marginRight: "3px", marginBottom: "10px" }}>
                 <Button size="middle" onClick={showDrawer} type="primary">Add User</Button>
@@ -292,16 +294,17 @@ const Adminmain: React.FC = () => {
                 size="middle"
                 columns={columns}
                 dataSource={allusers?.data}
-
-            />
+                
+                />
 
             <Adduser
                 open={open}
                 onClose={onClose}
                 getuserdata={() => getAdmins()}
-
-            />
+                
+                />
         </div>
+    </div>
     );
 }
 
