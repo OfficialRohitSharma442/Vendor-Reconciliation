@@ -18,7 +18,7 @@ const Import = () => {
   const [companyFileSelectedValues, setcompanyFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
 
   const [vendorFileSelectedValues, setvendorFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
-  const [detailedFileSelectedValues, setdetailedFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
+  const [detailedFileSelectedValues, setdetailedFileSelectedValues] = useState(Array.from({ length: 12 }, () => ''));
 
   
   const [vendorFileJson, setvendorFileJson] = useState<any>([]);
@@ -52,9 +52,6 @@ const Import = () => {
     updatedSelectedValues[dropdownIndex] = value;
     setdetailedFileSelectedValues(updatedSelectedValues);
   };
-
-
-
 
   const companyFileHeader = [
     "Vendor",
@@ -332,13 +329,13 @@ const Import = () => {
     },
   ];
 
-  async function companyFileHeaderChanged() {
+  async function companyFileHeaderChanged() { 
     if (companyFileJson.length > 0 && companyFileSelectedValues.length > 0) {
       let data = companyFileJson[0];
-      companyFileSelectedValues.forEach((items) => {
+      companyFileSelectedValues.forEach((items,indexs) => {
         let index = data.indexOf(items);
         if (index != -1) {
-          data[index] = `${items}`;
+          data[index] = companyFileHeader[indexs];
         }
       })
       let ans: any = companyFileJson;
@@ -353,7 +350,12 @@ const Import = () => {
           const rowData: any = {};
           headers.forEach((header: any, index: any) => {
             // rowData[header] = row[index];
-            const value = row[index];
+            let value = row[index];
+            if(header == "Invoice Number" || header == "Document Number"){
+              if(value != "" && value != undefined && value!= null){
+                value = value.replace(/[\W_]+/g, '');
+                }
+            }
             // Trim all values
             rowData[header] = `${value}`.trim();
           });
@@ -424,10 +426,10 @@ const Import = () => {
 async function vendorFileHeaderChanged(){
   if (vendorFileJson.length > 0 && vendorFileSelectedValues.length > 0) {
     let data = vendorFileJson[0];
-    vendorFileSelectedValues.forEach((items) => {
+    vendorFileSelectedValues.forEach((items,indexs) => {
       let index = data.indexOf(items);
       if (index != -1) {
-        data[index] = `${items}`;
+        data[index] = vendorFileHeader[indexs];
       }
     })
     let ans: any = vendorFileJson;
@@ -438,12 +440,17 @@ async function vendorFileHeaderChanged(){
     const dataRows: any = ans;
 
     const transformToObjects = (headers: any, data: any) => {
-      return data.map((row: any) => {
+      return data.map((row: any,indexs:any) => {
         const rowData: any = {};
         headers.forEach((header: any, index: any) => {
           // rowData[header] = row[index];
-          const value = row[index];
+          let value = row[index];
           // Trim all values
+          if(header === "Invoice Number" || header === "Document Number"){
+            if(value != "" && value != undefined && value!= null){
+            value = value.replace(/[\W_]+/g, '');
+            }
+          }
           rowData[header] = `${value}`.trim();
         });
         return rowData;
@@ -495,10 +502,10 @@ async function vendorFileHeaderChanged(){
 async function detailedFileHeaderChanged(){
   if (detailedFileJson.length > 0 && detailedFileSelectedValues.length > 0) {
     let data = detailedFileJson[0];
-    detailedFileSelectedValues.forEach((items) => {
+    detailedFileSelectedValues.forEach((items,indexs) => {
       let index = data.indexOf(items);
       if (index != -1) {
-        data[index] = `${items}`;
+        data[index] = detailedFileHeader[indexs];
       }
     })
     let ans: any = detailedFileJson;
@@ -513,8 +520,13 @@ async function detailedFileHeaderChanged(){
         const rowData: any = {};
         headers.forEach((header: any, index: any) => {
           // rowData[header] = row[index];
-          const value = row[index];
+          let value = row[index];
           // Trim all values
+          if(header == "Invoice Number" || header == "Document Number"){
+            if(value != "" && value != undefined && value!= null){
+              value = value.replace(/[\W_]+/g, '');
+            }
+            }
           rowData[header] = `${value}`.trim();
         });
         return rowData;
