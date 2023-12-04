@@ -77,7 +77,7 @@ const Login = () => {
     }
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {contextHolder}
             <Form
                 name="basic"
