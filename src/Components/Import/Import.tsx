@@ -11,7 +11,7 @@ const { Option } = Select;
 const Import = () => {
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(4);
   const [companyFile, setcompanyFile] = useState([]);
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
   const [companyFileHeaderJson, setcompanyFileHeaderJson] = useState<any>([]);
@@ -75,6 +75,7 @@ const Import = () => {
     "Document Number",
     "Invoice Number",
   ];
+  
   const detailedFileHeader = [
     "Due Date",
     "Company Code",
@@ -133,7 +134,9 @@ const Import = () => {
       }
       else {
         onError();
-        message.error(`Please upload excle file.`);
+        setTimeout(() => {
+          message.error(`Please upload excle file.`);
+        }, 2000);
       }
     },
     onChange(info) {
@@ -353,8 +356,8 @@ const Import = () => {
             let value = row[index];
             if(header == "Invoice Number" || header == "Document Number"){
               if(value != "" && value != undefined && value!= null){
-                value = value.replace(/[\W_]+/g, '');
-                }
+                value = String(value).replace(/[\W_]+/g, '');
+              }
             }
             // Trim all values
             rowData[header] = `${value}`.trim();
@@ -448,7 +451,7 @@ async function vendorFileHeaderChanged(){
           // Trim all values
           if(header === "Invoice Number" || header === "Document Number"){
             if(value != "" && value != undefined && value!= null){
-            value = value.replace(/[\W_]+/g, '');
+            value = String(value).replace(/[\W_]+/g, '');
             }
           }
           rowData[header] = `${value}`.trim();
@@ -524,9 +527,9 @@ async function detailedFileHeaderChanged(){
           // Trim all values
           if(header == "Invoice Number" || header == "Document Number"){
             if(value != "" && value != undefined && value!= null){
-              value = value.replace(/[\W_]+/g, '');
+              value = String(value).replace(/[\W_]+/g, '');
             }
-            }
+          }
           rowData[header] = `${value}`.trim();
         });
         return rowData;
@@ -598,25 +601,59 @@ async function detailedFileHeaderChanged(){
 
   const next = () => {
     if(current == 0){
-
+      if(companyFileJson.length != undefined && companyFileJson.length != null && companyFileJson.length >0){
+        setCurrent(current + 1);
+      }
+      else{
+        message.error(`Please upload excle file.`);
+      }
     }
-    else if (current == 1 && companyFile.length >0 && companyFileJson.length >0) {
-      companyFileHeaderChanged();
-      setCurrent(current + 1);
+    else if (current == 1) {
+      const allValuesSelected = companyFileSelectedValues.every(value => value !== '');
+      if (allValuesSelected) {
+        companyFileHeaderChanged();
+        setCurrent(current + 1);
+      } 
+      else{
+        message.error(`Please select a value for each dropdown.`);
+      }
     }
     else if(current == 2){
-
+      if(vendorFileJson.length != undefined && vendorFileJson.length != null && vendorFileJson.length >0){
+        setCurrent(current + 1);
+      }
+      else{
+        message.error(`Please upload excle file.`);
+      }
     }
     else if(current == 3){
-      vendorFileHeaderChanged();
-      setCurrent(current + 1);
+      const allValuesSelected = vendorFileSelectedValues.every(value => value !== '');
+      if (allValuesSelected) {
+        vendorFileHeaderChanged();
+        setCurrent(current + 1);
+      } 
+      else{
+        message.error(`Please select a value for each dropdown.`);
+      }
+      
     }
     else if(current == 4){
-
+      if(detailedFileJson.length != undefined && detailedFileJson.length != null && detailedFileJson.length >0){
+        setCurrent(current + 1);
+      }
+      else{
+        message.error(`Please upload excle file.`);
+      }
     }
     else if(current == 5){
-      detailedFileHeaderChanged();
-      setCurrent(current + 1);
+      const allValuesSelected = detailedFileSelectedValues.every(value => value !== '');
+      if (allValuesSelected) {
+        detailedFileHeaderChanged();
+        // setCurrent(current + 1);
+      } 
+      else{
+        message.error(`Please select a value for each dropdown.`);
+      }
     }
   };
   // const prev = () => {
@@ -653,7 +690,7 @@ async function detailedFileHeaderChanged(){
             </Button>
           )}
           {current === steps.length - 1 && (
-            <Button type="primary" onClick={detailedFileHeaderChanged}>
+            <Button type="primary" onClick={next}>
               Generate Report
             </Button>
           )}
