@@ -32,7 +32,8 @@ const Login = () => {
                     token: response?.data?.token,
                     role: response?.data?.role,
                 }
-                localStorage.setItem("VR-user_Role", JSON.stringify(data))
+                debugger;
+                localStorage.setItem("VR-user_Role", JSON.stringify(response?.data))
                 setRole(response?.data?.role)
                 messageApi.open({
                     type: 'success',

@@ -7,10 +7,12 @@ import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { FileExcelOutlined } from '@ant-design/icons';
 import './Import.css';
 import axios from 'axios';
+import Vendor from '../Vendor/vendor';
 const { Option } = Select;
 const Import = () => {
-  let alldata: any = localStorage.getItem("VR-user_Role");
-  let tokens = JSON.parse(alldata).token;
+
+ 
+
 
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
@@ -18,11 +20,25 @@ const Import = () => {
   const [companyFile, setcompanyFile] = useState([]);
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
   const [companyFileHeaderJson, setcompanyFileHeaderJson] = useState<any>([]);
+  const [companyFileData, setcompanyFileData] = useState<any>([]);
+  const [vendorNameOpation, setvendorNameOpation] = useState<any>([]);
+
+
+  const [companyFileName, setcompanyFileName] = useState("");
+
+  const [vendorfileName, setvendorfileName] = useState("");
+
+  const [detailedFileName, setdetailedFileName] = useState("");
+
+
+  const [sendData, setsendData] = useState(true);
+  
+
   const [companyFileSelectedValues, setcompanyFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
   const [vendorFileSelectedValues, setvendorFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
   const [detailedFileSelectedValues, setdetailedFileSelectedValues] = useState(Array.from({ length: 12 }, () => ''));
 
-  
+
   const [vendorFileJson, setvendorFileJson] = useState<any>([]);
   const [vendorFileHeaderJson, setvendorFileHeaderJson] = useState<any>([]);
   const [detailedFileJson, setdetailedFileJson] = useState<any>([]);
@@ -30,7 +46,7 @@ const Import = () => {
 
 
   // **************for model************
-  const [vendorName,SetvendorName]=useState("");
+  const [vendorName, SetvendorName] = useState("");
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   //************************** */
@@ -77,7 +93,7 @@ const Import = () => {
     "Document Number",
     "Invoice Number",
   ];
-  
+
   const detailedFileHeader = [
     "Due Date",
     "Company Code",
@@ -118,16 +134,19 @@ const Import = () => {
               setcompanyFile(file);
               setcompanyFileJson(jsonData);
               setcompanyFileHeaderJson(trimmedHeaders);
+              setcompanyFileName(file.name);
               onSuccess();
             }
             else if (current == 2) {
               setvendorFileJson(jsonData);
               setvendorFileHeaderJson(trimmedHeaders);
               onSuccess();
+              setvendorfileName(file.name)
             }
             else if (current == 4) {
               setdetailedFileJson(jsonData);
               setdetailedFileHeaderJson(trimmedHeaders);
+              setdetailedFileName(file.name);
               onSuccess();
             }
           }
@@ -334,10 +353,10 @@ const Import = () => {
     },
   ];
 
-  async function companyFileHeaderChanged() { 
+  async function companyFileHeaderChanged() {
     if (companyFileJson.length > 0 && companyFileSelectedValues.length > 0) {
       let data = companyFileJson[0];
-      companyFileSelectedValues.forEach((items,indexs) => {
+      companyFileSelectedValues.forEach((items, indexs) => {
         let index = data.indexOf(items);
         if (index != -1) {
           data[index] = companyFileHeader[indexs];
@@ -349,69 +368,39 @@ const Import = () => {
 
       const headers: any = ans[0];
       const dataRows: any = ans;
-
+      let vendorNamedropdown:any = [];
       const transformToObjects = (headers: any, data: any) => {
         return data.map((row: any) => {
           const rowData: any = {};
           headers.forEach((header: any, index: any) => {
             // rowData[header] = row[index];
             let value = row[index];
-            if(header == "Invoice Number" || header == "Document Number"){
-              if(value != "" && value != undefined && value!= null){
-                value = String(value).replace(/[\W_]+/g, '');
+            if (value != "" && value != undefined && value != null) {
+              if (header == "Invoice Number" || header == "Document Number") {
+                if (value != "" && value != undefined && value != null) {
+                  value = String(value).replace(/[\W_]+/g, '');
+                }
               }
+              if (header == "Vendor Name") {
+                vendorNamedropdown.push(value.trim());
+              }
+              rowData[header] = `${value}`.trim();
             }
-            // Trim all values
-            rowData[header] = `${value}`.trim();
+            else {
+              message.error(`Check Your excle file some mandatory filed data is empty.`);
+              setsendData(false);
+            }
+
           });
           return rowData;
         });
       };
-
+      setvendorNameOpation(vendorNamedropdown);
       let transformedData = transformToObjects(headers, dataRows);
       console.log(transformedData);
       transformedData = transformedData.slice(1);
-
-      
-      const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
-      let data1 = {
-        user: "6568b9ad12f8f60df1b89211",
-        fileName: "masterfile",
-        data: transformedData
-      }
-       const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllMasterData";
-
-      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
-      try {
-        let response = await axios.post(url, data1,
-          {
-            headers: {
-              'Authorization': ` Bearer ${tokens}`
-            }
-          }
-        )
-        if (response.status == 201) {
-
-          let response2 = await axios.get(url2,
-            {
-              headers: {
-                'Authorization': ` Bearer ${tokens}`
-              }
-            }
-          )
-
-          console.log(response2);
-          if (response2) {
-            showModal();
-          }
-        }
-
-      }
-      catch (error) {
-        console.log(error)
-      }
-
-
+      setcompanyFileData(transformedData);
+      showModal();
       // let response2 = await axios.get(url2,
       //   {
       //     headers: {
@@ -424,57 +413,21 @@ const Import = () => {
       // if (response2) {
       //   showModal();
       // }
-      
+
     }
   }
 
-async function vendorFileHeaderChanged(){
-  if (vendorFileJson.length > 0 && vendorFileSelectedValues.length > 0) {
-    let data = vendorFileJson[0];
-    vendorFileSelectedValues.forEach((items,indexs) => {
-      let index = data.indexOf(items);
-      if (index != -1) {
-        data[index] = vendorFileHeader[indexs];
-      }
-    })
-    let ans: any = vendorFileJson;
-    ans[0] = data;
-    console.log(data)
+ async function postData(transformedData:any){
 
-    const headers: any = ans[0];
-    const dataRows: any = ans;
-
-    const transformToObjects = (headers: any, data: any) => {
-      return data.map((row: any,indexs:any) => {
-        const rowData: any = {};
-        headers.forEach((header: any, index: any) => {
-          // rowData[header] = row[index];
-          let value = row[index];
-          // Trim all values
-          if(header === "Invoice Number" || header === "Document Number"){
-            if(value != "" && value != undefined && value!= null){
-            value = String(value).replace(/[\W_]+/g, '');
-            }
-          }
-          rowData[header] = `${value}`.trim();
-        });
-        return rowData;
-      });
-    };
-
-    let transformedData = transformToObjects(headers, dataRows);
-    console.log(transformedData);
-    transformedData = transformedData.slice(1);
-    setvendorFileJson(transformedData);
-
-    const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/vendorOpen";
+      const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
       let data1 = {
         user: "6568b9ad12f8f60df1b89211",
-        fileName: "masterfile",
+        fileName: companyFileName,
         data: transformedData
       }
-       const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllVendorData";
-
+      const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllMasterData";
+      let alldata: any = localStorage.getItem("VR-user_Role");
+      let tokens = JSON.parse(alldata).token;
       //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
       try {
         let response = await axios.post(url, data1,
@@ -493,6 +446,7 @@ async function vendorFileHeaderChanged(){
               }
             }
           )
+
           console.log(response2);
         }
 
@@ -500,58 +454,57 @@ async function vendorFileHeaderChanged(){
       catch (error) {
         console.log(error)
       }
-    
+
   }
-}
-  
-async function detailedFileHeaderChanged(){
-  if (detailedFileJson.length > 0 && detailedFileSelectedValues.length > 0) {
-    let data = detailedFileJson[0];
-    detailedFileSelectedValues.forEach((items,indexs) => {
-      let index = data.indexOf(items);
-      if (index != -1) {
-        data[index] = detailedFileHeader[indexs];
-      }
-    })
-    let ans: any = detailedFileJson;
-    ans[0] = data;
-    console.log(data)
 
-    const headers: any = ans[0];
-    const dataRows: any = ans;
+  async function vendorFileHeaderChanged() {
+    if (vendorFileJson.length > 0 && vendorFileSelectedValues.length > 0) {
+      let data = vendorFileJson[0];
+      vendorFileSelectedValues.forEach((items, indexs) => {
+        let index = data.indexOf(items);
+        if (index != -1) {
+          data[index] = vendorFileHeader[indexs];
+        }
+      })
+      let ans: any = vendorFileJson;
+      ans[0] = data;
+      console.log(data)
 
-    const transformToObjects = (headers: any, data: any) => {
-      return data.map((row: any) => {
-        const rowData: any = {};
-        headers.forEach((header: any, index: any) => {
-          // rowData[header] = row[index];
-          let value = row[index];
-          // Trim all values
-          if(header == "Invoice Number" || header == "Document Number"){
-            if(value != "" && value != undefined && value!= null){
-              value = String(value).replace(/[\W_]+/g, '');
+      const headers: any = ans[0];
+      const dataRows: any = ans;
+
+      const transformToObjects = (headers: any, data: any) => {
+        return data.map((row: any, indexs: any) => {
+          const rowData: any = {};
+          headers.forEach((header: any, index: any) => {
+            // rowData[header] = row[index];
+            let value = row[index];
+            // Trim all values
+            if (header === "Invoice Number" || header === "Document Number") {
+              if (value != "" && value != undefined && value != null) {
+                value = String(value).replace(/[\W_]+/g, '');
+              }
             }
-          }
-          rowData[header] = `${value}`.trim();
+            rowData[header] = `${value}`.trim();
+          });
+          return rowData;
         });
-        return rowData;
-      });
-    };
+      };
 
-    let transformedData = transformToObjects(headers, dataRows);
-    console.log(transformedData);
-    transformedData = transformedData.slice(1);
-    setdetailedFileJson(transformedData);
-    // let newArray = transformedData.flatMap((items:any) => Array(3).fill(items));
+      let transformedData = transformToObjects(headers, dataRows);
+      console.log(transformedData);
+      transformedData = transformedData.slice(1);
+      setvendorFileJson(transformedData);
 
-    const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
+      const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/vendorOpen";
       let data1 = {
         user: "6568b9ad12f8f60df1b89211",
-        fileName: "masterfile",
+        fileName: vendorfileName,
         data: transformedData
       }
-       const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllCompleteDetailsData";
-
+      const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllVendorData";
+      let alldata: any = localStorage.getItem("VR-user_Role");
+      let tokens = JSON.parse(alldata).token;
       //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
       try {
         let response = await axios.post(url, data1,
@@ -578,10 +531,114 @@ async function detailedFileHeaderChanged(){
         console.log(error)
       }
 
+    }
   }
-  message.success('Processing complete!')
-}
 
+  async function detailedFileHeaderChanged() {
+    if (detailedFileJson.length > 0 && detailedFileSelectedValues.length > 0) {
+      let data = detailedFileJson[0];
+      detailedFileSelectedValues.forEach((items, indexs) => {
+        let index = data.indexOf(items);
+        if (index != -1) {
+          data[index] = detailedFileHeader[indexs];
+        }
+      })
+      let ans: any = detailedFileJson;
+      ans[0] = data;
+      console.log(data)
+
+      const headers: any = ans[0];
+      const dataRows: any = ans;
+
+      const transformToObjects = (headers: any, data: any) => {
+        return data.map((row: any) => {
+          const rowData: any = {};
+          headers.forEach((header: any, index: any) => {
+            // rowData[header] = row[index];
+            let value = row[index];
+            // Trim all values
+            if (header == "Invoice Number" || header == "Document Number") {
+              if (value != "" && value != undefined && value != null) {
+                value = String(value).replace(/[\W_]+/g, '');
+              }
+            }
+            rowData[header] = `${value}`.trim();
+          });
+          return rowData;
+        });
+      };
+
+      let transformedData = transformToObjects(headers, dataRows);
+      console.log(transformedData);
+      transformedData = transformedData.slice(1);
+      setdetailedFileJson(transformedData);
+      // let newArray = transformedData.flatMap((items:any) => Array(3).fill(items));
+
+      const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
+      let data1 = {
+        user: "6568b9ad12f8f60df1b89211",
+        fileName: detailedFileName,
+        data: transformedData
+      }
+      const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllCompleteDetailsData";
+      let alldata: any = localStorage.getItem("VR-user_Role");
+      let tokens = JSON.parse(alldata).token;
+      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
+      try {
+        let response = await axios.post(url, data1,
+          {
+            headers: {
+              'Authorization': ` Bearer ${tokens}`
+            }
+          }
+        )
+        if (response.status == 201) {
+
+          let response2 = await axios.get(url2,
+            {
+              headers: {
+                'Authorization': ` Bearer ${tokens}`
+              }
+            }
+          )
+          console.log(response2);
+        }
+
+      }
+      catch (error) {
+        console.log(error)
+      }
+
+    }
+    message.success('Processing complete!')
+  }
+
+  async function postVendorName(name:any){
+    let alldata: any = localStorage.getItem("VR-user_Role");
+    let tokens = JSON.parse(alldata).token;
+    const url = "https://concerned-plum-crayfish.cyclic.app/api/generate-report";
+      let data1 = {
+        user: "6568b9ad12f8f60df1b89211",
+        VendorName: name
+      }
+
+      try {
+        let response = await axios.post(url, data1,
+          {
+            headers: {
+              'Authorization': ` Bearer ${tokens}`
+            }
+          }
+        )
+        if (response.status == 201) {
+          console.log(response);
+        }
+
+      }
+      catch (error) {
+        console.log(error)
+      }
+  }
 
   const showModal = () => {
     setOpen(true);
@@ -589,10 +646,15 @@ async function detailedFileHeaderChanged(){
 
   const handleOk = () => {
     setConfirmLoading(true);
-    setTimeout(() => {
+    if(sendData && companyFileData.length > 0 ){
+      postData(companyFileData);
+      setTimeout(() => {
       setOpen(false);
       setConfirmLoading(false);
-    }, 2000);
+     }, 2000);
+   }
+   else{}
+
   };
 
   const handleCancel = () => {
@@ -602,11 +664,11 @@ async function detailedFileHeaderChanged(){
 
 
   const next = () => {
-    if(current == 0){
-      if(companyFileJson.length != undefined && companyFileJson.length != null && companyFileJson.length >0){
+    if (current == 0) {
+      if (companyFileJson.length != undefined && companyFileJson.length != null && companyFileJson.length > 0) {
         setCurrent(current + 1);
       }
-      else{
+      else {
         message.error(`Please upload excle file.`);
       }
     }
@@ -616,44 +678,46 @@ async function detailedFileHeaderChanged(){
         companyFileHeaderChanged();
         setCurrent(current + 1);
       } 
-      else{
+      else {
         message.error(`Please select a value for each dropdown.`);
       }
     }
-    else if(current == 2){
-      if(vendorFileJson.length != undefined && vendorFileJson.length != null && vendorFileJson.length >0){
+    else if (current == 2) {
+      if (vendorFileJson.length != undefined && vendorFileJson.length != null && vendorFileJson.length > 0) {
         setCurrent(current + 1);
       }
-      else{
+      else {
         message.error(`Please upload excle file.`);
       }
     }
-    else if(current == 3){
+    else if (current == 3) {
       const allValuesSelected = vendorFileSelectedValues.every(value => value !== '');
       if (allValuesSelected) {
         vendorFileHeaderChanged();
         setCurrent(current + 1);
-      } 
-      else{
+      }
+      else {
         message.error(`Please select a value for each dropdown.`);
       }
-      
+
     }
-    else if(current == 4){
-      if(detailedFileJson.length != undefined && detailedFileJson.length != null && detailedFileJson.length >0){
+    else if (current == 4) {
+      if (detailedFileJson.length != undefined && detailedFileJson.length != null && detailedFileJson.length > 0) {
         setCurrent(current + 1);
       }
-      else{
+      else {
         message.error(`Please upload excle file.`);
       }
     }
-    else if(current == 5){
+    else if (current == 5) {
       const allValuesSelected = detailedFileSelectedValues.every(value => value !== '');
       if (allValuesSelected) {
         detailedFileHeaderChanged();
-        // setCurrent(current + 1);
-      } 
-      else{
+        if(vendorName != "" && vendorName != null && vendorName != undefined){
+        postVendorName(vendorName);
+        }
+      }
+      else {
         message.error(`Please select a value for each dropdown.`);
       }
     }
@@ -713,13 +777,12 @@ async function detailedFileHeaderChanged(){
           placeholder={`select Vender naem`}
           onChange={(value) => SetvendorName(value)}
         >
-          {companyFileHeaderJson
-            .filter((option: any) => !companyFileSelectedValues.includes(option))
-            .map((option: any) => (
+         { vendorNameOpation.map((option: any) => (
               <Option key={option} value={option}>
                 {option}
               </Option>
-          ))}
+            ))
+         }
         </Select>
       </Modal>
     </>
