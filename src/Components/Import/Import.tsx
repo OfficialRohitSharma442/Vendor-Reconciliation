@@ -11,7 +11,7 @@ const { Option } = Select;
 const Import = () => {
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(4);
+  const [current, setCurrent] = useState(0);
   const [companyFile, setcompanyFile] = useState([]);
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
   const [companyFileHeaderJson, setcompanyFileHeaderJson] = useState<any>([]);
