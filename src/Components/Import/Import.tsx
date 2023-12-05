@@ -9,6 +9,9 @@ import './Import.css';
 import axios from 'axios';
 const { Option } = Select;
 const Import = () => {
+  let alldata: any = localStorage.getItem("VR-user_Role");
+  let tokens = JSON.parse(alldata).token;
+
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
@@ -16,7 +19,6 @@ const Import = () => {
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
   const [companyFileHeaderJson, setcompanyFileHeaderJson] = useState<any>([]);
   const [companyFileSelectedValues, setcompanyFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
-
   const [vendorFileSelectedValues, setvendorFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
   const [detailedFileSelectedValues, setdetailedFileSelectedValues] = useState(Array.from({ length: 12 }, () => ''));
 
@@ -379,12 +381,12 @@ const Import = () => {
       }
        const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllMasterData";
 
-       let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
+      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
       try {
         let response = await axios.post(url, data1,
           {
             headers: {
-              'Authorization': ` Bearer ${tokenforcall}`
+              'Authorization': ` Bearer ${tokens}`
             }
           }
         )
@@ -393,7 +395,7 @@ const Import = () => {
           let response2 = await axios.get(url2,
             {
               headers: {
-                'Authorization': ` Bearer ${tokenforcall}`
+                'Authorization': ` Bearer ${tokens}`
               }
             }
           )
@@ -473,12 +475,12 @@ async function vendorFileHeaderChanged(){
       }
        const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllVendorData";
 
-       let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
+      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
       try {
         let response = await axios.post(url, data1,
           {
             headers: {
-              'Authorization': ` Bearer ${tokenforcall}`
+              'Authorization': ` Bearer ${tokens}`
             }
           }
         )
@@ -487,7 +489,7 @@ async function vendorFileHeaderChanged(){
           let response2 = await axios.get(url2,
             {
               headers: {
-                'Authorization': ` Bearer ${tokenforcall}`
+                'Authorization': ` Bearer ${tokens}`
               }
             }
           )
@@ -550,12 +552,12 @@ async function detailedFileHeaderChanged(){
       }
        const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllCompleteDetailsData";
 
-       let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
+      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
       try {
         let response = await axios.post(url, data1,
           {
             headers: {
-              'Authorization': ` Bearer ${tokenforcall}`
+              'Authorization': ` Bearer ${tokens}`
             }
           }
         )
@@ -564,7 +566,7 @@ async function detailedFileHeaderChanged(){
           let response2 = await axios.get(url2,
             {
               headers: {
-                'Authorization': ` Bearer ${tokenforcall}`
+                'Authorization': ` Bearer ${tokens}`
               }
             }
           )
