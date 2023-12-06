@@ -193,7 +193,7 @@ const Import = () => {
       title: 'First',
       content: (
         <div style={{ margin: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "50px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
             <div>
               Note:
             </div>
@@ -247,7 +247,7 @@ const Import = () => {
       title: 'Thrid',
       content: (
         <div style={{ margin: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "50px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
             <div>
               Note:
             </div>
@@ -301,7 +301,7 @@ const Import = () => {
       title: 'Five',
       content: (
         <div style={{ margin: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "50px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
             <div>
               Note:
             </div>
@@ -324,10 +324,10 @@ const Import = () => {
           <div className='Step2Note'>
             Note: All the fields are mandatory and Select your file column name with matched dropdown
           </div>
-          <div className='Step2Dropdown'>
+          <div className='Step2Dropdownlast'>
             {
               detailedFileHeader.map((key: any, index) => (
-                <div className='DropdownMaindiv' key={index}>
+                <div className='DropdownMaindivlast' key={index}>
                   <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
                   <Select
                     key={index}
@@ -728,7 +728,7 @@ const Import = () => {
   const items = steps.map((item: any) => ({ key: item.title, title: item.title }));
 
   const contentStyle: React.CSSProperties = {
-    height: "450px",
+    height: "350px",
     // textAlign: 'center',
     // display: "grid",
     // placeItems: "center",

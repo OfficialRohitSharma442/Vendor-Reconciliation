@@ -17,12 +17,7 @@ const Login = () => {
     const handleLogin = async () => {
         try {
             setloading(true);
-            let data1 = {
-                username: "umesh",
-                email: "umesh@gmail.com",
-                fullName: "umesh jyani",
-                password: "umesh"
-            }
+
             let response = await axios.post("https://concerned-plum-crayfish.cyclic.app/api/user/login", data);
 
             if (response?.status == 200) {
@@ -52,6 +47,7 @@ const Login = () => {
                 }, 2000)
             }
         } catch (error: any) {
+            debugger;
             // console.log(error.response.status);
             const { status } = error;
 
