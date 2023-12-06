@@ -11,7 +11,7 @@ import Vendor from '../Vendor/vendor';
 const { Option } = Select;
 const Import = () => {
 
- 
+
 
 
   const [size, setSize] = useState<SizeType>();
@@ -32,7 +32,7 @@ const Import = () => {
 
 
   const [sendData, setsendData] = useState(true);
-  
+
 
   const [companyFileSelectedValues, setcompanyFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
   const [vendorFileSelectedValues, setvendorFileSelectedValues] = useState(Array.from({ length: 9 }, () => ''));
@@ -368,7 +368,7 @@ const Import = () => {
 
       const headers: any = ans[0];
       const dataRows: any = ans;
-      let vendorNamedropdown:any = [];
+      let vendorNamedropdown: any = [];
       const transformToObjects = (headers: any, data: any) => {
         return data.map((row: any) => {
           const rowData: any = {};
@@ -417,43 +417,43 @@ const Import = () => {
     }
   }
 
- async function postData(transformedData:any){
+  async function postData(transformedData: any) {
 
-      const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
-      let data1 = {
-        user: "6568b9ad12f8f60df1b89211",
-        fileName: companyFileName,
-        data: transformedData
-      }
-      const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllMasterData";
-      let alldata: any = localStorage.getItem("VR-user_Role");
-      let tokens = JSON.parse(alldata).token;
-      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
-      try {
-        let response = await axios.post(url, data1,
+    const url = "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
+    let data1 = {
+      user: "6568b9ad12f8f60df1b89211",
+      fileName: companyFileName,
+      data: transformedData
+    }
+    const url2 = "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllMasterData";
+    let alldata: any = localStorage.getItem("VR-user_Role");
+    let tokens = JSON.parse(alldata).token;
+    //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
+    try {
+      let response = await axios.post(url, data1,
+        {
+          headers: {
+            'Authorization': ` Bearer ${tokens}`
+          }
+        }
+      )
+      if (response.status == 201) {
+
+        let response2 = await axios.get(url2,
           {
             headers: {
               'Authorization': ` Bearer ${tokens}`
             }
           }
         )
-        if (response.status == 201) {
 
-          let response2 = await axios.get(url2,
-            {
-              headers: {
-                'Authorization': ` Bearer ${tokens}`
-              }
-            }
-          )
-
-          console.log(response2);
-        }
-
+        console.log(response2);
       }
-      catch (error) {
-        console.log(error)
-      }
+
+    }
+    catch (error) {
+      console.log(error)
+    }
 
   }
 
@@ -613,31 +613,31 @@ const Import = () => {
     message.success('Processing complete!')
   }
 
-  async function postVendorName(name:any){
+  async function postVendorName(name: any) {
     let alldata: any = localStorage.getItem("VR-user_Role");
     let tokens = JSON.parse(alldata).token;
     const url = "https://concerned-plum-crayfish.cyclic.app/api/generate-report";
-      let data1 = {
-        user: "6568b9ad12f8f60df1b89211",
-        VendorName: name
-      }
+    let data1 = {
+      user: "6568b9ad12f8f60df1b89211",
+      VendorName: name
+    }
 
-      try {
-        let response = await axios.post(url, data1,
-          {
-            headers: {
-              'Authorization': ` Bearer ${tokens}`
-            }
+    try {
+      let response = await axios.post(url, data1,
+        {
+          headers: {
+            'Authorization': ` Bearer ${tokens}`
           }
-        )
-        if (response.status == 201) {
-          console.log(response);
         }
+      )
+      if (response.status == 201) {
+        console.log(response);
+      }
 
-      }
-      catch (error) {
-        console.log(error)
-      }
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   const showModal = () => {
@@ -646,14 +646,14 @@ const Import = () => {
 
   const handleOk = () => {
     setConfirmLoading(true);
-    if(sendData && companyFileData.length > 0 ){
+    if (sendData && companyFileData.length > 0) {
       postData(companyFileData);
       setTimeout(() => {
-      setOpen(false);
-      setConfirmLoading(false);
-     }, 2000);
-   }
-   else{}
+        setOpen(false);
+        setConfirmLoading(false);
+      }, 2000);
+    }
+    else { }
 
   };
 
@@ -677,7 +677,7 @@ const Import = () => {
       if (allValuesSelected) {
         companyFileHeaderChanged();
         setCurrent(current + 1);
-      } 
+      }
       else {
         message.error(`Please select a value for each dropdown.`);
       }
@@ -713,8 +713,8 @@ const Import = () => {
       const allValuesSelected = detailedFileSelectedValues.every(value => value !== '');
       if (allValuesSelected) {
         detailedFileHeaderChanged();
-        if(vendorName != "" && vendorName != null && vendorName != undefined){
-        postVendorName(vendorName);
+        if (vendorName != "" && vendorName != null && vendorName != undefined) {
+          postVendorName(vendorName);
         }
       }
       else {
@@ -777,12 +777,12 @@ const Import = () => {
           placeholder={`select Vender naem`}
           onChange={(value) => SetvendorName(value)}
         >
-         { vendorNameOpation.map((option: any) => (
-              <Option key={option} value={option}>
-                {option}
-              </Option>
-            ))
-         }
+          {vendorNameOpation.map((option: any) => (
+            <Option key={option} value={option}>
+              {option}
+            </Option>
+          ))
+          }
         </Select>
       </Modal>
     </>

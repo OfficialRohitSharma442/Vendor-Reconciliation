@@ -14,7 +14,7 @@ const SidebarMenu = () => {
         { label: 'Reports', path: '/Reports', icon: <FileTextOutlined /> },
         (role == "ADMIN") && { label: 'Admin Page', path: '/Settings', icon: <SettingOutlined /> },
 
-    ];
+    ]
     const masteritems = [{ label: 'Super Admin', path: '/admin', icon: <SettingTwoTone /> }]
 
     return (
@@ -23,6 +23,8 @@ const SidebarMenu = () => {
                 navigate(key);
             }}
             mode="inline"
+            defaultSelectedKeys={['/Home']}
+
         >
             {
                 (role === "MASTER" ? masteritems : items).map((item, index) => (
