@@ -37,7 +37,15 @@ const Import = () => {
   const [detailedFileName, setdetailedFileName] = useState("");
 
   const [sendData, setsendData] = useState(true);
-
+  const [companyFileSelectedValues, setcompanyFileSelectedValues] = useState(
+    Array.from({ length: 9 }, () => "")
+  );
+  const [vendorFileSelectedValues, setvendorFileSelectedValues] = useState(
+    Array.from({ length: 9 }, () => "")
+  );
+  const [detailedFileSelectedValues, setdetailedFileSelectedValues] = useState(
+    Array.from({ length: 12 }, () => "")
+  );
 
   const [vendorFileJson, setvendorFileJson] = useState<any>([]);
   const [vendorFileHeaderJson, setvendorFileHeaderJson] = useState<any>([]);
