@@ -7,6 +7,7 @@ import Superadmin from '../SuperAdmin/Superadmin'
 import Reports from '../Reports/Reports'
 import { Context } from '../Context/Context'
 import Login from '../Login/Login'
+import Home from '../Home/Home'
 
 
 const RoutesPage = () => {
@@ -14,8 +15,8 @@ const RoutesPage = () => {
 
     return (
         <Routes>
-            <Route path="/Home" element={<div>home page</div>} ></Route>
-            <Route path="/Import" element={<Import />} ></Route>
+            {role == "USER" && <Route path="/Home" element={<Home />} ></Route>}
+            {role == "USER" && <Route path="/Import" element={<Import />} ></Route>}
             <Route path="/VenderPage" element={<Vendor />} ></Route>
             <Route path="/Reports" element={<Reports />} ></Route>
             {(role == "ADMIN" || role == "MASTER") && <Route path="/Settings" element={<Adminmain />} ></Route>}

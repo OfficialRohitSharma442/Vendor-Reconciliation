@@ -1,0 +1,23 @@
+.rotate-border {
+    position: relative;
+    outline: 2px dashed transparent; /* Initial state - adjust width and color as needed */
+    animation: rotateBorder 3s infinite linear;
+}
+
+@keyframes rotateBorder {
+    0% {
+        outline-color: transparent;
+    }
+    25% {
+        outline-color: green;
+    }
+    50% {
+        outline-color: transparent;
+    }
+    75% {
+        outline-color: green;
+    }
+    100% {
+        outline-color: transparent;
+    }
+}

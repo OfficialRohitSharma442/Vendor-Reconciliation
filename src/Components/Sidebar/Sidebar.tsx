@@ -56,8 +56,6 @@ const Sidebar = () => {
                 </div>
                 <Content>
                     <div style={{ maxHeight: "calc(100vh - 65px)", overflow: "auto", height: "100%" }}>
-
-
                         <RoutesPage />
                     </div>
                 </Content>

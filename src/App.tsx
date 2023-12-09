@@ -12,7 +12,6 @@ const App = () => {
   const [loading, setloading] = React.useState(true);
   const [token, setToken] = React.useState("");
   const [reload, setReload] = React.useState(false);
-  console.log(svgImg)
 
   React.useEffect(() => {
     const fetchRole = async () => {
