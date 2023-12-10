@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { DownloadOutlined, FileExcelOutlined } from "@ant-design/icons";
 import {
   Button,
-  message,
   Modal,
   Select,
   Steps,
-  theme,
   UploadProps,
+  message,
+  theme,
 } from "antd";
-import * as XLSX from "xlsx";
-import Dragger from "antd/es/upload/Dragger";
-import { DownloadOutlined } from "@ant-design/icons";
 import { SizeType } from "antd/es/config-provider/SizeContext";
-import { FileExcelOutlined } from "@ant-design/icons";
-import "./Import.css";
+import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
+import "./Import.css";
 const { Option } = Select;
 const Import = () => {
   const [size, setSize] = useState<SizeType>();
@@ -55,92 +54,37 @@ const Import = () => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   //************************** */
 
-  // useEffect(() => {
-  //   const getCall = async () => {
-  //     const alldata: any = localStorage.getItem("VR-user_Role");
-
-  //     const url = "http://localhost:3000/api/generate-report";
-  //     const data = {
-  //       vendorName: "UNIPARTS INDIA LTD",
-  //     };
-  //     const tokens = JSON.parse(alldata).token;
-  //     const response = await axios.post(url, data, {
-  //       headers: {
-  //         Authorization: ` Bearer ${tokens}`,
-  //         responseType: "arraybuffer",
-  //       },
-  //     });
-
-  //     // Create a Blob from the binary data
-  //     const blob = new Blob([response.data], {
-  //       type: response.headers["content-type"],
-  //     });
-
-  //     // Create a download link
-  //     const downloadLink = document.createElement("a");
-  //     downloadLink.href = window.URL.createObjectURL(blob);
-  //     downloadLink.download = "yourFileName.xlsx"; // Specify the file name
-
-  //     // Append the link to the document
-  //     document.body.appendChild(downloadLink);
-
-  //     // Trigger the download
-  //     downloadLink.click();
-
-  //     // Remove the link from the document
-  //     document.body.removeChild(downloadLink);
-  //   };
-  //   getCall();
-  // }, []);
-
-  // WORKING
+  // DOWNDOWN P CASE FILE.
 
   // useEffect(() => {
-  //   const getCall = async () => {
+  //   (async () => {
   //     const alldata: any = localStorage.getItem("VR-user_Role");
-
-  //     const url = "http://localhost:3000/api/generate-report";
-  //     const data = {
-  //       vendorName: "UNIPARTS INDIA LTD",
-  //     };
   //     const tokens = JSON.parse(alldata).token;
+
+  //     const getPCaseUrl = "http://localhost:3000/api/generate-report/p-case";
 
   //     try {
-  //       const response = await axios.post(url, data, {
+  //       const pCaseResponse = await axios.get(getPCaseUrl, {
   //         headers: {
   //           Authorization: `Bearer ${tokens}`,
   //         },
-  //         responseType: "arraybuffer",
   //       });
 
-  //       // Create a Blob from the binary data
-  //       const blob = new Blob([response.data], {
-  //         type: response.headers["content-type"],
-  //       });
+  //       const data = pCaseResponse.data;
 
-  //       // Create a download link
-  //       const downloadLink = document.createElement("a");
-  //       downloadLink.href = window.URL.createObjectURL(blob);
-  //       downloadLink.download = "CasePData.xlsx"; // Specify the file name
+  //       const ws = XLSX.utils.json_to_sheet(data);
 
-  //       // Append the link to the document
-  //       document.body.appendChild(downloadLink);
+  //       const wb = XLSX.utils.book_new();
+  //       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
-  //       // Trigger the download
-  //       downloadLink.click();
+  //       XLSX.writeFile(wb, "pCaseFile.xlsx");
 
-  //       // Remove the link from the document
-  //       document.body.removeChild(downloadLink);
+  //       console.log("Excel file generated successfully");
   //     } catch (error) {
-  //       console.error("Error downloading file:", error);
-  //       // Handle the error appropriately
+  //       console.error("Error fetching data or generating Excel file:", error);
   //     }
-  //   };
-
-  //   getCall();
+  //   })();
   // }, []);
-
-  console.log(companyFileSelectedValues, "lkhk");
 
   const handleSelectChange = (value: any, dropdownIndex: any) => {
     const updatedSelectedValues = [...companyFileSelectedValues];
@@ -543,8 +487,7 @@ const Import = () => {
 
   async function postData(transformedData: any) {
     const alldata: any = localStorage.getItem("VR-user_Role");
-    const url =
-      "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
+    const url = "http://localhost:3000/api/master/dynamic-master";
     const data1 = {
       user: JSON.parse(alldata)?.ID,
       fileName: companyFileName,
@@ -553,7 +496,6 @@ const Import = () => {
     const url2 =
       "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllMasterData";
     const tokens = JSON.parse(alldata).token;
-    //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
     try {
       const response = await axios.post(url, data1, {
         headers: {
@@ -594,7 +536,6 @@ const Import = () => {
         return data.map((row: any, indexs: any) => {
           const rowData: any = {};
           headers.forEach((header: any, index: any) => {
-            // rowData[header] = row[index];
             let value = row[index];
             // Trim all values
             if (header === "Invoice Number" || header === "Document Number") {
@@ -614,8 +555,7 @@ const Import = () => {
       setvendorFileJson(transformedData);
       const alldata: any = localStorage.getItem("VR-user_Role");
 
-      const url =
-        "https://concerned-plum-crayfish.cyclic.app/api/upload/vendorOpen";
+      const url = "http://localhost:3000/api/vendor/dynamic-vendor";
       const data1 = {
         user: JSON.parse(alldata)?.ID,
         fileName: vendorfileName,
@@ -624,7 +564,6 @@ const Import = () => {
       const url2 =
         "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllVendorData";
       const tokens = JSON.parse(alldata).token;
-      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
       try {
         const response = await axios.post(url, data1, {
           headers: {
@@ -665,7 +604,6 @@ const Import = () => {
         return data.map((row: any) => {
           const rowData: any = {};
           headers.forEach((header: any, index: any) => {
-            // rowData[header] = row[index];
             let value = row[index];
             // Trim all values
             if (header == "Invoice Number" || header == "Document Number") {
@@ -679,15 +617,13 @@ const Import = () => {
         });
       };
 
-      let transformedData = transformToObjects(headers, dataRows);
+      let transformedData = await transformToObjects(headers, dataRows);
       console.log(transformedData);
       transformedData = transformedData.slice(1);
       setdetailedFileJson(transformedData);
-      // let newArray = transformedData.flatMap((items:any) => Array(3).fill(items));
       const alldata: any = localStorage.getItem("VR-user_Role");
 
-      const url =
-        "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
+      const url = "http://localhost:3000/api/complete/dynamic-complete";
       const data1 = {
         user: JSON.parse(alldata)?.ID,
         fileName: detailedFileName,
@@ -696,7 +632,6 @@ const Import = () => {
       const url2 =
         "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllCompleteDetailsData";
       const tokens = JSON.parse(alldata).token;
-      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
       try {
         const response = await axios.post(url, data1, {
           headers: {
@@ -721,8 +656,7 @@ const Import = () => {
   async function postVendorName(name: any) {
     const alldata: any = localStorage.getItem("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
-    const url =
-      "https://concerned-plum-crayfish.cyclic.app/api/generate-report";
+    const url = "http://localhost:3000/api/report/dynamic-report";
     const data = {
       user: JSON.parse(alldata)?.ID,
       vendorName: name,
@@ -732,30 +666,33 @@ const Import = () => {
       const response = await axios.post(url, data, {
         headers: {
           Authorization: ` Bearer ${tokens}`,
-          responseType: "arraybuffer",
         },
       });
-      if (response.status == 201) {
-        console.log(response);
+      if (response.data.success === "ok") {
+        const getPCaseUrl = "http://localhost:3000/api/generate-report/p-case";
+
+        try {
+          const pCaseResponse = await axios.get(getPCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
+
+          const data = pCaseResponse.data;
+
+          const ws = XLSX.utils.json_to_sheet(data);
+
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+          XLSX.writeFile(wb, "pCaseFile.xlsx");
+
+          console.log("Excel file generated successfully");
+        } catch (error) {
+          console.error("Error fetching data or generating Excel file:", error);
+        }
+        return;
       }
-      // REPORT
-      // Create a Blob from the binary data
-      const blob = new Blob([response.data], {
-        type: response.headers["content-type"],
-      });
-
-      // Create a download link
-      const downloadLink = document.createElement("a");
-      downloadLink.href = window.URL.createObjectURL(blob);
-      downloadLink.download = "CasePData.xlsx"; // Specify the file name
-
-      // Append the link to the document
-      document.body.appendChild(downloadLink);
-
-      // Trigger the download
-      downloadLink.click();
-
-      // Remove the link from the document
     } catch (error) {
       console.log(error);
     }
@@ -781,7 +718,7 @@ const Import = () => {
     setOpen(false);
   };
 
-  const next = () => {
+  const next = async () => {
     if (current == 0) {
       if (
         companyFileJson.length != undefined &&
@@ -837,9 +774,9 @@ const Import = () => {
         (value) => value !== ""
       );
       if (allValuesSelected) {
-        detailedFileHeaderChanged();
+        await detailedFileHeaderChanged();
         if (vendorName != "" && vendorName != null && vendorName != undefined) {
-          postVendorName(vendorName);
+          await postVendorName(vendorName);
         }
       } else {
         message.error(`Please select a value for each dropdown.`);
