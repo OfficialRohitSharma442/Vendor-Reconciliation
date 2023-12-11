@@ -1,14 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import "./dragdrop.css"
+import {HolderOutlined  } from "@ant-design/icons";
+import { message } from 'antd';
 
-const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticContent }) => {
-    const [boxOneItems, setBoxOneItems] = React.useState(initialBoxOneItems || []);
-    const [boxTwoItems, setBoxTwoItems] = React.useState(initialBoxTwoItems || []);
 
-    const onDragEnd = (result) => {
+const DragAndDrop = ({ initialBoxOneItems, boxTwoItems,setBoxTwoItems, defaultStaticContent }:any) => {
+    interface BoxItem {
+        id: string;
+        content: string; // or any other type
+      }
+    const [boxOneItems, setBoxOneItems] = React.useState<BoxItem[]>([]);
+    useEffect(()=>{
+        setBoxOneItems(initialBoxOneItems);
+    },[initialBoxOneItems])
+   
+    console.log(boxTwoItems);       
+    const onDragEnd = (result:any) => {
         const { source, destination } = result;
 
         if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
@@ -25,9 +35,14 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
             if (destinationList === 'droppable-1') {
                 newBoxOneItems.splice(destination.index, 0, draggedItem);
                 setBoxOneItems(newBoxOneItems);
-            } else {
-                setBoxTwoItems((prev) => [...prev, draggedItem]);
-                setBoxOneItems(newBoxOneItems);
+            } 
+            else {
+                if (boxTwoItems.length < defaultStaticContent.length) {
+                    setBoxTwoItems((prev: any) => [...prev, draggedItem]);
+                    setBoxOneItems(newBoxOneItems);
+                } else {
+                    message.error(`You cannot drop more than ${defaultStaticContent.length} columns`);
+                }
             }
         }
 
@@ -39,47 +54,68 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
                 newBoxTwoItems.splice(destination.index, 0, draggedItem);
                 setBoxTwoItems(newBoxTwoItems);
             } else {
-                setBoxOneItems((prev) => [...prev, draggedItem]);
+                setBoxOneItems((prev:any) => [...prev, draggedItem]);
                 setBoxTwoItems(newBoxTwoItems);
             }
-        }
+        }   
     };
 
     const itemStyle = {
         border: '1px solid gray',
-        padding: '1rem',
+        // padding: '1rem',
         backgroundColor: 'white',
         marginBottom: '0.5rem',
         display: 'flex',
         alignItems: 'center',
+        fontWeight:"500",
+        padding:"5px",
+        // background:"#f4f4f4"
+    };
+    const itemStyle1 = {
+        border: '1px solid gray',
+        // padding: '1rem',
+        backgroundColor: 'white',
+        marginBottom: '0.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        fontWeight:"500",
+        padding:"5px",
+        background:"#fafafa"
     };
 
     return (
         <>
             <DragDropContext onDragEnd={onDragEnd}>
-                <div style={{ display: 'flex', position: 'relative' }}>
+                <div style={{ display: 'flex', position: 'relative' , gap:"20px" , justifyContent:"center"}}>
                     {/* Static box with line */}
                     <div
                         style={{
                             position: 'relative',
-                            marginRight: '1rem',
+                            
                         }}
                     >
+                       <p style={{margin:"5px", textAlign:"center" ,fontSize:"15px",fontWeight:"bold"}}>Static Column</p>
                         <div
                             style={{
                                 border: '1px solid #ccc',
                                 borderRadius: '8px',
+                                height:"450px",
                                 padding: '1rem',
-                                backgroundColor: '#e0e0e0',
-                                width: '200px',
+                                // backgroundColor: '#e0e0e0',
+                                width: '230px',
                                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                 marginBottom: '0.5rem',
+                                background:"#fafafa"
                             }}
                         >
-                            <div style={{ fontWeight: 'bold' }}>Static Columns</div>
+                            {/* <div style={{ fontWeight: 'bold', textAlign:"center" }}>Static Columns</div> */}
                             {/* Map through default static content */}
-                            {defaultStaticContent.map((item) => (
-                                <div key={item.id} style={itemStyle}>
+                            {defaultStaticContent?.map((item:any) => (
+                                <div key={item.id} style={itemStyle1} >
+                                    <div style={{ marginRight: '8px' }}>
+                                                        {/* <FontAwesomeIcon icon={faArrowsAlt} /> */}
+                                                        <HolderOutlined />
+                                    </div>
                                     {item.content}
                                 </div>
                             ))}
@@ -92,29 +128,35 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
                                 top: '50%',
                                 left: '100%',
                                 transform: 'translate(0, -50%)',
-                                borderLeft: '1px solid #ccc',
+                                // borderLeft: '1px solid #ccc',
                                 height: '100%',
                             }}
                         />
                     </div>
 
                     {/* Droppable for boxTwoItems */}
+                    <div>
+                    <p style={{margin:"5px", textAlign:"center" ,fontSize:"15px" , fontWeight:"bold"}}>Drop Column</p>
+
                     <Droppable droppableId="droppable-2">
+                        
                         {(provided, snapshot) => (
                             <div
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                                 style={{
                                     border: snapshot.isDraggingOver ? `` : '2px dashed #ccc',
-                                    padding: '1.5rem',
-                                    margin: '1rem',
+                                    padding: '14px 16px',
                                     backgroundColor: snapshot.isDraggingOver ? '#f8f8f8' : '#fff',
                                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                     borderRadius: '8px',
+                                    minWidth:"230px",
+                                    height:"450px",
                                 }}
                                 className={` ${snapshot.isDraggingOver && "rotate-border"}`}
                             >
-                                {boxTwoItems.map((item, index) => (
+                                
+                                {boxTwoItems.map((item:any, index:any) => (
                                     <Draggable key={item.id} draggableId={item.id} index={index}>
                                         {(provided, snapshot) => (
                                             <div
@@ -126,8 +168,13 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
                                                     border: '1px solid gray',
                                                     backgroundColor: snapshot.isDragging ? 'lightblue' : 'white',
                                                     ...provided.draggableProps.style,
+                                                    maxHeight:"20px"
                                                 }}
                                             >
+                                                 <div style={{ marginRight: '8px' }}>
+                                                        {/* <FontAwesomeIcon icon={faArrowsAlt} /> */}
+                                                        <HolderOutlined />
+                                                    </div>
                                                 {item.content}
                                             </div>
                                         )}
@@ -137,8 +184,12 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
                             </div>
                         )}
                     </Droppable>
+                    </div>
 
                     {/* Droppable for boxOneItems */}
+                    <div>
+                    <p style={{margin:"5px", textAlign:"center" ,fontSize:"15px" ,fontWeight:"bold"}}>Uploaded file Column</p>
+
                     <Droppable droppableId="droppable-1">
                         {(provided, snapshot) => (
                             <div
@@ -146,14 +197,16 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
                                 {...provided.droppableProps}
                                 style={{
                                     border: '2px dashed #ccc',
-                                    padding: '1.5rem',
-                                    margin: '1rem',
+                                    padding: '14px 16px',
                                     backgroundColor: snapshot.isDraggingOver ? '#f8f8f8' : '#fff',
                                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                     borderRadius: '8px',
+                                    height:"450px",
+                                    width:"240px",
+                                    overflow:"scroll"
                                 }}
                             >
-                                {boxOneItems.map((item, index) => (
+                                {boxOneItems?.map((item:any, index:any) => (
                                     <Draggable key={item.id} draggableId={item.id} index={index}>
                                         {(provided, snapshot) => (
                                             <div
@@ -169,7 +222,8 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
                                             >
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                                     <div style={{ marginRight: '8px' }}>
-                                                        <FontAwesomeIcon icon={faArrowsAlt} />
+                                                        {/* <FontAwesomeIcon icon={faArrowsAlt} /> */}
+                                                        <HolderOutlined />
                                                     </div>
                                                     {item.content}
                                                 </div>
@@ -181,6 +235,8 @@ const DragAndDrop = ({ initialBoxOneItems, initialBoxTwoItems, defaultStaticCont
                             </div>
                         )}
                     </Droppable>
+                    </div>
+
                 </div >
             </DragDropContext >
         </>

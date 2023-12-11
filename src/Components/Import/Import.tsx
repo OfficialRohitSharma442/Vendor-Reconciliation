@@ -14,9 +14,50 @@ import { DownloadOutlined } from "@ant-design/icons";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import { FileExcelOutlined } from "@ant-design/icons";
 import "./Import.css";
-import axios from "axios";
+import axios from "axios";    
+import DragAndDrop from "../utils/Drag-and-Drop";
 const { Option } = Select;
 const Import = () => {
+  // **************Static Data*********************
+  const companyHeader =[
+    { id: '1', content: 'Vendor' },
+    { id: '2', content: 'Vendor Name' },
+    { id: '3', content: 'Document Number' },
+    { id: '4', content: 'Invoice Number' },
+    { id: '5', content: 'Closing Balance' },
+    { id: '6', content: 'Invoice Amount' },
+    { id: '7', content: 'Currency' },
+    { id: '8', content: 'Due Date' },
+    { id: '9', content: 'Document Date' }
+  ];
+  const  vendorFileHeader =[
+    { id: '1', content: 'Business Partner' },
+    { id: '2', content: 'Business Partner Name' },
+    { id: '3', content: 'Closing Balance' },
+    { id: '4', content: 'Invoice Amount' },
+    { id: '5', content: 'Currency' },
+    { id: '6', content: 'Due Date' },
+    { id: '7', content: 'Docment Date' },
+    { id: '8', content: 'Document Number' },
+    { id: '9', content: 'Invoice Number' }
+  ];
+  const detailedFileHeader = [
+    { id: '1', content: 'Due Date' },
+    { id: '2', content: 'Company Code' },
+    { id: '3', content: 'Credit Amount(INR)' },
+    { id: '4', content: 'Debit Amount(INR)' },
+    { id: '5', content: 'Cheque Rtgs Neft' },
+    { id: '6', content: 'Payment Docment' },
+    { id: '7', content: 'Reference' },
+    { id: '8', content: 'Grn Number' },
+    { id: '9', content: 'Invoice Date' },
+    { id: '10', content: 'Document Date' },
+    { id: '11', content: 'Document Number' },
+    { id: '12', content: 'Invoice Number' }
+  ];
+
+  
+  const [UpdatedCompanyHeader, setUpdatedCompanyHeader] = useState([]);
 
 
 
@@ -163,43 +204,45 @@ const Import = () => {
     setdetailedFileSelectedValues(updatedSelectedValues);
   };
 
-  const companyFileHeader = [
-    "Vendor",
-    "Vendor Name",
-    "Document Number",
-    "Invoice Number",
-    "Closing Balance",
-    "Invoice Amount",
-    "Currency",
-    "Due Date",
-    "Document Date",
-  ];
-  const vendorFileHeader = [
-    "Business Partner",
-    "Business Partner Name",
-    "Closing Balance",
-    "Invoice Amount",
-    "Currency",
-    "Due Date",
-    "Docment Date",
-    "Document Number",
-    "Invoice Number",
-  ];
+  // const companyFileHeader = [
+  //   "Vendor",
+  //   "Vendor Name",
+  //   "Document Number",
+  //   "Invoice Number",
+  //   "Closing Balance",
+  //   "Invoice Amount",
+  //   "Currency",
+  //   "Due Date",
+  //   "Document Date",
+  // ];
+  // const vendorFileHeader = [
+  //   "Business Partner",
+  //   "Business Partner Name",
+  //   "Closing Balance",
+  //   "Invoice Amount",
+  //   "Currency",
+  //   "Due Date",
+  //   "Docment Date",
+  //   "Document Number",
+  //   "Invoice Number",
+  // ];
 
-  const detailedFileHeader = [
-    "Due Date",
-    "Company Code",
-    "Credit Amount(INR)",
-    "Debit Amount(INR)",
-    "Cheque Rtgs Neft",
-    "Payment Docment",
-    "Reference",
-    "Grn Number",
-    "Invoice Date",
-    "Document Date",
-    "Document Number",
-    "Invoice Number",
-  ];
+  // const detailedFileHeader = [
+  //   "Due Date",
+  //   "Company Code",
+  //   "Credit Amount(INR)",
+  //   "Debit Amount(INR)",
+  //   "Cheque Rtgs Neft",
+  //   "Payment Docment",
+  //   "Reference",
+  //   "Grn Number",
+  //   "Invoice Date",
+  //   "Document Date",
+  //   "Document Number",
+  //   "Invoice Number",
+  // ];
+
+
   const props: UploadProps = {
     name: "file",
     multiple: false,
@@ -228,12 +271,13 @@ const Import = () => {
               str.trim().replace(/\s+/g, " ")
             );
             jsonData[0] = trimmedHeaders;
+            const newArray = trimmedHeaders.map((content:any, index:any) => ({ id: (index + 1).toString(), content }));
             console.log("JSON Data:", jsonData);
             console.log("Headers:", headers);
             if (current == 0) {
               setcompanyFile(file);
               setcompanyFileJson(jsonData);
-              setcompanyFileHeaderJson(trimmedHeaders);
+              setcompanyFileHeaderJson(newArray);
               setcompanyFileName(file.name);
               onSuccess();
             } else if (current == 2) {
@@ -272,6 +316,8 @@ const Import = () => {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
+
+  
   const uploadFile = (Filename: any) => (
     <Dragger {...props}>
       <p className="ant-upload-drag-icon">
@@ -287,6 +333,7 @@ const Import = () => {
       </p>
     </Dragger>
   );
+
   const steps: any = [
     {
       title: "First",
@@ -306,38 +353,43 @@ const Import = () => {
     {
       title: "Second",
       content: (
-        <div className="Step2Main">
-          <div className="Step2Note">
-            Note: All the fields are mandatory and Select your file column name
-            with matched dropdown
-          </div>
-          <div className="Step2Dropdown">
-            {companyFileHeader.map((key: any, index) => (
-              <div className="DropdownMaindiv" key={index}>
-                <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
-                <Select
-                  key={index}
-                  className="Dropdown"
-                  // style={{ width: 300, margin: '8px' }}
-                  placeholder={`select your ${key} column`}
-                  onChange={(value) => handleSelectChange(value, index)}
-                >
-                  {companyFileHeaderJson
-                    .filter(
-                      (option: any) =>
-                        !companyFileSelectedValues.includes(option)
-                    )
-                    .map((option: any) => (
-                      <Option key={option} value={option}>
-                        {option}
-                      </Option>
-                    ))}
-                </Select>
-              </div>
-            ))}
-          </div>
-        </div>
+        <>
+        <DragAndDrop initialBoxOneItems={companyFileHeaderJson} initialBoxTwoItems={UpdatedCompanyHeader} defaultStaticContent={companyHeader}/>
+        </>
       ),
+      // content: (
+      //   <div className="Step2Main">
+      //     <div className="Step2Note">
+      //       Note: All the fields are mandatory and Select your file column name
+      //       with matched dropdown
+      //     </div>
+      //     <div className="Step2Dropdown">
+      //       {companyFileHeader.map((key: any, index) => (
+      //         <div className="DropdownMaindiv" key={index}>
+      //           <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
+      //           <Select
+      //             key={index}
+      //             className="Dropdown"
+      //             // style={{ width: 300, margin: '8px' }}
+      //             placeholder={`select your ${key} column`}
+      //             onChange={(value) => handleSelectChange(value, index)}
+      //           >
+      //             {companyFileHeaderJson
+      //               .filter(
+      //                 (option: any) =>
+      //                   !companyFileSelectedValues.includes(option)
+      //               )
+      //               .map((option: any) => (
+      //                 <Option key={option} value={option}>
+      //                   {option}
+      //                 </Option>
+      //               ))}
+      //           </Select>
+      //         </div>
+      //       ))}
+      //     </div>
+      //   </div>
+      // ),
     },
     {
       title: "Thrid",
@@ -448,7 +500,7 @@ const Import = () => {
       companyFileSelectedValues.forEach((items, indexs) => {
         const index = data.indexOf(items);
         if (index != -1) {
-          data[index] = companyFileHeader[indexs];
+          data[index] = companyHeader[indexs];
         }
       });
       const ans: any = companyFileJson;

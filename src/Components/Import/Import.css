@@ -34,3 +34,32 @@
     width: 100%;
     
 }
+.ant-drawer-body {
+    padding: 0 !important; /* Remove or adjust the padding as needed */
+}
+
+
+
+.excel-table-container {
+    /* margin: 20px; */
+    margin-top: 20px;
+    overflow: scroll;
+    /* height: 150px; */
+  }
+  
+  .excel-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .excel-table th,
+  .excel-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .excel-table th {
+    background-color: #f2f2f2;
+  }
+  

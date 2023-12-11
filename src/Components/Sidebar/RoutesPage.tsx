@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Routes } from "react-router-dom"
 import Adminmain from "../Admin/adminmain"
 import Vendor from "../Vendor/vendor"
-import Import from "../Import/Import"
+import Import from "../Import/Import copy"
 import Superadmin from '../SuperAdmin/Superadmin'
 import Reports from '../Reports/Reports'
 import { Context } from '../Context/Context'
