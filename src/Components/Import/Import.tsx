@@ -553,6 +553,7 @@ const Import = () => {
         TransFormToObjectsData = TransFormToObjectsData.slice(1);
         setcompanyFileData(TransFormToObjectsData);
       };
+      
       transformToObjects(headers, dataRows);
       showModal();
 
