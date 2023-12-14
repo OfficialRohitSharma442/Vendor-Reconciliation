@@ -62,4 +62,12 @@
   .excel-table th {
     background-color: #f2f2f2;
   }
+  .Prev_excelFile{
+    /* max-height: 100vh;
+    /* width: auto; */
+    /* overflow: scroll; */ */
+
+    /* overflow: hidden; */
+    height: 100vh;
+  }
   
