@@ -17,7 +17,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems,setBoxTwoItems, defaultSt
         setBoxOneItems(initialBoxOneItems);
     },[initialBoxOneItems])
    
-    console.log(boxTwoItems);       
+    // console.log(boxTwoItems);       
     const onDragEnd = (result:any) => {
         const { source, destination } = result;
 
