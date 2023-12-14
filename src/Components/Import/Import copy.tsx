@@ -14,13 +14,14 @@ import {
 import * as XLSX from "xlsx";
 import Dragger from "antd/es/upload/Dragger";
 import { DownloadOutlined } from "@ant-design/icons";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined, EyeOutlined } from "@ant-design/icons";
 
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import { FileExcelOutlined } from "@ant-design/icons";
 import "./Import.css";
 import axios from "axios";
 import DragAndDrop from "../utils/Drag-and-Drop";
+
 const { Option } = Select;
 const Import = () => {
   // **************Static Data*********************
@@ -825,6 +826,9 @@ const Import = () => {
         extra={
           <Space>
             {/* <Button >Cancel</Button> */}
+            <Button onClick={() => setOpen(true)} type="primary">
+              <EyeOutlined />
+            </Button>
             <Button onClick={MappingCheck} type="primary">
               Save
             </Button>
@@ -851,11 +855,41 @@ const Import = () => {
       <Modal
         title="Title"
         open={open}
-        onOk={handleOk}
-        confirmLoading={confirmLoading}
+
+
         onCancel={handleCancel}
+        style={{ padding: "10px" }}
+        width={950}
+
+
       >
-        <p>Select your vendor name</p>
+
+        <div className="Prev_excelFile">
+          <div style={{ overflowX: 'auto', maxHeight: '320px', /* Set the max height for the table body */ }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', border: '1px solid #ddd', position: "relative" }}>
+              <thead>
+                <tr>
+                  {companyFileJson?.[0] && companyFileJson?.[0].map((header, index) => (
+                    <th key={index} style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: 'green', color: "white", fontSize: '13px', fontFamily: 'Arial, sans-serif', whiteSpace: "nowrap", height: "30px", position: "sticky", top: "0" }}>
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody style={{ overflowY: 'scroll' }}>
+                {companyFileJson?.slice(1)?.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell, cellIndex) => (
+                      <td key={cellIndex} style={{ border: '1px solid #ddd', padding: '8px', fontSize: '12px', fontFamily: 'Arial, sans-serif' }}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* <p>Select your vendor name</p>
         <Select
           className="Dropdown"
           // style={{ width: 300, margin: '8px' }}
@@ -867,7 +901,7 @@ const Import = () => {
               {option}
             </Option>
           ))}
-        </Select>
+        </Select> */}
       </Modal>
     </>
   );
