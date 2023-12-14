@@ -11,7 +11,7 @@ const SidebarMenu = () => {
     const items = [
         { label: 'Home', path: '/Home', icon: <HomeOutlined />, key: 'home' },
         { label: 'Import', path: '/Import', icon: <ImportOutlined />, key: 'import' },
-        { label: 'Add Vendor', path: '/VendorPage', icon: <UserAddOutlined />, key: 'addVendor' },
+        { label: 'Add Vendor', path: '/VenderPage', icon: <UserAddOutlined />, key: 'VenderPage' },
         { label: 'Reports', path: '/Reports', icon: <FileTextOutlined />, key: 'reports' },
         ...(role === "ADMIN" ? [{ label: 'Admin Page', path: '/Settings', icon: <SettingOutlined />, key: 'adminPage' }] : []),
     ];

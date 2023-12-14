@@ -69,7 +69,7 @@ const Import = () => {
  
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(2);
+  const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
   // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
@@ -106,7 +106,9 @@ const Import = () => {
   const [AnnexureP,setAnnexureP] = useState("");
   const [AnnexureK,setAnnexureK] = useState("");
 
-
+// ******************for show priview*********************
+  const[showfile,setshowfile] = useState<any>([]);
+  
   // ********************for uplode every file***************
   const props: UploadProps = {
     name: "file",
@@ -221,28 +223,6 @@ const Import = () => {
           <div>
             {uploadFile("Company File")}
           </div>
-          {/* {companyFileJson.length > 0 ?
-            <div className="excel-table-container">
-              <table className="excel-table">
-                <thead>
-                  <tr>
-                    {companyFileJson[0].map((header: any, index: any) => (
-                      <th key={index}>{header}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {companyFileJson.slice(1).map((row: any, rowIndex: any) => (
-                    <tr key={rowIndex}>
-                      {row.map((cell: any, cellIndex: any) => (
-                        <td key={cellIndex}>{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            : null} */}
         </div>
       ),
     },
@@ -309,7 +289,7 @@ const Import = () => {
                 </Option>
               ))}
             </Select>
-            <p>Select Annexure K Document type like TDS345983495</p>
+            {/* <p>Select Annexure K Document type like TDS345983495</p>
             <Select
       className="Dropdown"
       placeholder="Select Annexure K Document type"
@@ -328,32 +308,8 @@ const Import = () => {
     >
       <Option value="Option1">Option 1</Option>
       <Option value="Option2">Option 2</Option>
-    </Select>
-            
-          </div>
-
-          {/* :
-            <div className="excel-table-container">
-            <table className="excel-table">
-              <thead>
-                <tr>
-                  {pcaseReportHeader?.map((header)=> (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {pcaseReport?.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {pcaseReportHeader?.map(header => (
-                      <td key={header}>{row[header]}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-      } */}
+    </Select> */}
+    </div>
         </>
       ),
     },
@@ -403,27 +359,48 @@ const Import = () => {
         });
         if (response.data.success === "ok") {
           const getPCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/p-case";
-
+          const getKCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/k-case";
           try {
             const pCaseResponse = await axios.get(getPCaseUrl, {
               headers: {
                 Authorization: `Bearer ${tokens}`,
               },
             });
-            const data = pCaseResponse.data;
 
-            // setpcaseReportHeader(data[0]);
-            // const newArray = data.slice(1);
-            // setpcaseReport(newArray);
+            const kCaseResponse = await axios.get(getKCaseUrl, {
+              headers: {
+                Authorization: `Bearer ${tokens}`,
+              },
+            });
 
-            const ws = XLSX.utils.json_to_sheet(data);
-
+            const pCaseData = pCaseResponse?.data?.data;
+            const kCaseData = kCaseResponse?.data?.data;
+            console.log({ pCaseData });
+            console.log({ kCaseData });
+            // Create a workbook
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
-            XLSX.writeFile(wb, "pCaseFile.xlsx");
+            // Create "P" sheet if data is available
+            if (pCaseData && pCaseData.length > 0) {
+              const wsP = XLSX.utils.json_to_sheet(pCaseData);
+              XLSX.utils.book_append_sheet(wb, wsP, "P");
+            }
 
-            console.log("Excel file generated successfully");
+            // Create "K" sheet if data is available
+            if (kCaseData && kCaseData.length > 0) {
+              const wsK = XLSX.utils.json_to_sheet(kCaseData);
+              XLSX.utils.book_append_sheet(wb, wsK, "K");
+            }
+
+            // Save the Excel file only if at least one sheet is created
+            if (wb.SheetNames.length > 0) {
+              XLSX.writeFile(wb, "combinedCaseFile.xlsx");
+              console.log(
+                "Excel file with both P and K sheets generated successfully"
+              );
+            } else {
+              console.log("No data available for either P or K sheets");
+            }
           } catch (error) {
             console.error("Error fetching data or generating Excel file:", error);
           }
@@ -483,10 +460,10 @@ const Import = () => {
           console.log("Transformed data:", transformedData);
           // let url = "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
           let url = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
-          await postData(url, transformedData, companyFileName);
           onClose();
           setCurrent(current + 1);
           setUpdateHeader([]);
+          await postData(url, transformedData, companyFileName);
         }
         catch (error) {
           console.error("Error during transformation:", error);
@@ -674,8 +651,8 @@ const Import = () => {
           let url = "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete";
           setUpdateHeader([]);
           onClose();
-         // setCurrent(current + 1);
-          // await postData(url, transformedData, detailedFileName);
+         setCurrent(current + 1);
+          await postData(url, transformedData, detailedFileName);
         }
         catch (error) {
           console.error("Error during transformation:", error);
@@ -702,10 +679,14 @@ const Import = () => {
     TransformedData.forEach((element: any, idx: any) => {
       data.forEach((item: any) => {
         const contentRegex = new RegExp(item.content, 'g');
+        let abc = element['Document Number'];
+        if(abc.content(item.content)){
+          
+        }
         if (element['Document Number'].includes(item.content)) {
           element['Document Number'] = element['Document Number'].replace(contentRegex, item.id);
         }
-      });
+      }); 
     });
     
     
@@ -787,6 +768,19 @@ const Import = () => {
     }
   }
 
+  function showfiles(){
+    if(current==0){
+      setshowfile(companyFileJson);
+    }
+    else if(current ==1){
+      setshowfile(vendorFileJson);
+    }
+    else if(current == 2){
+      setshowfile(detailedFileJson);
+    }
+    setOpen(true);
+  }
+
   return (
     <>
       <div style={{ margin: "20px" }}>
@@ -826,7 +820,7 @@ const Import = () => {
         extra={
           <Space>
             {/* <Button >Cancel</Button> */}
-            <Button onClick={() => setOpen(true)} type="primary">
+            <Button onClick={showfiles} type="primary">
               <EyeOutlined />
             </Button>
             <Button onClick={MappingCheck} type="primary">
@@ -855,10 +849,10 @@ const Import = () => {
       <Modal
         title="Title"
         open={open}
-
+        
 
         onCancel={handleCancel}
-        style={{ padding: "10px" }}
+      style={{ padding: "10px" }}
         width={950}
 
 
@@ -869,7 +863,7 @@ const Import = () => {
             <table style={{ borderCollapse: 'collapse', width: '100%', border: '1px solid #ddd', position: "relative" }}>
               <thead>
                 <tr>
-                  {companyFileJson?.[0] && companyFileJson?.[0].map((header, index) => (
+                  {showfile?.[0] && showfile?.[0].map((header:any, index:any) => (
                     <th key={index} style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: 'green', color: "white", fontSize: '13px', fontFamily: 'Arial, sans-serif', whiteSpace: "nowrap", height: "30px", position: "sticky", top: "0" }}>
                       {header}
                     </th>
@@ -877,9 +871,9 @@ const Import = () => {
                 </tr>
               </thead>
               <tbody style={{ overflowY: 'scroll' }}>
-                {companyFileJson?.slice(1)?.map((row, rowIndex) => (
+                {showfile?.slice(1)?.map((row:any, rowIndex:any) => (
                   <tr key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
+                    {row.map((cell:any, cellIndex:any) => (
                       <td key={cellIndex} style={{ border: '1px solid #ddd', padding: '8px', fontSize: '12px', fontFamily: 'Arial, sans-serif' }}>{cell}</td>
                     ))}
                   </tr>
