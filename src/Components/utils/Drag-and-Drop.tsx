@@ -207,7 +207,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems,setBoxTwoItems, defaultSt
                                 }}
                             >
                                 {boxOneItems?.map((item:any, index:any) => (
-                                    <Draggable key={item.id} draggableId={item.id} index={index}>
+                                    <Draggable key={item?.id} draggableId={item?.id} index={index}>
                                         {(provided, snapshot) => (
                                             <div
                                                 ref={provided.innerRef}
@@ -225,7 +225,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems,setBoxTwoItems, defaultSt
                                                         {/* <FontAwesomeIcon icon={faArrowsAlt} /> */}
                                                         <HolderOutlined />
                                                     </div>
-                                                    {item.content}
+                                                    {item?.content}
                                                 </div>
                                             </div>
                                         )}

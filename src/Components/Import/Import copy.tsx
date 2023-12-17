@@ -3,10 +3,12 @@ import {
   Button,
   Drawer,
   Grid,
+  Input,
   message,
   Modal,
   Select,
   Space,
+  Spin,
   Steps,
   theme,
   UploadProps,
@@ -15,7 +17,6 @@ import * as XLSX from "xlsx";
 import Dragger from "antd/es/upload/Dragger";
 import { DownloadOutlined } from "@ant-design/icons";
 import { ArrowRightOutlined, EyeOutlined } from "@ant-design/icons";
-
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import { FileExcelOutlined } from "@ant-design/icons";
 import "./Import.css";
@@ -43,7 +44,7 @@ const Import = () => {
     { id: '4', content: 'Invoice Amount' },
     { id: '5', content: 'Currency' },
     { id: '6', content: 'Due Date' },
-    { id: '7', content: 'Docment Date' },
+    { id: '7', content: 'Document Date' },
     { id: '8', content: 'Document Number' },
     { id: '9', content: 'Invoice Number' }
   ];
@@ -61,15 +62,22 @@ const Import = () => {
     { id: '11', content: 'Document Number' },
     { id: '12', content: 'Invoice Number' }
   ];
-  const DocumentTypeHeader=[
+  const DocumentTypeHeader = [
     { id: '1', content: 'TDS' },
     { id: '2', content: 'PID' },
   ]
+  // *******************url *************
+  const companyPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master"
+  const vendorPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/vendor/dynamic-vendor"
+  const detailPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete"
+  const companyMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping";
+  const vendorMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping"
+  const detailMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping"
   // ****************for steps***************************
- 
+
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(1);
   const [open, setOpen] = useState(false);
   // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
@@ -84,8 +92,8 @@ const Import = () => {
   const [detailedFileName, setdetailedFileName] = useState("");
   const [detailedFileJson, setdetailedFileJson] = useState<any>([]);
   const [detailedFileHeader, setdetailedFileHeader] = useState<any>([]);
-  const [DocumentTypes,setDocumentTypes] = useState([]);
-  const [TransformedData,setTransformedData] = useState<any>([]);
+  const [DocumentTypes, setDocumentTypes] = useState([]);
+  const [TransformedData, setTransformedData] = useState<any>([]);
   // ****************for Panle ***************************
   const [OpenPanel, setOpenPanel] = useState(false);
 
@@ -95,20 +103,12 @@ const Import = () => {
   const [vendorNameOpation, setvendorNameOpation] = useState<any>([]);
   const [vendorName, SetvendorName] = useState("");
 
-  // *****************for reports p case***************
-  const [pcaseReport, setpcaseReport] = useState([]);
-  const [pcaseReportHeader, setpcaseReportHeader] = useState([]);
-
   // **************for model************
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  // **********************for maping of document type *************8
-  const [AnnexureP,setAnnexureP] = useState("");
-  const [AnnexureK,setAnnexureK] = useState("");
+  // ******************for show priview*********************
+  const [showfile, setshowfile] = useState<any>([]);
 
-// ******************for show priview*********************
-  const[showfile,setshowfile] = useState<any>([]);
-  
   // ********************for uplode every file***************
   const props: UploadProps = {
     name: "file",
@@ -249,7 +249,7 @@ const Import = () => {
       ),
     },
     {
-      title: "Thrid",
+      title: "Third",
       content: (
         <div style={{ margin: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
@@ -276,6 +276,11 @@ const Import = () => {
         <>
           {/* {pcaseReport.length <= 0 && pcaseReportHeader.length <=0 ? */}
           <div style={{ display: "Grid", placeItems: "center" }}>
+              <div>
+                <Input placeholder="Basic usage" />
+
+              </div>
+
             <p>Select your vendor name</p>
             <Select
               className="Dropdown"
@@ -289,27 +294,7 @@ const Import = () => {
                 </Option>
               ))}
             </Select>
-            {/* <p>Select Annexure K Document type like TDS345983495</p>
-            <Select
-      className="Dropdown"
-      placeholder="Select Annexure K Document type"
-      onChange={(value)=> setAnnexureK(value)}
-      value={vendorName}
-    >
-      <Option value="Option1">TDS...</Option>
-      <Option value="Option2">PID...</Option>
-          </Select>
-    <p>Select Annexure K Document type like TDS345983495</p>
-    <Select
-      className="Dropdown"
-      placeholder="Select Annexure P Document type"
-      onChange={(value)=> setAnnexureP(value)}
-      value={vendorName}
-    >
-      <Option value="Option1">Option 1</Option>
-      <Option value="Option2">Option 2</Option>
-    </Select> */}
-    </div>
+          </div>
         </>
       ),
     },
@@ -332,6 +317,10 @@ const Import = () => {
       });
       if (response.status == 201) {
         console.log(response);
+        onClose();
+        setCurrent(current + 1);
+        setUpdateHeader([]);
+        message.success(`Your file upload successfully`);
       }
     }
     catch (error) {
@@ -435,16 +424,98 @@ const Import = () => {
     console.log("Clicked cancel button");
     setOpen(false);
   };
-
+  // ******************save mapping *********
+  async function saveMapping(keyforjson: any, valueforjson: any, urlforpost: any, urlforGet: any) {
+    const data = await getMapping(urlforGet);
+    if (data != null && data?._id) {
+      urlforpost = `${urlforpost}/${data._id}`;
+    }
+    const resultJSON: any = {};
+    keyforjson.forEach((item: any, index: any) => {
+      resultJSON[item.content] = valueforjson[index].content;
+    });
+    const alldata: any = localStorage.getItem("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    const finaltemp = {
+      user: JSON.parse(alldata)?.ID,
+      data: resultJSON,
+    };
+    try {
+      const response = await axios.post(urlforpost, finaltemp, {
+        headers: {
+          Authorization: ` Bearer ${tokens}`,
+        },
+      });
+      if (response.status == 201) {
+        console.log(response);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+  async function getMapping(url: any) {
+    const alldata: any = localStorage.getItem("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${tokens}`,
+        },
+      });
+      if (response.data.data[0]) {
+        return response?.data?.data[0];
+      }
+      else {
+        return null
+      }
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  }
   // *************for first file / companyfile ********************
 
-  function companyFileCheck() {
-    setOpenPanel(true);
+  async function companyFileCheck() {
+    const data = await getMapping(companyMappingUrl);
+    const header = companyFileJson[0];
+    const contentArray = [];
+    for (const key in data) {
+      if (key !== 'user' && key !== '_id') {
+        contentArray.push(data[key]);
+      }
+    }
+    const allValuesExist = contentArray.every(value => header.includes(value));
+    if (allValuesExist) {
+      for (const key in data) {
+        const index = header.indexOf(data[key]);
+        if (index !== -1) {
+          header[index] = key;
+        }
+      }
+      const alldata = companyFileJson;
+      alldata[0] = header;
+      try {
+        const transformedData = await transformToObjectsFile1(header, alldata);
+        console.log("Transformed data:", transformedData);
+        await postData(companyPostUrl, transformedData, companyFileName);
+        setTimeout(() => {
+          message.success(`Upload your next file`);
+        }, 2000);
+      }
+      catch (error) {
+        console.error("Error during transformation:", error);
+      }
+    }
+    else {
+      setOpenPanel(true);
+    }
   }
 
   async function companyFileMapping() {
     if (current == 0) {
       if (UpdateHeader?.length == companyHeader?.length) {
+        saveMapping(companyHeader, UpdateHeader, companyMappingUrl, companyMappingUrl);
         let convertFileHeader = companyFileHeader.map((item: any) => item.content);
         let convertHeader = companyHeader.map((item: any) => item.content);
         UpdateHeader.forEach((item: any, idx: any) => {
@@ -458,17 +529,14 @@ const Import = () => {
         try {
           const transformedData = await transformToObjectsFile1(convertFileHeader, Allfilejson);
           console.log("Transformed data:", transformedData);
-          // let url = "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
-          let url = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
-          onClose();
-          setCurrent(current + 1);
-          setUpdateHeader([]);
-          await postData(url, transformedData, companyFileName);
+          await postData(companyPostUrl, transformedData, companyFileName);
+          setTimeout(() => {
+            message.success(`Upload your next file`);
+          }, 2000);
         }
         catch (error) {
-          console.error("Error during transformation:", error);
+          message.error(`first file upload error`);
         }
-
       }
       else {
         message.error(`Please select a value for each dropdown.`);
@@ -526,9 +594,9 @@ const Import = () => {
         await Promise.all(
           headers.map(async (header: any, index: any) => {
             let value = row[index];
-            if(value == undefined)
-            debugger
-            console.log(value,index);
+            // if (value == undefined)
+            //   debugger
+            console.log(value, index);
             if (value !== "" && value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value).replace(/[\W_]+/g, "");
@@ -549,12 +617,45 @@ const Import = () => {
     return TransFormToObjectsData;
   };
 
-  function vendorFileCheck() {
-    setOpenPanel(true);
+  async function vendorFileCheck() {
+    const data = await getMapping(vendorMappingUrl);
+    const header = vendorFileJson[0];
+    const contentArray = [];
+    for (const key in data) {
+      if (key !== 'user' && key !== '_id') {
+        contentArray.push(data[key]);
+      }
+    }
+    const allValuesExist = contentArray.every(value => header.includes(value));
+    if (allValuesExist && data != null) {
+      for (const key in data) {
+        const index = header.indexOf(data[key]);
+        if (index !== -1) {
+          header[index] = key;
+        }
+      }
+      const alldata = vendorFileJson;
+      alldata[0] = header;
+      try {
+        const transformedData = await transformToObjectsFile2(header, alldata);
+        console.log("Transformed data:", transformedData);
+        await postData(vendorPostUrl, transformedData, vendorfileName);
+        setTimeout(() => {
+          message.success(`Upload your next file`);
+        }, 2000);
+      }
+      catch (error) {
+        console.error("Error during transformation:", error);
+      }
+    }
+    else {
+      setOpenPanel(true);
+    }
   }
   async function vendorFileMapping() {
     if (current == 1) {
       if (UpdateHeader?.length == vendorHeader?.length) {
+        saveMapping(vendorHeader, UpdateHeader, vendorMappingUrl, vendorMappingUrl);
         let convertFileHeader = vendorFileHeader.map((item: any) => item.content);
         let convertHeader = vendorHeader.map((item: any) => item.content);
         UpdateHeader.forEach((item: any, idx: any) => {
@@ -568,17 +669,11 @@ const Import = () => {
         try {
           const transformedData = await transformToObjectsFile2(convertFileHeader, Allfilejson);
           console.log("Transformed data:", transformedData);
-          // let url =  "https://concerned-plum-crayfish.cyclic.app/api/upload/vendorOpen";;
-          let url = "https://concerned-plum-crayfish.cyclic.app/api/vendor/dynamic-vendor";
-          onClose();
-          setCurrent(current + 1);
-          setUpdateHeader([]);
-          await postData(url, transformedData, vendorfileName);
+          await postData(vendorPostUrl, transformedData, vendorfileName);
         }
         catch (error) {
           console.error("Error during transformation:", error);
         }
-
       }
       else {
         message.error(`Please select a value for each dropdown.`);
@@ -586,8 +681,8 @@ const Import = () => {
     }
   }
   // ***********************for detailed File  ************
-  const transformToObjectFile3 = async (headers: any, data: any) => {
-    let DocumentType:any=[];
+  const transformToObjectsFile3 = async (headers: any, data: any) => {
+    let DocumentType: any = [];
     let TransFormToObjectsData = await Promise.all(
       data.map(async (row: any) => {
         const rowData: any = {};
@@ -600,7 +695,7 @@ const Import = () => {
             if (value !== "" && value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value).replace(/[\W_]+/g, "");
-                if(header == "Document Number"){
+                if (header == "Document Number") {
                   const result = value.match(/^[A-Za-z]+/);
                   const extractedLetters = result ? result[0] : '';
                   DocumentType.push(extractedLetters);
@@ -618,22 +713,58 @@ const Import = () => {
       })
 
     );
-    DocumentType= DocumentType.slice(1);
+    DocumentType = DocumentType.slice(1);
     const uniqueArray = [...new Set(DocumentType)];
-    const newArray:any = uniqueArray.map((content: any, index: any) => ({ id: (index + 4).toString(), content }));
+    const newArray: any = uniqueArray.map((content: any, index: any) => ({ id: (index + 4).toString(), content }));
 
     setDocumentTypes(newArray);
-
     TransFormToObjectsData = TransFormToObjectsData.slice(1);
     setTransformedData(TransFormToObjectsData);
     return TransFormToObjectsData;
   };
-  function detailedFileCheck() {
-    setOpenPanel(true);
+
+  async function detailedFileCheck() {
+    const data = await getMapping(detailMappingUrl);
+    const header = detailedFileJson[0];
+    const contentArray = [];
+    for (const key in data) {
+      if (key !== 'user' && key !== '_id') {
+        contentArray.push(data[key]);
+      }
+    }
+    const allValuesExist = contentArray.every(value => header.includes(value));
+    if (allValuesExist && data != null) {
+      for (const key in data) {
+        const index = header.indexOf(data[key]);
+        if (index !== -1) {
+          header[index] = key;
+        }
+      }
+      const alldata = detailedFileJson;
+      alldata[0] = header;
+      setdetailedFileJson(alldata);
+      setCurrent(current + 1);
+      // try {
+      //   const transformedData = await transformToObjectsFile3(header, alldata);
+      //   console.log("Transformed data:", transformedData);
+      //   await postData(detailPostUrl, transformedData, vendorfileName);
+      //   setTimeout(() => {
+      //     message.success(`Upload your next file`);
+      //   }, 2000);
+      // }
+      // catch (error) {
+      //   console.error("Error during transformation:", error);
+      // }
+    }
+    else {
+      setOpenPanel(true);
+    }
   }
+
   async function detailedFileMapping() {
     if (current == 2) {
       if (UpdateHeader?.length == detailedHeader?.length) {
+        saveMapping(detailedHeader, UpdateHeader, detailMappingUrl, detailMappingUrl);
         let convertFileHeader = detailedFileHeader.map((item: any) => item.content);
         let convertHeader = detailedHeader.map((item: any) => item.content);
         UpdateHeader.forEach((item: any, idx: any) => {
@@ -644,19 +775,16 @@ const Import = () => {
         });
         let Allfilejson = detailedFileJson;
         Allfilejson[0] = convertFileHeader;
-        try {
-          const transformedData = await transformToObjectFile3(convertFileHeader, Allfilejson);
-          console.log("Transformed data:", transformedData);
-          // let url =  "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
-          let url = "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete";
-          setUpdateHeader([]);
-          onClose();
-         setCurrent(current + 1);
-          await postData(url, transformedData, detailedFileName);
-        }
-        catch (error) {
-          console.error("Error during transformation:", error);
-        }
+        setdetailedFileJson(Allfilejson);
+        setCurrent(current + 1);
+        // try {
+        //   const transformedData = await transformToObjectsFile3(convertFileHeader, Allfilejson);
+        //   console.log("Transformed data:", transformedData);
+        //   await postData(detailPostUrl, transformedData, detailedFileName);
+        // }
+        // catch (error) {
+        //   console.error("Error during transformation:", error);
+        // }
       }
       else {
         message.error(`Please select a value for each dropdown.`);
@@ -664,36 +792,6 @@ const Import = () => {
     }
   }
 
-  async function DocumentMapping(){
-    if(UpdateHeader.length == DocumentTypeHeader.length){
-      // let convert = UpdateHeader.map((item: any) => item.content);
-     let data = UpdateHeader; 
-     for (let index = 0; index < data.length; index++) {
-      if (index === 0) {
-          data[index].id = "TDS";
-      } else if (index === 1) {
-          data[index].id = "BPI";
-      }
-    }
-
-    TransformedData.forEach((element: any, idx: any) => {
-      data.forEach((item: any) => {
-        const contentRegex = new RegExp(item.content, 'g');
-        let abc = element['Document Number'];
-        if(abc.content(item.content)){
-          
-        }
-        if (element['Document Number'].includes(item.content)) {
-          element['Document Number'] = element['Document Number'].replace(contentRegex, item.id);
-        }
-      }); 
-    });
-    
-    
-
-      console.log(TransformedData);
-    }
-  }
   // *********************for click on next step
 
   const next = () => {
@@ -759,23 +857,18 @@ const Import = () => {
       vendorFileMapping();
     }
     else if (current == 2) {
-      if(TransformedData.length>0){
-        DocumentMapping();
-      }
-      else{
-        detailedFileMapping();
-      }
+      detailedFileMapping();
     }
   }
 
-  function showfiles(){
-    if(current==0){
+  function showfiles() {
+    if (current == 0) {
       setshowfile(companyFileJson);
     }
-    else if(current ==1){
+    else if (current == 1) {
       setshowfile(vendorFileJson);
     }
-    else if(current == 2){
+    else if (current == 2) {
       setshowfile(detailedFileJson);
     }
     setOpen(true);
@@ -785,6 +878,10 @@ const Import = () => {
     <>
       <div style={{ margin: "20px" }}>
         <Steps current={current} items={items} />
+        {/* <Spin spinning={true} fullscreen /> */}
+        <div style={{ display: "grid", placeItems: "center" }}>
+          {/* <Spin size="large" /> */}
+        </div>
         <div style={contentStyle}>{steps[current].content}</div>
         <div
           style={{
@@ -793,16 +890,6 @@ const Import = () => {
             justifyContent: "space-around",
           }}
         >
-          {/* {current > 0 && (
-            <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
-              Previous
-            </Button>
-          )} */}
-          {/* {current < steps.length - 1 && (
-            <Button type="primary" onClick={() => next()}>
-              Next
-            </Button>
-          )} */}
           {current === steps.length - 1 && (
             <Button type="primary" onClick={postVendorName}>
               Generate Report
@@ -833,7 +920,7 @@ const Import = () => {
           initialBoxOneItems={
             current === 0 ? companyFileHeader :
               current === 1 ? vendorFileHeader :
-                current === 2 ? TransformedData.length > 0 ? DocumentTypes : detailedFileHeader :
+                current === 2 ? detailedFileHeader :
                   null
           }
           boxTwoItems={UpdateHeader}
@@ -841,7 +928,7 @@ const Import = () => {
           defaultStaticContent={
             current === 0 ? companyHeader :
               current === 1 ? vendorHeader :
-                current === 2 ? TransformedData.length > 0 ? DocumentTypeHeader : detailedHeader :
+                current === 2 ? detailedHeader :
                   null
           }
         />
@@ -849,21 +936,16 @@ const Import = () => {
       <Modal
         title="Title"
         open={open}
-        
-
         onCancel={handleCancel}
-      style={{ padding: "10px" }}
+        style={{ padding: "10px" }}
         width={950}
-
-
       >
-
         <div className="Prev_excelFile">
           <div style={{ overflowX: 'auto', maxHeight: '320px', /* Set the max height for the table body */ }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', border: '1px solid #ddd', position: "relative" }}>
               <thead>
                 <tr>
-                  {showfile?.[0] && showfile?.[0].map((header:any, index:any) => (
+                  {showfile?.[0] && showfile?.[0].map((header: any, index: any) => (
                     <th key={index} style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: 'green', color: "white", fontSize: '13px', fontFamily: 'Arial, sans-serif', whiteSpace: "nowrap", height: "30px", position: "sticky", top: "0" }}>
                       {header}
                     </th>
@@ -871,9 +953,9 @@ const Import = () => {
                 </tr>
               </thead>
               <tbody style={{ overflowY: 'scroll' }}>
-                {showfile?.slice(1)?.map((row:any, rowIndex:any) => (
+                {showfile?.slice(1)?.map((row: any, rowIndex: any) => (
                   <tr key={rowIndex}>
-                    {row.map((cell:any, cellIndex:any) => (
+                    {row.map((cell: any, cellIndex: any) => (
                       <td key={cellIndex} style={{ border: '1px solid #ddd', padding: '8px', fontSize: '12px', fontFamily: 'Arial, sans-serif' }}>{cell}</td>
                     ))}
                   </tr>
@@ -882,20 +964,6 @@ const Import = () => {
             </table>
           </div>
         </div>
-
-        {/* <p>Select your vendor name</p>
-        <Select
-          className="Dropdown"
-          // style={{ width: 300, margin: '8px' }}
-          placeholder={`select Vender naem`}
-          onChange={(value) => SetvendorName(value)}
-        >
-          {vendorNameOpation.map((option: any) => (
-            <Option key={option} value={option}>
-              {option}
-            </Option>
-          ))}
-        </Select> */}
       </Modal>
     </>
   );
