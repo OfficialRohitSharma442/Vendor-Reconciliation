@@ -154,7 +154,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                     style={{
-                                        border: snapshot.isDraggingOver ? `` : '2px dashed #ccc',
+                                        border: snapshot?.isDraggingOver ? `` : '2px dashed #ccc',
                                         padding: '14px 16px',
                                         backgroundColor: snapshot.isDraggingOver ? '#f8f8f8' : '#fff',
                                         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -162,16 +162,16 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
                                         minWidth: "230px",
                                         height: "450px",
                                     }}
-                                    className={` ${snapshot.isDraggingOver && "rotate-border"}`}
+                                    className={` ${snapshot?.isDraggingOver && "rotate-border"}`}
                                 >
 
                                     {boxTwoItems.map((item: any, index: any) => (
-                                        <Draggable key={item.id} draggableId={item.id} index={index}>
+                                        <Draggable key={item?.id} draggableId={item?.id} index={index}>
                                             {(provided, snapshot) => (
                                                 <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
+                                                    ref={provided?.innerRef}
+                                                    {...provided?.draggableProps}
+                                                    {...provided?.dragHandleProps}
                                                     style={{
                                                         ...itemStyle,
                                                         border: '1px solid gray',
@@ -189,7 +189,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
                                             )}
                                         </Draggable>
                                     ))}
-                                    {provided.placeholder}
+                                    {provided?.placeholder}
                                 </div>
                             )}
                         </Droppable>
@@ -216,7 +216,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
                                     }}
                                 >
                                     {boxOneItems?.map((item: any, index: any) => (
-                                        <Draggable key={item.id} draggableId={item.id} index={index}>
+                                        <Draggable key={item?.id} draggableId={item?.id} index={index}>
                                             {(provided, snapshot) => (
                                                 <div
                                                     ref={provided.innerRef}
