@@ -14,12 +14,12 @@ import { DownloadOutlined } from "@ant-design/icons";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import { FileExcelOutlined } from "@ant-design/icons";
 import "./Import.css";
-import axios from "axios";    
+import axios from "axios";
 import DragAndDrop from "../utils/Drag-and-Drop";
 const { Option } = Select;
 const Import = () => {
   // **************Static Data*********************
-  const companyHeader =[
+  const companyHeader = [
     { id: '1', content: 'Vendor' },
     { id: '2', content: 'Vendor Name' },
     { id: '3', content: 'Document Number' },
@@ -30,7 +30,7 @@ const Import = () => {
     { id: '8', content: 'Due Date' },
     { id: '9', content: 'Document Date' }
   ];
-  const  vendorFileHeader =[
+  const vendorFileHeader = [
     { id: '1', content: 'Business Partner' },
     { id: '2', content: 'Business Partner Name' },
     { id: '3', content: 'Closing Balance' },
@@ -56,7 +56,7 @@ const Import = () => {
     { id: '12', content: 'Invoice Number' }
   ];
 
-  
+
   const [UpdatedCompanyHeader, setUpdatedCompanyHeader] = useState([]);
 
 
@@ -271,7 +271,7 @@ const Import = () => {
               str.trim().replace(/\s+/g, " ")
             );
             jsonData[0] = trimmedHeaders;
-            const newArray = trimmedHeaders.map((content:any, index:any) => ({ id: (index + 1).toString(), content }));
+            const newArray = trimmedHeaders.map((content: any, index: any) => ({ id: (index + 1).toString(), content }));
             console.log("JSON Data:", jsonData);
             console.log("Headers:", headers);
             if (current == 0) {
@@ -317,7 +317,7 @@ const Import = () => {
     },
   };
 
-  
+
   const uploadFile = (Filename: any) => (
     <Dragger {...props}>
       <p className="ant-upload-drag-icon">
@@ -354,7 +354,7 @@ const Import = () => {
       title: "Second",
       content: (
         <>
-        <DragAndDrop initialBoxOneItems={companyFileHeaderJson} initialBoxTwoItems={UpdatedCompanyHeader} defaultStaticContent={companyHeader}/>
+          <DragAndDrop initialBoxOneItems={companyFileHeaderJson} initialBoxTwoItems={UpdatedCompanyHeader} defaultStaticContent={companyHeader} />
         </>
       ),
       // content: (
