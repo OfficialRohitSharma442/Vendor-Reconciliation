@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  Cascader,
   Drawer,
   Grid,
   Input,
@@ -54,7 +55,7 @@ const Import = () => {
     { id: '3', content: 'Credit Amount(INR)' },
     { id: '4', content: 'Debit Amount(INR)' },
     { id: '5', content: 'Cheque Rtgs Neft' },
-    { id: '6', content: 'Payment Docment' },
+    { id: '6', content: 'Payment Document' },
     { id: '7', content: 'Reference' },
     { id: '8', content: 'Grn Number' },
     { id: '9', content: 'Invoice Date' },
@@ -62,10 +63,21 @@ const Import = () => {
     { id: '11', content: 'Document Number' },
     { id: '12', content: 'Invoice Number' }
   ];
-  const DocumentTypeHeader = [
-    { id: '1', content: 'TDS' },
-    { id: '2', content: 'PID' },
-  ]
+  const DocumentTypeHeader = ["TDS Document Type", "PID Document Type"];
+  const DocumentOptions = [
+    {
+      value: 'starts-with',
+      label: 'Starts with',
+    },
+    {
+      value: 'ends-with',
+      label: 'Ends with',
+    },
+    {
+      value: 'Contains',
+      label: 'Contains',
+    },
+  ];
   // *******************url *************
   const companyPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master"
   const vendorPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/vendor/dynamic-vendor"
@@ -77,7 +89,7 @@ const Import = () => {
 
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(1);
+  const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
   // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
@@ -108,6 +120,9 @@ const Import = () => {
 
   // ******************for show priview*********************
   const [showfile, setshowfile] = useState<any>([]);
+  // *****************state for document mapping *********
+  const [inputValues, setInputValues] = useState([]);
+  const [dropdownValues, setDropdownValues] = useState([]);
 
   // ********************for uplode every file***************
   const props: UploadProps = {
@@ -202,6 +217,21 @@ const Import = () => {
     </Dragger>
   );
 
+  // ***********************
+  const handleInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newInputValues: any = [...inputValues];
+    newInputValues[index] = e.target.value;
+    setInputValues(newInputValues);
+    // console.log(newInputValues);
+  };
+  const handleCascaderChange = (index: number, value: any) => {
+    const newDropdownValues: any = [...dropdownValues];
+    newDropdownValues[index] = value;
+    setDropdownValues(newDropdownValues);
+    // console.log(newDropdownValues)
+  };
+
+
   // ***************** main steps****************
   const steps: any = [
     {
@@ -274,18 +304,30 @@ const Import = () => {
       title: "Report",
       content: (
         <>
-          {/* {pcaseReport.length <= 0 && pcaseReportHeader.length <=0 ? */}
-          <div style={{ display: "Grid", placeItems: "center" }}>
-              <div>
-                <Input placeholder="Basic usage" />
+          <div style={{ display: "Grid", placeItems: "center", gridTemplateColumns: "1fr 1fr", margin: "20px" }}>
+            {DocumentTypeHeader.map((item: any, idx: any) => {
+              return (
+                <div key={item}>
+                  <p>{item}</p>
+                  <Input addonAfter={
+                    <Cascader options={DocumentOptions} placeholder="Select Filter" style={{ width: 150 }}
+                      onChange={(value) => handleCascaderChange(idx, value)}
+                    />
+                  }
+                    value={inputValues[idx] || ""}
+                    onChange={handleInputChange(idx)}
+                  />
+                </div>
+              )
+            })}
 
-              </div>
-
+          </div>
+          <div style={{ display: "grid", placeItems: "center" }}>
             <p>Select your vendor name</p>
             <Select
               className="Dropdown"
-              // style={{ width: 300, margin: '8px' }}
-              placeholder={`select Vender naem`}
+              style={{ width: "300" }}
+              placeholder={`select Vendor name`}
               onChange={(value) => SetvendorName(value)}
             >
               {vendorNameOpation.map((option: any) => (
@@ -295,6 +337,7 @@ const Import = () => {
               ))}
             </Select>
           </div>
+
         </>
       ),
     },
@@ -331,76 +374,95 @@ const Import = () => {
   // *****************post vendor naem to this function******8
 
   async function postVendorName() {
-    if (vendorName != "" && vendorName != undefined && vendorName != null) {
-      const alldata: any = localStorage.getItem("VR-user_Role");
-      const tokens = JSON.parse(alldata).token;
-      const url = "https://concerned-plum-crayfish.cyclic.app/api/report/dynamic-report";
-      const data = {
-        user: JSON.parse(alldata)?.ID,
-        vendorName: vendorName,
-      };
+    const alldata: any = localStorage.getItem("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    const url = "https://concerned-plum-crayfish.cyclic.app/api/report/dynamic-report";
+    const data = {
+      user: JSON.parse(alldata)?.ID,
+      vendorName: vendorName,
+    };
+    try {
+      const response = await axios.post(url, data, {
+        headers: {
+          Authorization: ` Bearer ${tokens}`,
+        },
+      });
+      if (response.data.success === "ok") {
+        const getPCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/p-case";
+        const getKCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/k-case";
+        const getLCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/l-case";
+        const getMCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/m-case";
+        try {
+          const pCaseResponse = await axios.get(getPCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
+          const kCaseResponse = await axios.get(getKCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
+          const lCaseResponse = await axios.get(getLCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
+          const mCaseResponse = await axios.get(getMCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
 
-      try {
-        const response = await axios.post(url, data, {
-          headers: {
-            Authorization: ` Bearer ${tokens}`,
-          },
-        });
-        if (response.data.success === "ok") {
-          const getPCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/p-case";
-          const getKCaseUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report/k-case";
-          try {
-            const pCaseResponse = await axios.get(getPCaseUrl, {
-              headers: {
-                Authorization: `Bearer ${tokens}`,
-              },
-            });
+          const pCaseData = pCaseResponse?.data?.data;
+          const kCaseData = kCaseResponse?.data?.data;
+          const lCaseData = lCaseResponse?.data?.data;
+          const mCaseData = mCaseResponse?.data?.data;
+          console.log({ pCaseData });
+          console.log({ kCaseData });
+          console.log({lCaseData});
+          console.log({mCaseData});
+          const wb = XLSX.utils.book_new();
 
-            const kCaseResponse = await axios.get(getKCaseUrl, {
-              headers: {
-                Authorization: `Bearer ${tokens}`,
-              },
-            });
-
-            const pCaseData = pCaseResponse?.data?.data;
-            const kCaseData = kCaseResponse?.data?.data;
-            console.log({ pCaseData });
-            console.log({ kCaseData });
-            // Create a workbook
-            const wb = XLSX.utils.book_new();
-
-            // Create "P" sheet if data is available
-            if (pCaseData && pCaseData.length > 0) {
-              const wsP = XLSX.utils.json_to_sheet(pCaseData);
-              XLSX.utils.book_append_sheet(wb, wsP, "P");
-            }
-
-            // Create "K" sheet if data is available
-            if (kCaseData && kCaseData.length > 0) {
-              const wsK = XLSX.utils.json_to_sheet(kCaseData);
-              XLSX.utils.book_append_sheet(wb, wsK, "K");
-            }
-
-            // Save the Excel file only if at least one sheet is created
-            if (wb.SheetNames.length > 0) {
-              XLSX.writeFile(wb, "combinedCaseFile.xlsx");
-              console.log(
-                "Excel file with both P and K sheets generated successfully"
-              );
-            } else {
-              console.log("No data available for either P or K sheets");
-            }
-          } catch (error) {
-            console.error("Error fetching data or generating Excel file:", error);
+          if (pCaseData && pCaseData.length > 0) {
+            const wsP = XLSX.utils.json_to_sheet(pCaseData);
+            XLSX.utils.book_append_sheet(wb, wsP, "P");
           }
-          return;
+
+          // Create "K" sheet if data is available
+          if (kCaseData && kCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(kCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "K");
+          }
+
+          // Create "L" sheet if data is available
+          if (lCaseData && lCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(lCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "L");
+          }
+
+          // Create "M" sheet if data is available
+          if (mCaseData && mCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(mCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "M");
+          }
+
+          // Save the Excel file only if at least one sheet is created
+          if (wb.SheetNames.length > 0) {
+            XLSX.writeFile(wb, "combinedCaseFile.xlsx");
+            console.log(
+              "Excel file with both P and K sheets generated successfully"
+            );
+          } else {
+            console.log("No data available for either P or K sheets");
+          }
+        } catch (error) {
+          console.error("Error fetching data or generating Excel file:", error);
         }
-      } catch (error) {
-        console.log(error);
+        return;
       }
-    }
-    else {
-      message.error(`Please Select vendor Name`);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -425,8 +487,8 @@ const Import = () => {
     setOpen(false);
   };
   // ******************save mapping *********
-  async function saveMapping(keyforjson: any, valueforjson: any, urlforpost: any, urlforGet: any) {
-    const data = await getMapping(urlforGet);
+  async function saveMapping(keyforjson: any, valueforjson: any, urlforpost: any) {
+    const data = await getMapping(urlforpost);
     if (data != null && data?._id) {
       urlforpost = `${urlforpost}/${data._id}`;
     }
@@ -440,18 +502,35 @@ const Import = () => {
       user: JSON.parse(alldata)?.ID,
       data: resultJSON,
     };
-    try {
-      const response = await axios.post(urlforpost, finaltemp, {
-        headers: {
-          Authorization: ` Bearer ${tokens}`,
-        },
-      });
-      if (response.status == 201) {
-        console.log(response);
+    if (data != null && data._id) {
+      try {
+        const response = await axios.put(urlforpost, finaltemp, {
+          headers: {
+            Authorization: ` Bearer ${tokens}`,
+          },
+        });
+        if (response.status == 201) {
+          console.log(response);
+        }
+      }
+      catch (error) {
+        console.log(error);
       }
     }
-    catch (error) {
-      console.log(error);
+    else {
+      try {
+        const response = await axios.post(urlforpost, finaltemp, {
+          headers: {
+            Authorization: ` Bearer ${tokens}`,
+          },
+        });
+        if (response.status == 201) {
+          console.log(response);
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
     }
   }
   async function getMapping(url: any) {
@@ -486,7 +565,7 @@ const Import = () => {
       }
     }
     const allValuesExist = contentArray.every(value => header.includes(value));
-    if (allValuesExist) {
+    if (allValuesExist && data != null) {
       for (const key in data) {
         const index = header.indexOf(data[key]);
         if (index !== -1) {
@@ -515,7 +594,7 @@ const Import = () => {
   async function companyFileMapping() {
     if (current == 0) {
       if (UpdateHeader?.length == companyHeader?.length) {
-        saveMapping(companyHeader, UpdateHeader, companyMappingUrl, companyMappingUrl);
+        saveMapping(companyHeader, UpdateHeader, companyMappingUrl);
         let convertFileHeader = companyFileHeader.map((item: any) => item.content);
         let convertHeader = companyHeader.map((item: any) => item.content);
         UpdateHeader.forEach((item: any, idx: any) => {
@@ -571,17 +650,13 @@ const Import = () => {
       })
 
     );
-
     console.log("DATA", vendorNamedropdown);
     console.log({ vendorNamedropdown });
-
     const set = new Set(vendorNamedropdown);
     console.log({ set });
     const uniqueArray = [...set];
     console.log({ uniqueArray });
-
     setvendorNameOpation(uniqueArray);
-
     TransFormToObjectsData = TransFormToObjectsData.slice(1);
     return TransFormToObjectsData;
   };
@@ -655,7 +730,7 @@ const Import = () => {
   async function vendorFileMapping() {
     if (current == 1) {
       if (UpdateHeader?.length == vendorHeader?.length) {
-        saveMapping(vendorHeader, UpdateHeader, vendorMappingUrl, vendorMappingUrl);
+        saveMapping(vendorHeader, UpdateHeader, vendorMappingUrl);
         let convertFileHeader = vendorFileHeader.map((item: any) => item.content);
         let convertHeader = vendorHeader.map((item: any) => item.content);
         UpdateHeader.forEach((item: any, idx: any) => {
@@ -682,7 +757,6 @@ const Import = () => {
   }
   // ***********************for detailed File  ************
   const transformToObjectsFile3 = async (headers: any, data: any) => {
-    let DocumentType: any = [];
     let TransFormToObjectsData = await Promise.all(
       data.map(async (row: any) => {
         const rowData: any = {};
@@ -696,9 +770,38 @@ const Import = () => {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value).replace(/[\W_]+/g, "");
                 if (header == "Document Number") {
-                  const result = value.match(/^[A-Za-z]+/);
-                  const extractedLetters = result ? result[0] : '';
-                  DocumentType.push(extractedLetters);
+                  let assigdata = "SPI"
+                  if (dropdownValues[0] == "Starts with") {
+                    if (value.startsWith(inputValues[0])) {
+                      assigdata = "TDS"
+                    }
+                  }
+                  else if (dropdownValues[0] == "Ends with") {
+                    if (value.endsWith(inputValues[0])) {
+                      assigdata = "TDS"
+                    }
+                  }
+                  else if (dropdownValues[0] == "Contains") {
+                    if (value.includes(inputValues[0])) {
+                      assigdata = "TDS"
+                    }
+                  }
+                  if (dropdownValues[1] == "Starts with") {
+                    if (value.startsWith(inputValues[1])) {
+                      assigdata = "PID"
+                    }
+                  }
+                  else if (dropdownValues[1] == "Ends with") {
+                    if (value.endsWith(inputValues[1])) {
+                      assigdata = "PID"
+                    }
+                  }
+                  else if (dropdownValues[1] == "Contains") {
+                    if (value.includes(inputValues[1])) {
+                      assigdata = "PID"
+                    }
+                  }
+                  rowData["NewType"] = assigdata;
                 }
               }
               rowData[header] = `${value}`.trim();
@@ -713,11 +816,6 @@ const Import = () => {
       })
 
     );
-    DocumentType = DocumentType.slice(1);
-    const uniqueArray = [...new Set(DocumentType)];
-    const newArray: any = uniqueArray.map((content: any, index: any) => ({ id: (index + 4).toString(), content }));
-
-    setDocumentTypes(newArray);
     TransFormToObjectsData = TransFormToObjectsData.slice(1);
     setTransformedData(TransFormToObjectsData);
     return TransFormToObjectsData;
@@ -764,7 +862,7 @@ const Import = () => {
   async function detailedFileMapping() {
     if (current == 2) {
       if (UpdateHeader?.length == detailedHeader?.length) {
-        saveMapping(detailedHeader, UpdateHeader, detailMappingUrl, detailMappingUrl);
+        saveMapping(detailedHeader, UpdateHeader, detailMappingUrl);
         let convertFileHeader = detailedFileHeader.map((item: any) => item.content);
         let convertHeader = detailedHeader.map((item: any) => item.content);
         UpdateHeader.forEach((item: any, idx: any) => {
@@ -775,16 +873,10 @@ const Import = () => {
         });
         let Allfilejson = detailedFileJson;
         Allfilejson[0] = convertFileHeader;
+        setcompanyFileHeader(convertHeader);
         setdetailedFileJson(Allfilejson);
         setCurrent(current + 1);
-        // try {
-        //   const transformedData = await transformToObjectsFile3(convertFileHeader, Allfilejson);
-        //   console.log("Transformed data:", transformedData);
-        //   await postData(detailPostUrl, transformedData, detailedFileName);
-        // }
-        // catch (error) {
-        //   console.error("Error during transformation:", error);
-        // }
+        onClose();
       }
       else {
         message.error(`Please select a value for each dropdown.`);
@@ -792,6 +884,26 @@ const Import = () => {
     }
   }
 
+  // ************************get reports*********************8
+  async function getreport() {
+    const isValidArray1 = inputValues.every(value => value !== "" && value !== undefined && value !== null);
+    const isValidArray2 = dropdownValues.every(value => value !== "" && value !== undefined && value !== null);
+    // vendorName != "" && vendorName != undefined && vendorName != null &&
+    if (isValidArray1 && isValidArray2) {
+      try {
+        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
+        console.log("Transformed data:", transformedData);
+        await postData(detailPostUrl, transformedData, detailedFileName);
+        await postVendorName();
+        setTimeout(() => {
+          setCurrent(0);
+        }, 1000);
+      }
+      catch (error) {
+        console.error("Error during transformation:", error);
+      }
+    }
+  }
   // *********************for click on next step
 
   const next = () => {
@@ -882,7 +994,7 @@ const Import = () => {
         <div style={{ display: "grid", placeItems: "center" }}>
           {/* <Spin size="large" /> */}
         </div>
-        <div style={contentStyle}>{steps[current].content}</div>
+        <div style={contentStyle}>{steps[current]?.content}</div>
         <div
           style={{
             marginTop: 24,
@@ -891,7 +1003,7 @@ const Import = () => {
           }}
         >
           {current === steps.length - 1 && (
-            <Button type="primary" onClick={postVendorName}>
+            <Button type="primary" onClick={getreport}>
               Generate Report
             </Button>
           )}

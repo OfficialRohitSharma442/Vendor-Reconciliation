@@ -234,7 +234,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
                                                             {/* <FontAwesomeIcon icon={faArrowsAlt} /> */}
                                                             <HolderOutlined />
                                                         </div>
-                                                        {item.content}
+                                                        {item?.content}
                                                     </div>
                                                 </div>
                                             )}
