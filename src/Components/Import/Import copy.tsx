@@ -79,12 +79,12 @@ const Import = () => {
     },
   ];
   // *******************url *************
-  const companyPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master"
-  const vendorPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/vendor/dynamic-vendor"
-  const detailPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete"
+  const companyPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
+  const vendorPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/vendor/dynamic-vendor";
+  const detailPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete";
   const companyMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping";
-  const vendorMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping"
-  const detailMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping"
+  const vendorMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping";
+  const detailMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping";
   // ****************for steps***************************
 
   const [size, setSize] = useState<SizeType>();
@@ -244,7 +244,10 @@ const Import = () => {
                 Sample file
               </Button>
             </div>
-            <div>
+            <div style={{ display: "flex", gap: "20px" }}>
+              <Button onClick={showfiles} type="primary">
+                <EyeOutlined />
+              </Button>
               <Button type="primary" size={size} onClick={() => next()}>
                 Next <ArrowRightOutlined />
               </Button>
@@ -266,7 +269,10 @@ const Import = () => {
                 Sample file
               </Button>
             </div>
-            <div>
+            <div style={{ display: "flex", gap: "20px" }}>
+              <Button onClick={showfiles} type="primary">
+                <EyeOutlined />
+              </Button>
               <Button type="primary" size={size} onClick={() => next()}>
                 Next <ArrowRightOutlined />
               </Button>
@@ -288,7 +294,10 @@ const Import = () => {
                 Sample file
               </Button>
             </div>
-            <div>
+            <div style={{ display: "flex", gap: "20px" }}>
+              <Button onClick={showfiles} type="primary">
+                <EyeOutlined />
+              </Button>
               <Button type="primary" size={size} onClick={() => next()}>
                 Next <ArrowRightOutlined />
               </Button>
@@ -361,7 +370,10 @@ const Import = () => {
       if (response.status == 201) {
         console.log(response);
         onClose();
-        setCurrent(current + 1);
+        if (url == "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete")
+          setCurrent(0);
+        else
+          setCurrent(current + 1);
         setUpdateHeader([]);
         message.success(`Your file upload successfully`);
       }
@@ -420,8 +432,8 @@ const Import = () => {
           const mCaseData = mCaseResponse?.data?.data;
           console.log({ pCaseData });
           console.log({ kCaseData });
-          console.log({lCaseData});
-          console.log({mCaseData});
+          console.log({ lCaseData });
+          console.log({ mCaseData });
           const wb = XLSX.utils.book_new();
 
           if (pCaseData && pCaseData.length > 0) {
@@ -886,22 +898,22 @@ const Import = () => {
 
   // ************************get reports*********************8
   async function getreport() {
-    const isValidArray1 = inputValues.every(value => value !== "" && value !== undefined && value !== null);
-    const isValidArray2 = dropdownValues.every(value => value !== "" && value !== undefined && value !== null);
-    // vendorName != "" && vendorName != undefined && vendorName != null &&
-    if (isValidArray1 && isValidArray2) {
+    const isValidArray1 = inputValues.length == 2 && inputValues.every(value => value !== "" && value !== undefined && value !== null);
+    const isValidArray2 = dropdownValues.length == 2 && dropdownValues.every(value => value !== "" && value !== undefined && value !== null);
+    
+    if (isValidArray1 && isValidArray2 && vendorName != "" && vendorName != undefined && vendorName != null) {
       try {
         const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
         console.log("Transformed data:", transformedData);
         await postData(detailPostUrl, transformedData, detailedFileName);
         await postVendorName();
-        setTimeout(() => {
-          setCurrent(0);
-        }, 1000);
       }
       catch (error) {
         console.error("Error during transformation:", error);
       }
+    }
+    else {
+      message.error("please fill all data")
     }
   }
   // *********************for click on next step
@@ -974,16 +986,21 @@ const Import = () => {
   }
 
   function showfiles() {
-    if (current == 0) {
+    if (current == 0 && companyFileJson.length > 0) {
       setshowfile(companyFileJson);
+      setOpen(true);
     }
-    else if (current == 1) {
+    else if (current == 1 && vendorFileJson.length > 0) {
       setshowfile(vendorFileJson);
+      setOpen(true);
     }
-    else if (current == 2) {
+    else if (current == 2 && detailedFileJson.length > 0) {
       setshowfile(detailedFileJson);
+      setOpen(true);
     }
-    setOpen(true);
+    else {
+      message.error("Please Upload file")
+    }
   }
 
   return (
