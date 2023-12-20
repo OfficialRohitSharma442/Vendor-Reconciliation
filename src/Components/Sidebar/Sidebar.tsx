@@ -7,6 +7,8 @@ import SidebarMenu from './SidebarMenu';
 import RoutesPage from './RoutesPage';
 import { useNavigate } from 'react-router-dom';
 import { Context } from '../Context/Context';
+import Cookies from "js-cookie"
+import "./sidebar.css"
 const { Sider, Content } = Layout;
 const Sidebar = () => {
     const { setReload, reload } = React.useContext(Context);
@@ -19,7 +21,7 @@ const Sidebar = () => {
 
 
             <Sider collapsible collapsed={collapsed} trigger={null} reverseArrow={true} onCollapse={() => setCollapsed(!collapsed)} collapsedWidth="70" theme='light'>
-                <SidebarHeader collapsed={collapsed} />
+                <SidebarHeader collapsed={collapsed} setCollapsed={setCollapsed} />
                 <SidebarMenu />
             </Sider>
 
@@ -27,16 +29,7 @@ const Sidebar = () => {
                 <div style={{ background: "#ffffff", padding: '16px', width: '100%', borderBottom: "1px solid #dcd2d2", display: "flex", justifyContent: "space-between" }}>
                     {/* Your header content goes here */}
                     <div>
-                        {collapsed ?
-                            <Button onClick={() => setCollapsed(!collapsed)}>
-                                <MenuFoldOutlined />
-                                {/* <ArrowLeftOutlined /> */}
-                            </Button>
-                            :
-                            <Button onClick={() => setCollapsed(!collapsed)}>
-                                <CloseOutlined />
-                            </Button>
-                        }
+
                     </div>
                     <Button
                         type="primary"
@@ -45,7 +38,8 @@ const Sidebar = () => {
                         onClick={() => {
                             setloading(true);
                             setTimeout(() => {
-                                localStorage.clear();
+                                // localStorage.clear();
+                                Cookies.remove("VR-user_Role");
                                 setReload(!reload)
                             }, 1000)
                         }}

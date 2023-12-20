@@ -3,6 +3,7 @@ import { Button, Checkbox, Form, Input, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Context } from '../Context/Context';
+import Cookies from 'js-cookie';
 const Login = () => {
     const navigate = useNavigate();
     const [data, setData] = useState({
@@ -22,11 +23,8 @@ const Login = () => {
 
             if (response?.status == 200) {
                 // Update the state with the response data
-                let data = {
-                    token: response?.data?.token,
-                    role: response?.data?.role,
-                }
-                localStorage.setItem("VR-user_Role", JSON.stringify(response?.data))
+                Cookies.set('VR-user_Role', JSON.stringify(response?.data), { expires: 1 });
+                // localStorage.setItem("VR-user_Role", JSON.stringify(response?.data))
                 setRole(response?.data?.role)
                 messageApi.open({
                     type: 'success',
@@ -42,7 +40,6 @@ const Login = () => {
                 });
                 setTimeout(() => {
                     messageApi.destroy()
-
                 }, 2000)
             }
         } catch (error: any) {

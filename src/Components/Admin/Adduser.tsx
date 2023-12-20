@@ -2,6 +2,7 @@
 import { message, Button, Col, DatePicker, Drawer, Form, Input, Row, Select, Space } from 'antd';
 import axios from 'axios';
 import React, { ChangeEvent } from "react";
+import Cookies from 'js-cookie';
 
 
 const { Option } = Select;
@@ -28,7 +29,7 @@ const Adduser: React.FC = ({ open, onClose, getuserdata }: any) => {
     const handleOnCreateUser = async () => {
         try {
             console.log(userdata);
-            let alldata: any = localStorage.getItem("VR-user_Role");
+            let alldata: any = Cookies.get('VR-user_Role');
             let token = JSON.parse(alldata).token;
             setloading(true);
             let response = await axios.post("https://concerned-plum-crayfish.cyclic.app/api/user/signup", userdata, {

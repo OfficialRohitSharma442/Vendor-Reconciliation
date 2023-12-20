@@ -23,6 +23,7 @@ import { FileExcelOutlined } from "@ant-design/icons";
 import "./Import.css";
 import axios from "axios";
 import DragAndDrop from "../utils/Drag-and-Drop";
+import Cookies from "js-cookie";
 
 const { Option } = Select;
 const Import = () => {
@@ -354,7 +355,7 @@ const Import = () => {
 
   // *****************************post all data to this function******  
   async function postData(url: any, data: any, FileName: any) {
-    const alldata: any = localStorage.getItem("VR-user_Role");
+    const alldata: any = Cookies.get('VR-user_Role');
     const tokens = JSON.parse(alldata).token;
     const finaltemp = {
       user: JSON.parse(alldata)?.ID,
@@ -386,7 +387,7 @@ const Import = () => {
   // *****************post vendor naem to this function******8
 
   async function postVendorName() {
-    const alldata: any = localStorage.getItem("VR-user_Role");
+    const alldata: any = Cookies.get('VR-user_Role');
     const tokens = JSON.parse(alldata).token;
     const url = "https://concerned-plum-crayfish.cyclic.app/api/report/dynamic-report";
     const data = {
@@ -508,7 +509,7 @@ const Import = () => {
     keyforjson.forEach((item: any, index: any) => {
       resultJSON[item.content] = valueforjson[index].content;
     });
-    const alldata: any = localStorage.getItem("VR-user_Role");
+    const alldata: any = Cookies.get('VR-user_Role');
     const tokens = JSON.parse(alldata).token;
     const finaltemp = {
       user: JSON.parse(alldata)?.ID,
@@ -546,7 +547,7 @@ const Import = () => {
     }
   }
   async function getMapping(url: any) {
-    const alldata: any = localStorage.getItem("VR-user_Role");
+    const alldata: any = Cookies.get('VR-user_Role');
     const tokens = JSON.parse(alldata).token;
     try {
       const response = await axios.get(url, {
@@ -1068,6 +1069,8 @@ const Import = () => {
         onCancel={handleCancel}
         style={{ padding: "10px" }}
         width={950}
+        okButtonProps={{ style: { display: 'none' } }}
+
       >
         <div className="Prev_excelFile">
           <div style={{ overflowX: 'auto', maxHeight: '320px', /* Set the max height for the table body */ }}>
@@ -1093,7 +1096,7 @@ const Import = () => {
             </table>
           </div>
         </div>
-      </Modal>
+      </Modal >
     </>
   );
 };

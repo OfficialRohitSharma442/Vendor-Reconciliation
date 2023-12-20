@@ -1,0 +1,14 @@
+.hamburger_logo_withButton{
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    
+}
+.closeIcone{
+    align-self: flex-end;        
+}
+.expend_icons_sidebar{
+    margin-top: 20px;
+}

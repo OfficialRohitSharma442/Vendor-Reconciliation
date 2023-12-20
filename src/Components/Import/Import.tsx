@@ -17,6 +17,7 @@ import "./Import.css";
 import axios from "axios";
 import DragAndDrop from "../utils/Drag-and-Drop";
 const { Option } = Select;
+import Cookies from "js-cookie";
 const Import = () => {
   // **************Static Data*********************
   const companyHeader = [
@@ -553,7 +554,7 @@ const Import = () => {
         TransFormToObjectsData = TransFormToObjectsData.slice(1);
         setcompanyFileData(TransFormToObjectsData);
       };
-      
+
       transformToObjects(headers, dataRows);
       showModal();
 
@@ -573,7 +574,7 @@ const Import = () => {
   }
 
   async function postData(transformedData: any) {
-    const alldata: any = localStorage.getItem("VR-user_Role");
+    const alldata: any = Cookies.get('VR-user_Role');
     const url =
       "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
     const data1 = {
@@ -643,7 +644,7 @@ const Import = () => {
       console.log(transformedData);
       transformedData = transformedData.slice(1);
       setvendorFileJson(transformedData);
-      const alldata: any = localStorage.getItem("VR-user_Role");
+      const alldata: any = Cookies.get('VR-user_Role');
 
       const url =
         "https://concerned-plum-crayfish.cyclic.app/api/upload/vendorOpen";
@@ -715,7 +716,7 @@ const Import = () => {
       transformedData = transformedData.slice(1);
       setdetailedFileJson(transformedData);
       // let newArray = transformedData.flatMap((items:any) => Array(3).fill(items));
-      const alldata: any = localStorage.getItem("VR-user_Role");
+      const alldata: any = Cookies.get('VR-user_Role');
 
       const url =
         "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
@@ -750,7 +751,7 @@ const Import = () => {
   }
 
   async function postVendorName(name: any) {
-    const alldata: any = localStorage.getItem("VR-user_Role");
+    const alldata: any = Cookies.get('VR-user_Role');
     const tokens = JSON.parse(alldata).token;
     const url =
       "https://concerned-plum-crayfish.cyclic.app/api/generate-report";

@@ -7,6 +7,7 @@ import type { ColumnType, ColumnsType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import Adduser from './Adduser';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 interface DataType {
     key: string;
@@ -43,7 +44,7 @@ const Adminmain: React.FC = () => {
     }, [])
     async function getAdmins() {
         try {
-            let userdata = localStorage.getItem("VR-user_Role");
+            let userdata = Cookies.get('VR-user_Role');
             let token;
             if (userdata) {
 
@@ -281,30 +282,30 @@ const Adminmain: React.FC = () => {
     ];
 
     return (
-    <div style={{ margin: '16px' }}>
+        <div style={{ margin: '16px' }}>
 
-        <div className='Admin_main' style={{ flexGrow: "1" }}>
-            <div className="Admin_page_cta" style={{ display: "flex", justifyContent: "space-between", marginRight: "3px", marginBottom: "10px" }}>
-                <Button size="middle" onClick={showDrawer} type="primary">Add User</Button>
-                <Button size="middle" type="primary">All User Report</Button>
+            <div className='Admin_main' style={{ flexGrow: "1" }}>
+                <div className="Admin_page_cta" style={{ display: "flex", justifyContent: "space-between", marginRight: "3px", marginBottom: "10px" }}>
+                    <Button size="middle" onClick={showDrawer} type="primary">Add User</Button>
+                    <Button size="middle" type="primary">All User Report</Button>
+                </div>
+                <Table
+                    bordered={true}
+                    loading={!allusers?.data}
+                    size="middle"
+                    columns={columns}
+                    dataSource={allusers?.data}
+
+                />
+
+                <Adduser
+                    open={open}
+                    onClose={onClose}
+                    getuserdata={() => getAdmins()}
+
+                />
             </div>
-            <Table
-                bordered={true}
-                loading={!allusers?.data}
-                size="middle"
-                columns={columns}
-                dataSource={allusers?.data}
-                
-                />
-
-            <Adduser
-                open={open}
-                onClose={onClose}
-                getuserdata={() => getAdmins()}
-                
-                />
         </div>
-    </div>
     );
 }
 

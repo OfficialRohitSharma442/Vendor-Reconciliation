@@ -3,11 +3,10 @@ import Sidebar from './Components/Sidebar/Sidebar'
 import { Context } from "./Components/Context/Context"
 import React, { useContext, useState } from 'react'
 import Login from './Components/Login/Login';
-import svgImg from "./assets/loading.svg"
-import { Flex } from 'antd';
+import Cookies from 'js-cookie';
 import LoaderSVG from './Components/utils/Loding';
 const App = () => {
-  let context = useContext(Context);
+
   const [role, setRole] = useState<any>("ADMIN");
   const [loading, setloading] = React.useState(true);
   const [token, setToken] = React.useState("");
@@ -15,7 +14,8 @@ const App = () => {
 
   React.useEffect(() => {
     const fetchRole = async () => {
-      const storedRole = localStorage.getItem("VR-user_Role");
+      const storedRole = Cookies.get('VR-user_Role');
+
       if (storedRole) {
 
         const parsedData = JSON.parse(storedRole);
