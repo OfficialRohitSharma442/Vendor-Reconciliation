@@ -26,8 +26,7 @@ const App = () => {
         setloading(false)
 
       } else {
-        // Handle the case where "VR-user_Role" is not found in localStorage
-        // console.error("VR-user_Role not found in localStorage");
+
         setRole(undefined);
         setloading(false)
       }
@@ -48,7 +47,6 @@ const App = () => {
       {loading ? (
         // Show a loading indicator here if needed
         <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: 'center', justifyContent: "center" }}>
-          {/* <img src={require(svgImg)} /> */}
           <LoaderSVG />
         </div>
       ) : (

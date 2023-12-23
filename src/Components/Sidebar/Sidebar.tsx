@@ -20,36 +20,54 @@ const Sidebar = () => {
             {/* Universal Header */}
 
 
-            <Sider collapsible collapsed={collapsed} trigger={null} reverseArrow={true} onCollapse={() => setCollapsed(!collapsed)} collapsedWidth="70" theme='light'>
+            <Sider
+                collapsible
+                collapsed={collapsed}
+                trigger={null}
+                reverseArrow={true}
+                onCollapse={() => setCollapsed(!collapsed)}
+                collapsedWidth="70"
+                theme='light'
+
+            >
                 <SidebarHeader collapsed={collapsed} setCollapsed={setCollapsed} />
                 <SidebarMenu />
+                <div className='sidebar_footer'>
+                    <div className='sidebar_footer_content'>
+
+                        <Button
+                            type="primary"
+                            icon={<LogoutOutlined />}
+                            loading={loading}
+                            onClick={() => {
+                                setloading(true);
+                                setTimeout(() => {
+
+                                    Cookies.remove("VR-user_Role");
+                                    setReload(!reload)
+                                }, 1000)
+                            }}
+                            danger
+                        >
+                        </Button>
+
+
+                        <div className='sideFooter_userName'>{!collapsed && JSON.parse(Cookies.get('VR-user_Role') || "null")?.username}</div>
+
+                    </div>
+                </div>
             </Sider>
 
             <Layout className="site-layout">
-                <div style={{ background: "#ffffff", padding: '16px', width: '100%', borderBottom: "1px solid #dcd2d2", display: "flex", justifyContent: "space-between" }}>
-                    {/* Your header content goes here */}
+                {/* <div style={{ background: "#ffffff", padding: '16px', width: '100%', borderBottom: "1px solid #dcd2d2", display: "flex", justifyContent: "space-between" }}>
+
                     <div>
 
                     </div>
-                    <Button
-                        type="primary"
-                        icon={<LogoutOutlined />}
-                        loading={loading}
-                        onClick={() => {
-                            setloading(true);
-                            setTimeout(() => {
-                                // localStorage.clear();
-                                Cookies.remove("VR-user_Role");
-                                setReload(!reload)
-                            }, 1000)
-                        }}
-                        danger
-                    >
-                        Logout
-                    </Button>
-                </div>
+
+                </div> */}
                 <Content>
-                    <div style={{ maxHeight: "calc(100vh - 65px)", overflow: "auto", height: "100%" }}>
+                    <div style={{ overflow: "auto", maxHeight: "100vh" }}>
                         <RoutesPage />
                     </div>
                 </Content>

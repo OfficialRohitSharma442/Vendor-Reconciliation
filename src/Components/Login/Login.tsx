@@ -21,6 +21,7 @@ const Login = () => {
 
             let response = await axios.post("https://concerned-plum-crayfish.cyclic.app/api/user/login", data);
 
+
             if (response?.status == 200) {
                 // Update the state with the response data
                 Cookies.set('VR-user_Role', JSON.stringify(response?.data), { expires: 1 });
@@ -28,7 +29,7 @@ const Login = () => {
                 setRole(response?.data?.role)
                 messageApi.open({
                     type: 'success',
-                    content: 'User Added Successfully',
+                    content: 'User Loged in Successfully',
                 });
                 messageApi.destroy()
                 navigate('/home');

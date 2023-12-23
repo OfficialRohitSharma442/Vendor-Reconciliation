@@ -7,7 +7,6 @@ import { Context } from '../Context/Context';
 const SidebarMenu = () => {
     const { role } = React.useContext(Context);
     const navigate = useNavigate();
-
     const items = [
         { label: 'Home', path: '/Home', icon: <HomeOutlined />, key: 'home' },
         { label: 'Import', path: '/Import', icon: <ImportOutlined />, key: 'import' },
@@ -15,7 +14,6 @@ const SidebarMenu = () => {
         { label: 'Reports', path: '/Reports', icon: <FileTextOutlined />, key: 'reports' },
         ...(role === "ADMIN" ? [{ label: 'Admin Page', path: '/Settings', icon: <SettingOutlined />, key: 'adminPage' }] : []),
     ];
-
     const masterItems = [{ label: 'Super Admin', path: '/admin', icon: <SettingTwoTone />, key: 'superAdmin' }];
 
     return (
@@ -25,10 +23,9 @@ const SidebarMenu = () => {
             }}
             mode="inline"
             defaultSelectedKeys={['/Home']}
-
         >
             {(role === "MASTER" ? masterItems : items).map((item) => (
-                <Menu.Item key={item.key} icon={item.icon}>
+                <Menu.Item key={item.key} icon={item.icon} style={{ marginTop: 10 }}>
                     {item.label}
                 </Menu.Item>
             ))}
