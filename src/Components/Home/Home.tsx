@@ -16,15 +16,15 @@ const Home = () => {
                 data: labels.map(() => Math.floor(Math.random() * 2000 - 1000)),
             },
             {
-                type: 'bar' as const,
+                type: 'line' as const,
                 label: 'Dataset 2',
-                backgroundColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgb(255, 0, 0)',
                 data: labels.map(() => Math.floor(Math.random() * 2000 - 1000)),
                 borderColor: 'white',
                 borderWidth: 2,
             },
             {
-                type: 'bar' as const,
+                type: 'line' as const,
                 label: 'Dataset 3',
                 backgroundColor: 'rgb(53, 162, 235)',
                 data: labels.map(() => Math.floor(Math.random() * 2000 - 1000)),
@@ -35,11 +35,19 @@ const Home = () => {
     return (
 
 
+        <div style={{ display: "flex" }}>
 
-        <>
-            <BarLineChart data={chartData} />;
+            <div style={{ width: "50%", height: "50%" }}>
+                <BarLineChart data={chartData} />
+                <BarLineChart data={chartData} />
 
-        </>
+            </div>
+            <div style={{ width: "50%", height: "50%" }}>
+                <BarLineChart data={chartData} />
+                <BarLineChart data={chartData} />
+
+            </div>
+        </div>
     )
 };
 

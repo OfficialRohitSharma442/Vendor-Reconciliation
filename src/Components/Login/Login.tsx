@@ -112,12 +112,12 @@ const Login = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" loading={loading} onClick={handleLogin} htmlType="submit" style={{ width: '100%', height: '40px', backgroundColor: '#0070c9', borderColor: '#0070c9' }}>
+                    <Button type="primary" loading={loading} onClick={handleLogin} htmlType="submit" style={{ width: '100%', height: '40px' }}>
                         Log In
                     </Button>
                 </Form.Item>
             </Form>
-        </div>
+        </div >
 
     );
 };
