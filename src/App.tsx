@@ -5,13 +5,18 @@ import React, { useContext, useState } from 'react'
 import Login from './Components/Login/Login';
 import Cookies from 'js-cookie';
 import LoaderSVG from './Components/utils/Loding';
-const App = () => {
+import { ConfigProvider, theme } from 'antd';
 
+const App = () => {
+  const { defaultAlgorithm, darkAlgorithm } = theme;
   const [role, setRole] = useState<any>("ADMIN");
   const [loading, setloading] = React.useState(true);
   const [token, setToken] = React.useState("");
   const [reload, setReload] = React.useState(false);
-
+  console.group()
+  console.log(defaultAlgorithm)
+  console.log(darkAlgorithm)
+  console.log(theme)
   React.useEffect(() => {
     const fetchRole = async () => {
       const storedRole = Cookies.get('VR-user_Role');
@@ -50,7 +55,17 @@ const App = () => {
           <LoaderSVG />
         </div>
       ) : (
-        role ? <Sidebar /> : <Login />
+        <ConfigProvider theme={{
+          algorithm: false ? darkAlgorithm : defaultAlgorithm,
+          token: {
+            colorPrimary: '#00b96b',
+            borderRadius: 2,
+            colorBgSpotlight: "red"
+          },
+
+        }}>
+          {role ? <Sidebar /> : <Login />}
+        </ConfigProvider>
       )}
     </Context.Provider>
   )

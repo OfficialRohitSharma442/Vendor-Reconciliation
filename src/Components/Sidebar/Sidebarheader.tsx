@@ -3,6 +3,7 @@ import { Button, Space } from 'antd';
 import { MenuOutlined, ArrowLeftOutlined, ArrowRightOutlined, PoweroffOutlined, LogoutOutlined, CloseOutlined } from '@ant-design/icons';
 import Typography from 'antd/es/typography/Typography';
 import myImage from "./../../assets/vendor-reconciliation-high-resolution-logo-black-transparent.png";
+import myImage2 from "./../../assets/vendor-reconciliation-high-resolution-logo-transparent.png";
 
 const SidebarHeader = ({ collapsed, setCollapsed }: any) => (
     <div style={{ marginTop: "15px", margin: "auto", transition: 'width 0.2s' }}>
