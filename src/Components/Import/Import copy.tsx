@@ -464,6 +464,8 @@ const Import = () => {
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/l-case";
         const getMCaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/m-case";
+        const getFCaseUrl =
+          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/f-case";
         try {
           const pCaseResponse = await axios.get(getPCaseUrl, {
             headers: {
@@ -485,15 +487,22 @@ const Import = () => {
               Authorization: `Bearer ${tokens}`,
             },
           });
+          const fCaseResponse = await axios.get(getFCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
 
           const pCaseData = pCaseResponse?.data?.data;
           const kCaseData = kCaseResponse?.data?.data;
           const lCaseData = lCaseResponse?.data?.data;
           const mCaseData = mCaseResponse?.data?.data;
+          const fCaseData = fCaseResponse?.data?.data;
           console.log({ pCaseData });
           console.log({ kCaseData });
           console.log({ lCaseData });
           console.log({ mCaseData });
+          console.log({ fCaseData });
           const wb = XLSX.utils.book_new();
 
           if (pCaseData && pCaseData.length > 0) {
@@ -517,6 +526,11 @@ const Import = () => {
           if (mCaseData && mCaseData.length > 0) {
             const wsK = XLSX.utils.json_to_sheet(mCaseData);
             XLSX.utils.book_append_sheet(wb, wsK, "M");
+          }
+          // Create "F" sheet if data is available
+          if (fCaseData && fCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(fCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "F");
           }
 
           // Save the Excel file only if at least one sheet is created
@@ -1135,9 +1149,8 @@ const Import = () => {
         onCancel={handleCancel}
         style={{ padding: "10px" }}
         width={950}
-        okButtonProps={{ style: { display: 'none' } }}
+        okButtonProps={{ style: { display: "none" } }}
         zIndex={10000}
-
       >
         <div className="Prev_excelFile">
           <div
