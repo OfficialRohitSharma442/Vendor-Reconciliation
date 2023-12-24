@@ -902,7 +902,7 @@ const Import = () => {
   async function getreport() {
     const isValidArray1 = inputValues.length == 2 && inputValues.every(value => value !== "" && value !== undefined && value !== null);
     const isValidArray2 = dropdownValues.length == 2 && dropdownValues.every(value => value !== "" && value !== undefined && value !== null);
-    
+
     if (isValidArray1 && isValidArray2 && vendorName != "" && vendorName != undefined && vendorName != null) {
       try {
         const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
@@ -1068,7 +1068,7 @@ const Import = () => {
         title="Title"
         open={open}
         onCancel={handleCancel}
-        style={{ padding: "10px" }}
+        style={{ padding: "10px", zIndex: "1" }}
         width={950}
         okButtonProps={{ style: { display: 'none' } }}
 
