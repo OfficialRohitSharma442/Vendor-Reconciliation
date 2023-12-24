@@ -148,7 +148,11 @@ const Import = () => {
             const workbook = XLSX.read(data, { type: "binary" });
             const sheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[sheetName];
-            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            const jsonData = XLSX.utils.sheet_to_json(sheet, {
+              header: 1,
+              defval: 'NODATA',
+              blankrows: false,
+            });
             const headers: any = jsonData[0];
             const trimmedHeaders = headers.map((str: any) =>
               str.trim().replace(/\s+/g, " ")
@@ -622,10 +626,15 @@ const Import = () => {
         try {
           const transformedData = await transformToObjectsFile1(convertFileHeader, Allfilejson);
           console.log("Transformed data:", transformedData);
-          await postData(companyPostUrl, transformedData, companyFileName);
-          setTimeout(() => {
-            message.success(`Upload your next file`);
-          }, 2000);
+          if(transformedData != null){
+            await postData(companyPostUrl, transformedData, companyFileName);
+            setTimeout(() => {
+              message.success(`Upload your next file`);
+            }, 2000);
+          }
+          else{
+            message.error(`Check and Upload file Again`);
+          }
         }
         catch (error) {
           message.error(`first file upload error`);
@@ -638,6 +647,7 @@ const Import = () => {
   }
 
   const transformToObjectsFile1 = async (headers: any, data: any) => {
+    let emptyData=false;
     let vendorNamedropdown: any = [];
     let TransFormToObjectsData = await Promise.all(
       data.map(async (row: any, idx: number) => {
@@ -652,7 +662,13 @@ const Import = () => {
               if (header === "Vendor Name" && idx !== 0) {
                 vendorNamedropdown.push(value.trim());
               }
-              rowData[header] = `${value}`.trim();
+              // if (header === "Vendor" || header === "Vendor Name" || header === "Document Number" || header === "Invoice Number" || header === "Closing Balance" || header === "Invoice Amount" || header === "Currency" || header === "Due Date" || header === "Document Date"){
+              //   if(value === "NODATA"){
+              //     emptyData = true ;
+              //     message.error(`your excle file ${header} column is empty check and upload file againg`);
+              //   }
+              // }
+                rowData[header] = `${value}`.trim();
             } else {
               // Handle empty values or show an error message
               // message.error(`Check Your excel file some mandatory filed data is empty.`);
@@ -660,7 +676,7 @@ const Import = () => {
             }
           })
         );
-        return rowData;
+        return emptyData ? null :rowData;
       })
 
     );
