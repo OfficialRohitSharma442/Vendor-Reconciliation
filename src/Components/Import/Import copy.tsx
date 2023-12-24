@@ -1050,6 +1050,7 @@ const Import = () => {
         size={"large"}
         onClose={onClose}
         open={OpenPanel}
+        zIndex={1000}
         width={900}
         extra={
           <Space>
@@ -1084,9 +1085,10 @@ const Import = () => {
         title="Title"
         open={open}
         onCancel={handleCancel}
-        style={{ padding: "10px", zIndex: "1" }}
+        style={{ padding: "10px" }}
         width={950}
         okButtonProps={{ style: { display: 'none' } }}
+        zIndex={10000}
 
       >
         <div className="Prev_excelFile">
