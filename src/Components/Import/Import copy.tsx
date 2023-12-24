@@ -136,8 +136,8 @@ const Import = () => {
     name: "file",
     multiple: false,
     accept: ".xlsm, .xlsx,.xls",
-    fileList: [],
     maxCount: 1,
+    showUploadList: false,
     customRequest: ({ file, onSuccess, onError }: any) => {
       if (
         file != "" &&
@@ -247,13 +247,12 @@ const Import = () => {
   );
 
   // ***********************
-  const handleInputChange =
-    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newInputValues: any = [...inputValues];
-      newInputValues[index] = e.target.value;
-      setInputValues(newInputValues);
-      // console.log(newInputValues);
-    };
+  const handleInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newInputValues: any = [...inputValues];
+    newInputValues[index] = e.target.value;
+    setInputValues(newInputValues);
+    // console.log(newInputValues);
+  };
   const handleCascaderChange = (index: number, value: any) => {
     const newDropdownValues: any = [...dropdownValues];
     newDropdownValues[index] = value;
@@ -423,18 +422,34 @@ const Import = () => {
       if (response.status == 201) {
         console.log(response);
         onClose();
-        if (
-          url ==
-          "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete"
-        )
-          setCurrent(0);
-        else setCurrent(current + 1);
+        if (current != 3) {
+          setCurrent(current + 1);
+          setTimeout(() => {
+            message.success(`Upload your next file`);
+          }, 2000);
+        }
+        if(current == 0){
+          setcompanyFileJson([]);
+        }
+        else if(current == 1){
+          setvendorFileJson([]);
+        }
+        else if(current == 2){
+          setdetailedFileJson([]);
+        }
         setUpdateHeader([]);
-        setCustomFileName("");
         message.success(`Your file upload successfully`);
+        return true;
       }
-    } catch (error) {
+    }
+    catch (error: any) {
+      onClose();
       console.log(error);
+      message.error(`${error?.response?.data?.error?.message}`);
+      setTimeout(() => {
+        message.error(`correct and uploading file again`);
+      }, 1000);
+      return false;
     }
   }
 
@@ -542,6 +557,7 @@ const Import = () => {
           } else {
             console.log("No data available for either P or K sheets");
           }
+          setCurrent(0);
         } catch (error) {
           console.error("Error fetching data or generating Excel file:", error);
         }
@@ -573,7 +589,6 @@ const Import = () => {
     const alldata: any = Cookies.get("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
     const finaltemp = {
-      user: JSON.parse(alldata)?.ID,
       data: resultJSON,
     };
     if (data != null && data._id) {
@@ -650,9 +665,6 @@ const Import = () => {
         const transformedData = await transformToObjectsFile1(header, alldata);
         console.log("Transformed data:", transformedData);
         await postData(companyPostUrl, transformedData, companyFileName);
-        setTimeout(() => {
-          message.success(`Upload your next file`);
-        }, 2000);
       } catch (error) {
         console.error("Error during transformation:", error);
       }
@@ -701,7 +713,6 @@ const Import = () => {
   }
 
   const transformToObjectsFile1 = async (headers: any, data: any) => {
-    const emptyData = false;
     const vendorNamedropdown: any = [];
     let TransFormToObjectsData = await Promise.all(
       data.map(async (row: any, idx: number) => {
@@ -716,12 +727,6 @@ const Import = () => {
               if (header === "Vendor Name" && idx !== 0) {
                 vendorNamedropdown.push(value.trim());
               }
-              // if (header === "Vendor" || header === "Vendor Name" || header === "Document Number" || header === "Invoice Number" || header === "Closing Balance" || header === "Invoice Amount" || header === "Currency" || header === "Due Date" || header === "Document Date"){
-              //   if(value === "NODATA"){
-              //     emptyData = true ;
-              //     message.error(`your excle file ${header} column is empty check and upload file againg`);
-              //   }
-              // }
               rowData[header] = `${value}`.trim();
             } else {
               // Handle empty values or show an error message
@@ -730,7 +735,7 @@ const Import = () => {
             }
           })
         );
-        return emptyData ? null : rowData;
+        return rowData;
       })
     );
     console.log("DATA", vendorNamedropdown);
@@ -799,9 +804,6 @@ const Import = () => {
         const transformedData = await transformToObjectsFile2(header, alldata);
         console.log("Transformed data:", transformedData);
         await postData(vendorPostUrl, transformedData, vendorfileName);
-        setTimeout(() => {
-          message.success(`Upload your next file`);
-        }, 2000);
       } catch (error) {
         console.error("Error during transformation:", error);
       }
@@ -923,18 +925,8 @@ const Import = () => {
       alldata[0] = header;
       setdetailedFileJson(alldata);
       setCurrent(current + 1);
-      // try {
-      //   const transformedData = await transformToObjectsFile3(header, alldata);
-      //   console.log("Transformed data:", transformedData);
-      //   await postData(detailPostUrl, transformedData, vendorfileName);
-      //   setTimeout(() => {
-      //     message.success(`Upload your next file`);
-      //   }, 2000);
-      // }
-      // catch (error) {
-      //   console.error("Error during transformation:", error);
-      // }
-    } else {
+    } 
+    else {
       setOpenPanel(true);
     }
   }
@@ -991,8 +983,10 @@ const Import = () => {
           detailedFileJson
         );
         console.log("Transformed data:", transformedData);
-        await postData(detailPostUrl, transformedData, detailedFileName);
-        await postVendorName();
+        const check = await postData(detailPostUrl, transformedData, detailedFileName);
+        if (check) {
+          await postVendorName();
+        }
       } catch (error) {
         console.error("Error during transformation:", error);
       }
@@ -1125,10 +1119,10 @@ const Import = () => {
             current === 0
               ? companyFileHeader
               : current === 1
-              ? vendorFileHeader
-              : current === 2
-              ? detailedFileHeader
-              : null
+                ? vendorFileHeader
+                : current === 2
+                  ? detailedFileHeader
+                  : null
           }
           boxTwoItems={UpdateHeader}
           setBoxTwoItems={setUpdateHeader}
@@ -1136,10 +1130,10 @@ const Import = () => {
             current === 0
               ? companyHeader
               : current === 1
-              ? vendorHeader
-              : current === 2
-              ? detailedHeader
-              : null
+                ? vendorHeader
+                : current === 2
+                  ? detailedHeader
+                  : null
           }
         />
       </Drawer>
