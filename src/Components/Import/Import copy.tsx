@@ -3,6 +3,7 @@ import {
   DownloadOutlined,
   EyeOutlined,
   FileExcelOutlined,
+  LoadingOutlined
 } from "@ant-design/icons";
 import {
   Button,
@@ -12,6 +13,7 @@ import {
   Modal,
   Select,
   Space,
+  Spin,
   Steps,
   UploadProps,
   message,
@@ -28,6 +30,8 @@ import "./Import.css";
 
 const { Option } = Select;
 const Import = () => {
+  const [loading, setloading] = React.useState(false)
+  const [loadingpannel, setloadingpannel] = React.useState(false)
   // **************Static Data*********************
   const companyHeader = [
     { id: "1", content: "Vendor" },
@@ -1073,6 +1077,13 @@ const Import = () => {
 
   return (
     <>
+
+
+
+      <Spin tip="Please Wait" spinning={loading} fullscreen={true} size="large" wrapperClassName="overlay" className="overlay" indicator={<LoadingOutlined />} ></Spin>
+
+
+
       <div style={{ margin: "20px" }}>
         <Steps current={current} items={items} />
         {/* <Spin spinning={true} fullscreen /> */}
@@ -1114,6 +1125,8 @@ const Import = () => {
           </Space>
         }
       >
+        <Spin tip="Please Wait" spinning={loadingpannel} fullscreen={true} size="large" className="overlay" indicator={<LoadingOutlined />} ></Spin>
+
         <DragAndDrop
           initialBoxOneItems={
             current === 0
@@ -1208,6 +1221,7 @@ const Import = () => {
           </div>
         </div>
       </Modal>
+
     </>
   );
 };
