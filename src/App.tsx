@@ -6,6 +6,7 @@ import Login from './Components/Login/Login';
 import Cookies from 'js-cookie';
 import LoaderSVG from './Components/utils/Loding';
 import { ConfigProvider, theme } from 'antd';
+import "./App.css"
 
 const App = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
