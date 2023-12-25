@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   ArrowRightOutlined,
   DownloadOutlined,
   EyeOutlined,
   FileExcelOutlined,
-  LoadingOutlined
+  LoadingOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -30,8 +31,10 @@ import "./Import.css";
 
 const { Option } = Select;
 const Import = () => {
-  const [loading, setloading] = React.useState(false)
-  const [loadingpannel, setloadingpannel] = React.useState(false)
+  // @ ts-ignore
+  const [loading, setloading] = React.useState(false);
+  // @ ts-ignore
+  const [loadingpannel, setloadingpannel] = React.useState(false);
   // **************Static Data*********************
   const companyHeader = [
     { id: "1", content: "Vendor" },
@@ -98,7 +101,7 @@ const Import = () => {
   const detailMappingUrl =
     "https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping";
   // ****************for steps***************************
-
+  // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
@@ -251,12 +254,13 @@ const Import = () => {
   );
 
   // ***********************
-  const handleInputChange = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newInputValues: any = [...inputValues];
-    newInputValues[index] = e.target.value;
-    setInputValues(newInputValues);
-    // console.log(newInputValues);
-  };
+  const handleInputChange =
+    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newInputValues: any = [...inputValues];
+      newInputValues[index] = e.target.value;
+      setInputValues(newInputValues);
+      // console.log(newInputValues);
+    };
   const handleCascaderChange = (index: number, value: any) => {
     const newDropdownValues: any = [...dropdownValues];
     newDropdownValues[index] = value;
@@ -432,21 +436,18 @@ const Import = () => {
             message.success(`Upload your next file`);
           }, 2000);
         }
-        if(current == 0){
+        if (current == 0) {
           setcompanyFileJson([]);
-        }
-        else if(current == 1){
+        } else if (current == 1) {
           setvendorFileJson([]);
-        }
-        else if(current == 2){
+        } else if (current == 2) {
           setdetailedFileJson([]);
         }
         setUpdateHeader([]);
         message.success(`Your file upload successfully`);
         return true;
       }
-    }
-    catch (error: any) {
+    } catch (error: any) {
       onClose();
       console.log(error);
       message.error(`${error?.response?.data?.error?.message}`);
@@ -647,9 +648,10 @@ const Import = () => {
   async function companyFileCheck() {
     const data = await getMapping(companyMappingUrl);
     const header = companyFileJson[0];
-    const contentArray = [];
+    const contentArray: any = [];
     for (const key in data) {
       if (key !== "user" && key !== "_id") {
+        // @ ts-ignore
         contentArray.push(data[key]);
       }
     }
@@ -784,11 +786,12 @@ const Import = () => {
   };
 
   async function vendorFileCheck() {
-    const data = await getMapping(vendorMappingUrl);
+    const data: any = await getMapping(vendorMappingUrl);
     const header = vendorFileJson[0];
-    const contentArray = [];
+    const contentArray: any = [];
     for (const key in data) {
       if (key !== "user" && key !== "_id") {
+        // @ ts-ignore
         contentArray.push(data[key]);
       }
     }
@@ -907,11 +910,12 @@ const Import = () => {
   };
 
   async function detailedFileCheck() {
-    const data = await getMapping(detailMappingUrl);
+    const data: any = await getMapping(detailMappingUrl);
     const header = detailedFileJson[0];
-    const contentArray = [];
+    const contentArray: any = [];
     for (const key in data) {
       if (key !== "user" && key !== "_id") {
+        // @ ts-ignore
         contentArray.push(data[key]);
       }
     }
@@ -929,8 +933,7 @@ const Import = () => {
       alldata[0] = header;
       setdetailedFileJson(alldata);
       setCurrent(current + 1);
-    } 
-    else {
+    } else {
       setOpenPanel(true);
     }
   }
@@ -987,7 +990,11 @@ const Import = () => {
           detailedFileJson
         );
         console.log("Transformed data:", transformedData);
-        const check = await postData(detailPostUrl, transformedData, detailedFileName);
+        const check = await postData(
+          detailPostUrl,
+          transformedData,
+          detailedFileName
+        );
         if (check) {
           await postVendorName();
         }
@@ -1077,12 +1084,15 @@ const Import = () => {
 
   return (
     <>
-
-
-
-      <Spin tip="Please Wait" spinning={loading} fullscreen={true} size="large" wrapperClassName="overlay" className="overlay" indicator={<LoadingOutlined />} ></Spin>
-
-
+      <Spin
+        tip="Please Wait"
+        spinning={loading}
+        fullscreen={true}
+        size="large"
+        wrapperClassName="overlay"
+        className="overlay"
+        indicator={<LoadingOutlined />}
+      ></Spin>
 
       <div style={{ margin: "20px" }}>
         <Steps current={current} items={items} />
@@ -1125,17 +1135,24 @@ const Import = () => {
           </Space>
         }
       >
-        <Spin tip="Please Wait" spinning={loadingpannel} fullscreen={true} size="large" className="overlay" indicator={<LoadingOutlined />} ></Spin>
+        <Spin
+          tip="Please Wait"
+          spinning={loadingpannel}
+          fullscreen={true}
+          size="large"
+          className="overlay"
+          indicator={<LoadingOutlined />}
+        ></Spin>
 
         <DragAndDrop
           initialBoxOneItems={
             current === 0
               ? companyFileHeader
               : current === 1
-                ? vendorFileHeader
-                : current === 2
-                  ? detailedFileHeader
-                  : null
+              ? vendorFileHeader
+              : current === 2
+              ? detailedFileHeader
+              : null
           }
           boxTwoItems={UpdateHeader}
           setBoxTwoItems={setUpdateHeader}
@@ -1143,10 +1160,10 @@ const Import = () => {
             current === 0
               ? companyHeader
               : current === 1
-                ? vendorHeader
-                : current === 2
-                  ? detailedHeader
-                  : null
+              ? vendorHeader
+              : current === 2
+              ? detailedHeader
+              : null
           }
         />
       </Drawer>
@@ -1221,7 +1238,6 @@ const Import = () => {
           </div>
         </div>
       </Modal>
-
     </>
   );
 };
