@@ -37,7 +37,7 @@ const Home = () => {
 
         <div style={{ display: "flex" }}>
 
-            <div style={{ width: "50%", height: "50%" }}>
+            {/*<div style={{ width: "50%", height: "50%" }}>
                 <BarLineChart data={chartData} />
                 <BarLineChart data={chartData} />
 
@@ -47,6 +47,9 @@ const Home = () => {
                 <BarLineChart data={chartData} />
 
             </div>
+    */}
+
+            <h2>HOME page</h2>
         </div>
     )
 };
