@@ -1,71 +1,70 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { DownloadOutlined, FileExcelOutlined } from "@ant-design/icons";
 import {
   Button,
-  message,
   Modal,
   Select,
   Steps,
-  theme,
   UploadProps,
+  message,
+  theme,
 } from "antd";
-import * as XLSX from "xlsx";
-import Dragger from "antd/es/upload/Dragger";
-import { DownloadOutlined } from "@ant-design/icons";
 import { SizeType } from "antd/es/config-provider/SizeContext";
-import { FileExcelOutlined } from "@ant-design/icons";
-import "./Import.css";
+import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
-import DragAndDrop from "../utils/Drag-and-Drop";
-const { Option } = Select;
 import Cookies from "js-cookie";
+import React, { useState } from "react";
+import * as XLSX from "xlsx";
+import DragAndDrop from "../utils/Drag-and-Drop";
+import "./Import.css";
+const { Option } = Select;
 const Import = () => {
   // **************Static Data*********************
   const companyHeader = [
-    { id: '1', content: 'Vendor' },
-    { id: '2', content: 'Vendor Name' },
-    { id: '3', content: 'Document Number' },
-    { id: '4', content: 'Invoice Number' },
-    { id: '5', content: 'Closing Balance' },
-    { id: '6', content: 'Invoice Amount' },
-    { id: '7', content: 'Currency' },
-    { id: '8', content: 'Due Date' },
-    { id: '9', content: 'Document Date' }
+    { id: "1", content: "Vendor" },
+    { id: "2", content: "Vendor Name" },
+    { id: "3", content: "Document Number" },
+    { id: "4", content: "Invoice Number" },
+    { id: "5", content: "Closing Balance" },
+    { id: "6", content: "Invoice Amount" },
+    { id: "7", content: "Currency" },
+    { id: "8", content: "Due Date" },
+    { id: "9", content: "Document Date" },
   ];
   const vendorFileHeader = [
-    { id: '1', content: 'Business Partner' },
-    { id: '2', content: 'Business Partner Name' },
-    { id: '3', content: 'Closing Balance' },
-    { id: '4', content: 'Invoice Amount' },
-    { id: '5', content: 'Currency' },
-    { id: '6', content: 'Due Date' },
-    { id: '7', content: 'Docment Date' },
-    { id: '8', content: 'Document Number' },
-    { id: '9', content: 'Invoice Number' }
+    { id: "1", content: "Business Partner" },
+    { id: "2", content: "Business Partner Name" },
+    { id: "3", content: "Closing Balance" },
+    { id: "4", content: "Invoice Amount" },
+    { id: "5", content: "Currency" },
+    { id: "6", content: "Due Date" },
+    { id: "7", content: "Docment Date" },
+    { id: "8", content: "Document Number" },
+    { id: "9", content: "Invoice Number" },
   ];
   const detailedFileHeader = [
-    { id: '1', content: 'Due Date' },
-    { id: '2', content: 'Company Code' },
-    { id: '3', content: 'Credit Amount(INR)' },
-    { id: '4', content: 'Debit Amount(INR)' },
-    { id: '5', content: 'Cheque Rtgs Neft' },
-    { id: '6', content: 'Payment Docment' },
-    { id: '7', content: 'Reference' },
-    { id: '8', content: 'Grn Number' },
-    { id: '9', content: 'Invoice Date' },
-    { id: '10', content: 'Document Date' },
-    { id: '11', content: 'Document Number' },
-    { id: '12', content: 'Invoice Number' }
+    { id: "1", content: "Due Date" },
+    { id: "2", content: "Company Code" },
+    { id: "3", content: "Credit Amount(INR)" },
+    { id: "4", content: "Debit Amount(INR)" },
+    { id: "5", content: "Cheque Rtgs Neft" },
+    { id: "6", content: "Payment Docment" },
+    { id: "7", content: "Reference" },
+    { id: "8", content: "Grn Number" },
+    { id: "9", content: "Invoice Date" },
+    { id: "10", content: "Document Date" },
+    { id: "11", content: "Document Number" },
+    { id: "12", content: "Invoice Number" },
   ];
 
-
+  // @ ts-ignore
   const [UpdatedCompanyHeader, setUpdatedCompanyHeader] = useState([]);
 
-
-
-
+  // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
+  // @ ts-ignore
   const [companyFile, setcompanyFile] = useState([]);
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
   const [companyFileHeaderJson, setcompanyFileHeaderJson] = useState<any>([]);
@@ -77,7 +76,7 @@ const Import = () => {
   const [vendorfileName, setvendorfileName] = useState("");
 
   const [detailedFileName, setdetailedFileName] = useState("");
-
+  // @ ts-ignore
   const [sendData, setsendData] = useState(true);
   const [companyFileSelectedValues, setcompanyFileSelectedValues] = useState(
     Array.from({ length: 9 }, () => "")
@@ -187,12 +186,6 @@ const Import = () => {
 
   console.log(companyFileSelectedValues, "lkhk");
 
-  const handleSelectChange = (value: any, dropdownIndex: any) => {
-    const updatedSelectedValues = [...companyFileSelectedValues];
-    updatedSelectedValues[dropdownIndex] = value;
-    setcompanyFileSelectedValues(updatedSelectedValues);
-  };
-
   const handleSelectChange2 = (value: any, dropdownIndex: any) => {
     const updatedSelectedValues = [...vendorFileSelectedValues];
     updatedSelectedValues[dropdownIndex] = value;
@@ -243,7 +236,6 @@ const Import = () => {
   //   "Invoice Number",
   // ];
 
-
   const props: UploadProps = {
     name: "file",
     multiple: false,
@@ -251,7 +243,7 @@ const Import = () => {
     maxCount: 1,
     // action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
     showUploadList: true,
-    customRequest: ({ file, onSuccess, onError, onUpload }: any) => {
+    customRequest: ({ file, onSuccess, onError }: any) => {
       if (
         file != "" &&
         (file.type ===
@@ -272,7 +264,10 @@ const Import = () => {
               str.trim().replace(/\s+/g, " ")
             );
             jsonData[0] = trimmedHeaders;
-            const newArray = trimmedHeaders.map((content: any, index: any) => ({ id: (index + 1).toString(), content }));
+            const newArray = trimmedHeaders.map((content: any, index: any) => ({
+              id: (index + 1).toString(),
+              content,
+            }));
             console.log("JSON Data:", jsonData);
             console.log("Headers:", headers);
             if (current == 0) {
@@ -318,7 +313,6 @@ const Import = () => {
     },
   };
 
-
   const uploadFile = (Filename: any) => (
     <Dragger {...props}>
       <p className="ant-upload-drag-icon">
@@ -340,7 +334,14 @@ const Import = () => {
       title: "First",
       content: (
         <div style={{ margin: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "25px",
+            }}
+          >
             <div>
               <Button type="primary" icon={<DownloadOutlined />} size={size}>
                 Sample file
@@ -355,7 +356,11 @@ const Import = () => {
       title: "Second",
       content: (
         <>
-          <DragAndDrop initialBoxOneItems={companyFileHeaderJson} initialBoxTwoItems={UpdatedCompanyHeader} defaultStaticContent={companyHeader} />
+          <DragAndDrop
+            initialBoxOneItems={companyFileHeaderJson}
+            initialBoxTwoItems={UpdatedCompanyHeader}
+            defaultStaticContent={companyHeader}
+          />
         </>
       ),
       // content: (
@@ -396,7 +401,14 @@ const Import = () => {
       title: "Thrid",
       content: (
         <div style={{ margin: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "25px",
+            }}
+          >
             <div>
               <Button type="primary" icon={<DownloadOutlined />} size={size}>
                 Sample file
@@ -447,7 +459,14 @@ const Import = () => {
       title: "Five",
       content: (
         <div style={{ margin: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "25px",
+            }}
+          >
             <div>
               <Button type="primary" icon={<DownloadOutlined />} size={size}>
                 Sample file
@@ -466,29 +485,30 @@ const Import = () => {
             Note: All the fields are mandatory and Select your file column name
             with matched dropdown
           </div>
-          <div className='Step2Dropdownlast'>
-            {
-              detailedFileHeader.map((key: any, index) => (
-                <div className='DropdownMaindivlast' key={index}>
-                  <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
-                  <Select
-                    key={index}
-                    className='Dropdown'
-                    // style={{ width: 300, margin: '8px' }}
-                    placeholder={`select your ${key} column`}
-                    onChange={(value) => handleSelectChange3(value, index)}
-                  >
-                    {detailedFileHeaderJson
-                      .filter((option: any) => !detailedFileSelectedValues.includes(option))
-                      .map((option: any) => (
-                        <Option key={option} value={option}>
-                          {option}
-                        </Option>
-                      ))}
-                  </Select>
-                </div>
-              ))
-            }
+          <div className="Step2Dropdownlast">
+            {detailedFileHeader.map((key: any, index) => (
+              <div className="DropdownMaindivlast" key={index}>
+                <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
+                <Select
+                  key={index}
+                  className="Dropdown"
+                  // style={{ width: 300, margin: '8px' }}
+                  placeholder={`select your ${key} column`}
+                  onChange={(value) => handleSelectChange3(value, index)}
+                >
+                  {detailedFileHeaderJson
+                    .filter(
+                      (option: any) =>
+                        !detailedFileSelectedValues.includes(option)
+                    )
+                    .map((option: any) => (
+                      <Option key={option} value={option}>
+                        {option}
+                      </Option>
+                    ))}
+                </Select>
+              </div>
+            ))}
           </div>
         </div>
       ),
@@ -574,7 +594,7 @@ const Import = () => {
   }
 
   async function postData(transformedData: any) {
-    const alldata: any = Cookies.get('VR-user_Role');
+    const alldata: any = Cookies.get("VR-user_Role");
     const url =
       "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
     const data1 = {
@@ -623,7 +643,7 @@ const Import = () => {
       const dataRows: any = ans;
 
       const transformToObjects = (headers: any, data: any) => {
-        return data.map((row: any, indexs: any) => {
+        return data.map((row: any) => {
           const rowData: any = {};
           headers.forEach((header: any, index: any) => {
             // rowData[header] = row[index];
@@ -644,7 +664,7 @@ const Import = () => {
       console.log(transformedData);
       transformedData = transformedData.slice(1);
       setvendorFileJson(transformedData);
-      const alldata: any = Cookies.get('VR-user_Role');
+      const alldata: any = Cookies.get("VR-user_Role");
 
       const url =
         "https://concerned-plum-crayfish.cyclic.app/api/upload/vendorOpen";
@@ -716,7 +736,7 @@ const Import = () => {
       transformedData = transformedData.slice(1);
       setdetailedFileJson(transformedData);
       // let newArray = transformedData.flatMap((items:any) => Array(3).fill(items));
-      const alldata: any = Cookies.get('VR-user_Role');
+      const alldata: any = Cookies.get("VR-user_Role");
 
       const url =
         "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
@@ -751,7 +771,7 @@ const Import = () => {
   }
 
   async function postVendorName(name: any) {
-    const alldata: any = Cookies.get('VR-user_Role');
+    const alldata: any = Cookies.get("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
     const url =
       "https://concerned-plum-crayfish.cyclic.app/api/generate-report";
