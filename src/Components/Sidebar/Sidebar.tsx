@@ -13,7 +13,7 @@ const { Sider, Content } = Layout;
 const Sidebar = () => {
     const { setReload, reload } = React.useContext(Context);
     const navigate = useNavigate();
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
     const [loading, setloading] = React.useState(false);
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -33,7 +33,7 @@ const Sidebar = () => {
                 <SidebarHeader collapsed={collapsed} setCollapsed={setCollapsed} />
                 <SidebarMenu />
                 <div className='sidebar_footer'>
-                    <div className='sidebar_footer_content'>
+                    <div className={`sidebar_footer_content ${!collapsed ? "f-sidegap" : "j_center"}`}>
 
                         <Button
                             type="primary"
@@ -50,8 +50,6 @@ const Sidebar = () => {
                             danger
                         >
                         </Button>
-
-
                         <div className='sideFooter_userName'>{!collapsed && JSON.parse(Cookies.get('VR-user_Role') || "null")?.username}</div>
 
                     </div>
@@ -72,7 +70,7 @@ const Sidebar = () => {
                     </div>
                 </Content>
             </Layout>
-        </Layout>
+        </Layout >
     );
 };
 

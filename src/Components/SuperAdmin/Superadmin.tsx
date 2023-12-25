@@ -135,19 +135,19 @@ const Superadmin: React.FC = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
     ),
-    // @ ts-ignore
+  
     onFilter: (value, record) =>
       record[dataIndex]
         .toString()
         .toLowerCase()
         .includes((value as string).toLowerCase()),
-    // @ ts-ignore
+   
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    // @ ts-ignore
+   
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter

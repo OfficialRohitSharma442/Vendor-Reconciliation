@@ -22,8 +22,14 @@
 }
 .sidebar_footer_content{
     display: flex;
-    gap: 10px;
+ 
     align-items: center;
+}
+.f-sidegap{
+    gap: 10px;
+}
+.j_center{
+    justify-content: center;
 }
 .sideFooter_userName{
     font-size: large;

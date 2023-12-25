@@ -31,9 +31,9 @@ const Cards: React.FC = () => {
                 />
             }
             actions={[
-                <Button icon={<DownloadOutlined />} onClick={downloadExcelFile} key="download" />,
-                <Button icon={<EyeOutlined />} onClick={previewExcelFile} key="preview" />,
-                <Button icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
+                <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={downloadExcelFile} key="download" />,
+                <Button style={{ border: "none" }} icon={<EyeOutlined />} onClick={previewExcelFile} key="preview" />,
+                <Button style={{ border: "none" }} icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
             ]}
         >
             <Meta

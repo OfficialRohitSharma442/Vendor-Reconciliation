@@ -149,12 +149,7 @@ const AddAdmin: React.FC<AddAdminProps> = ({
                   placeholder="Please enter Username"
                   onChange={handleOnChangeEventHandler}
                 />
-                {/* <Select placeholder="Please select license typer" disabled>
-                                    <Option value="P1">P1</Option>
-                                    <Option value="P2">P2</Option>
-                                    <Option value="P3">P3</Option>
-                                    <Option value="P4">P4</Option>
-                                </Select> */}
+               
               </Form.Item>
             </Col>
             <Col span={12}>
