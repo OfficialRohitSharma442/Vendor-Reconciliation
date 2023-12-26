@@ -57,7 +57,9 @@
   .excel-table th {
     background-color: #f2f2f2;
   }
-  
+  .doc_type_mapping{
+    min-width: 100px;
+  }
   
 
   /* for loding in save button  */

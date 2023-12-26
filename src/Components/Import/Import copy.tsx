@@ -28,6 +28,7 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
+import DocTypeMapping from "./docTypeMapping";
 
 const { Option } = Select;
 const Import = () => {
@@ -76,17 +77,19 @@ const Import = () => {
   const DocumentOptions = [
     {
       value: "starts-with",
-      label: "Starts with",
+      label: "StartsWith",
     },
     {
       value: "ends-with",
-      label: "Ends with",
+      label: "EndsWith",
     },
     {
       value: "Contains",
       label: "Contains",
     },
   ];
+
+
   // *******************url *************
   const companyPostUrl =
     "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
@@ -104,7 +107,7 @@ const Import = () => {
   // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(3);
   const [open, setOpen] = useState(false);
   // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
@@ -373,10 +376,10 @@ const Import = () => {
               display: "Grid",
               placeItems: "center",
               gridTemplateColumns: "1fr 1fr",
-              margin: "20px",
+              // margin: "20px",
             }}
           >
-            {DocumentTypeHeader.map((item: any, idx: any) => {
+            {/* {DocumentTypeHeader.map((item: any, idx: any) => {
               return (
                 <div key={item}>
                   <p>{item}</p>
@@ -394,7 +397,7 @@ const Import = () => {
                   />
                 </div>
               );
-            })}
+            })} */}
           </div>
           <div style={{ display: "grid", placeItems: "center" }}>
             <p>Select your vendor name</p>
@@ -410,6 +413,8 @@ const Import = () => {
                 </Option>
               ))}
             </Select>
+
+            <DocTypeMapping />
           </div>
         </>
       ),
@@ -1153,10 +1158,10 @@ const Import = () => {
             current === 0
               ? companyFileHeader
               : current === 1
-              ? vendorFileHeader
-              : current === 2
-              ? detailedFileHeader
-              : null
+                ? vendorFileHeader
+                : current === 2
+                  ? detailedFileHeader
+                  : null
           }
           boxTwoItems={UpdateHeader}
           setBoxTwoItems={setUpdateHeader}
@@ -1164,10 +1169,10 @@ const Import = () => {
             current === 0
               ? companyHeader
               : current === 1
-              ? vendorHeader
-              : current === 2
-              ? detailedHeader
-              : null
+                ? vendorHeader
+                : current === 2
+                  ? detailedHeader
+                  : null
           }
         />
       </Drawer>
