@@ -72,7 +72,7 @@ const Import = () => {
     { id: "11", content: "Document Number" },
     { id: "12", content: "Invoice Number" },
   ];
-  const DocumentTypeHeader = ["TDS Document Type", "PID Document Type"];
+  const DocumentTypeHeader = ["TDS Document Type", "PID Document Type","AAD Document Type","SPI Document Type"];
   const DocumentOptions = [
     {
       value: "starts-with",
@@ -87,6 +87,8 @@ const Import = () => {
       label: "Contains",
     },
   ];
+
+ 
   // *******************url *************
   const companyPostUrl =
     "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
@@ -104,7 +106,7 @@ const Import = () => {
   // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(2);
   const [open, setOpen] = useState(false);
   // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
@@ -373,7 +375,7 @@ const Import = () => {
               display: "Grid",
               placeItems: "center",
               gridTemplateColumns: "1fr 1fr",
-              margin: "20px",
+              // margin: "20px",
             }}
           >
             {DocumentTypeHeader.map((item: any, idx: any) => {
@@ -387,10 +389,13 @@ const Import = () => {
                         placeholder="Select Filter"
                         style={{ width: 150 }}
                         onChange={(value) => handleCascaderChange(idx, value)}
+                        disabled={item=="SPI Document Type"}
                       />
                     }
                     value={inputValues[idx] || ""}
                     onChange={handleInputChange(idx)}
+                    disabled={item=="SPI Document Type"}
+                    placeholder={item === "SPI Document Type" ? "Except All" : "Placeholder Two"}
                   />
                 </div>
               );
@@ -854,56 +859,47 @@ const Import = () => {
     }
   }
   // ***********************for detailed File  ************
+  const sample=[
+    {Type:"TDS",Method:"Contains",Value:"TDS"},
+    {Type:"PID",Method:"Contains",Value:"PID"},
+    {Type:"AAD",Method:"Contains",Value:"SPI"}
+  ]
+
   const transformToObjectsFile3 = async (headers: any, data: any) => {
     let TransFormToObjectsData = await Promise.all(
       data.map(async (row: any) => {
         const rowData: any = {};
         await Promise.all(
-          headers.map(async (header: any, index: any) => {
+          headers?.map(async (header: any, index: any) => {
             let value = row[index];
-            // if(value == undefined)
-            // debugger
-            // console.log(value,index);
-            if (value !== "" && value !== undefined && value !== null) {
+            if (value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value).replace(/[\W_]+/g, "");
-                if (header == "Document Number") {
+                if (header == "Document Number"){
                   let assigdata = "SPI";
-                  if (dropdownValues[0] == "Starts with") {
-                    if (value.startsWith(inputValues[0])) {
-                      assigdata = "TDS";
-                    }
-                  } else if (dropdownValues[0] == "Ends with") {
-                    if (value.endsWith(inputValues[0])) {
-                      assigdata = "TDS";
-                    }
-                  } else if (dropdownValues[0] == "Contains") {
-                    if (value.includes(inputValues[0])) {
-                      assigdata = "TDS";
-                    }
-                  }
-                  if (dropdownValues[1] == "Starts with") {
-                    if (value.startsWith(inputValues[1])) {
-                      assigdata = "PID";
-                    }
-                  } else if (dropdownValues[1] == "Ends with") {
-                    if (value.endsWith(inputValues[1])) {
-                      assigdata = "PID";
-                    }
-                  } else if (dropdownValues[1] == "Contains") {
-                    if (value.includes(inputValues[1])) {
-                      assigdata = "PID";
+                  for (let i = 0; i < sample.length; i++) {
+                    const item = sample[i];
+                    if (item?.Method === "Contains" && value?.includes(item?.Value)) {
+                      assigdata = item?.Type;
+                      break;
+                    } else if (item?.Method === "StartsWith" && value?.startsWith(item?.Value)) {
+                      assigdata = item?.Type;
+                      break;
+                    } else if (item?.Method === "EndsWith" && value?.endsWith(item?.Value)) {
+                      assigdata = item?.Type;
+                      break;
                     }
                   }
-                  rowData["NewType"] = assigdata;
+                  rowData["DocumentTypeMapped"] = assigdata;
                 }
               }
               rowData[header] = `${value}`.trim();
-            } else {
+            } 
+            // else {
               // Handle empty values or show an error message
               // message.error(`Check Your excel file some mandatory filed data is empty.`);
               // setsendData(false);
-            }
+            // }
           })
         );
         return rowData;
@@ -971,22 +967,23 @@ const Import = () => {
   // ************************get reports*********************8
   async function getreport() {
     const isValidArray1 =
-      inputValues.length == 2 &&
+      inputValues.length == 3 &&
       inputValues.every(
         (value) => value !== "" && value !== undefined && value !== null
       );
     const isValidArray2 =
-      dropdownValues.length == 2 &&
+      dropdownValues.length == 3 &&
       dropdownValues.every(
         (value) => value !== "" && value !== undefined && value !== null
       );
 
     if (
       isValidArray1 &&
-      isValidArray2 &&
-      vendorName != "" &&
-      vendorName != undefined &&
-      vendorName != null
+      isValidArray2 
+      // &&
+      // vendorName != "" &&
+      // vendorName != undefined &&
+      // vendorName != null
     ) {
       try {
         const transformedData = await transformToObjectsFile3(
