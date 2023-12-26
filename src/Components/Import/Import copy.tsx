@@ -136,9 +136,9 @@ const Import = () => {
   const [inputValues, setInputValues] = useState([]);
   const [dropdownValues, setDropdownValues] = useState([]);
 
-  // ********************for uplode every file***************
   const [customFileName, setCustomFileName] = useState<string | null>(null);
-
+  
+  // ********************for uplode every file***************
   const props: UploadProps = {
     name: "file",
     multiple: false,
@@ -164,7 +164,11 @@ const Import = () => {
               header: 1,
               defval: "",
               blankrows: false,
-            });
+              raw: false, // Ensure dates are parsed as JavaScript Date objects
+              dateNF: "mm-dd-yyyy", // Specify the date format if needed"yyyy-mm-dd"
+              cellDates: true, // Parse dates from the cell values
+            }as any);
+
             const headers: any = jsonData[0];
             const trimmedHeaders = headers.map((str: any) =>
               str.trim().replace(/\s+/g, " ")
