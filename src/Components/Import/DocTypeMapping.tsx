@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Input, Select, Button } from 'antd';
+import { Input, Select, Button, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-
 const { Option } = Select;
 
 const DocTypeMapping = () => {
@@ -40,7 +39,7 @@ const DocTypeMapping = () => {
         if (mappings.at(-1)?.Method != '' && mappings.at(-1)?.Type != '' && mappings.at(-1)?.Value?.trim() != '') {
             setMappings([...mappings, { Type: '', Method: '', Value: '' }]);
         } else {
-            alert("Field should not be empty")
+            message.error("Field should not be empty")
         }
     };
 

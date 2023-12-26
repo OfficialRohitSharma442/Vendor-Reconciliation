@@ -60,6 +60,11 @@
   .doc_type_mapping{
     min-width: 100px;
   }
-  
+  .mainstep{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
 
   /* for loding in save button  */

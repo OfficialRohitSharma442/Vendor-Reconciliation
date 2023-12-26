@@ -28,9 +28,9 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
-import DocTypeMapping from "./docTypeMapping";
-
+import DocTypeMapping from "./DocTypeMapping";
 const { Option } = Select;
+
 const Import = () => {
   // @ ts-ignore
   const [loading, setloading] = React.useState(false);
@@ -73,23 +73,6 @@ const Import = () => {
     { id: "11", content: "Document Number" },
     { id: "12", content: "Invoice Number" },
   ];
-  const DocumentTypeHeader = ["TDS Document Type", "PID Document Type","AAD Document Type","SPI Document Type"];
-  const DocumentOptions = [
-    {
-      value: "starts-with",
-      label: "StartsWith",
-    },
-    {
-      value: "ends-with",
-      label: "EndsWith",
-    },
-    {
-      value: "Contains",
-      label: "Contains",
-    },
-  ];
-
- 
   // *******************url *************
   const companyPostUrl =
     "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
@@ -107,7 +90,7 @@ const Import = () => {
   // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(2);
+  const [current, setCurrent] = useState(3);
   const [open, setOpen] = useState(false);
   // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
@@ -260,35 +243,13 @@ const Import = () => {
     </>
   );
 
-  // ***********************
-  const handleInputChange =
-    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newInputValues: any = [...inputValues];
-      newInputValues[index] = e.target.value;
-      setInputValues(newInputValues);
-      // console.log(newInputValues);
-    };
-  const handleCascaderChange = (index: number, value: any) => {
-    const newDropdownValues: any = [...dropdownValues];
-    newDropdownValues[index] = value;
-    setDropdownValues(newDropdownValues);
-    // console.log(newDropdownValues)
-  };
-
   // ***************** main steps****************
   const steps: any = [
     {
       title: "First",
       content: (
         <div style={{ margin: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "25px",
-            }}
-          >
+          <div className="mainstep">
             <div>
               <Button type="primary" icon={<DownloadOutlined />} size={size}>
                 Sample file
@@ -311,14 +272,7 @@ const Import = () => {
       title: "Second",
       content: (
         <div style={{ margin: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "25px",
-            }}
-          >
+          <div className="mainstep">
             <div>
               <Button type="primary" icon={<DownloadOutlined />} size={size}>
                 Sample file
@@ -341,14 +295,7 @@ const Import = () => {
       title: "Third",
       content: (
         <div style={{ margin: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "25px",
-            }}
-          >
+          <div className="mainstep">
             <div>
               <Button type="primary" icon={<DownloadOutlined />} size={size}>
                 Sample file
@@ -371,37 +318,6 @@ const Import = () => {
       title: "Report",
       content: (
         <>
-          <div
-            style={{
-              display: "Grid",
-              placeItems: "center",
-              gridTemplateColumns: "1fr 1fr",
-              // margin: "20px",
-            }}
-          >
-            {/* {DocumentTypeHeader.map((item: any, idx: any) => {
-              return (
-                <div key={item}>
-                  <p>{item}</p>
-                  <Input
-                    addonAfter={
-                      <Cascader
-                        options={DocumentOptions}
-                        placeholder="Select Filter"
-                        style={{ width: 150 }}
-                        onChange={(value) => handleCascaderChange(idx, value)}
-                        disabled={item=="SPI Document Type"}
-                      />
-                    }
-                    value={inputValues[idx] || ""}
-                    onChange={handleInputChange(idx)}
-                    disabled={item=="SPI Document Type"}
-                    placeholder={item === "SPI Document Type" ? "Except All" : "Placeholder Two"}
-                  />
-                </div>
-              );
-            })} */}
-          </div>
           <div style={{ display: "grid", placeItems: "center" }}>
             <p>Select your vendor name</p>
             <Select
@@ -498,6 +414,8 @@ const Import = () => {
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/m-case";
         const getFCaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/f-case";
+        const getGCaseUrl = 
+          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/g-case";
         try {
           const pCaseResponse = await axios.get(getPCaseUrl, {
             headers: {
@@ -524,17 +442,24 @@ const Import = () => {
               Authorization: `Bearer ${tokens}`,
             },
           });
+          const gCaseResponse = await axios.get(getGCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
 
           const pCaseData = pCaseResponse?.data?.data;
           const kCaseData = kCaseResponse?.data?.data;
           const lCaseData = lCaseResponse?.data?.data;
           const mCaseData = mCaseResponse?.data?.data;
           const fCaseData = fCaseResponse?.data?.data;
+          const gCaseData = gCaseResponse?.data?.data;
           console.log({ pCaseData });
           console.log({ kCaseData });
           console.log({ lCaseData });
           console.log({ mCaseData });
           console.log({ fCaseData });
+          console.log({ gCaseData });
           const wb = XLSX.utils.book_new();
 
           if (pCaseData && pCaseData.length > 0) {
@@ -563,6 +488,11 @@ const Import = () => {
           if (fCaseData && fCaseData.length > 0) {
             const wsK = XLSX.utils.json_to_sheet(fCaseData);
             XLSX.utils.book_append_sheet(wb, wsK, "F");
+          }
+          // Create "G" sheet if data is available
+          if (gCaseData && gCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(gCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "G");
           }
 
           // Save the Excel file only if at least one sheet is created
