@@ -89,6 +89,10 @@ const Addvendor: React.FC<AddAdminProps> = ({ open, onClose }: any) => {
                   <Option value="mao">Maomao Zhou</Option>
                 </Select>
               </Form.Item>
+              {/* <Select placeholder="Please select an owner">
+                <Option value="xiao">Xiaoxiao Fu</Option>
+                <Option value="mao">Maomao Zhou</Option>
+              </Select> */}
             </Col>
             <Col span={12}>
               <Form.Item

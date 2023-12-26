@@ -28,6 +28,7 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
+import DocTypeMapping from "./docTypeMapping";
 
 const { Option } = Select;
 const Import = () => {
@@ -76,11 +77,11 @@ const Import = () => {
   const DocumentOptions = [
     {
       value: "starts-with",
-      label: "Starts with",
+      label: "StartsWith",
     },
     {
       value: "ends-with",
-      label: "Ends with",
+      label: "EndsWith",
     },
     {
       value: "Contains",
@@ -378,7 +379,7 @@ const Import = () => {
               // margin: "20px",
             }}
           >
-            {DocumentTypeHeader.map((item: any, idx: any) => {
+            {/* {DocumentTypeHeader.map((item: any, idx: any) => {
               return (
                 <div key={item}>
                   <p>{item}</p>
@@ -399,7 +400,7 @@ const Import = () => {
                   />
                 </div>
               );
-            })}
+            })} */}
           </div>
           <div style={{ display: "grid", placeItems: "center" }}>
             <p>Select your vendor name</p>
@@ -415,6 +416,8 @@ const Import = () => {
                 </Option>
               ))}
             </Select>
+
+            <DocTypeMapping />
           </div>
         </>
       ),
@@ -1150,10 +1153,10 @@ const Import = () => {
             current === 0
               ? companyFileHeader
               : current === 1
-              ? vendorFileHeader
-              : current === 2
-              ? detailedFileHeader
-              : null
+                ? vendorFileHeader
+                : current === 2
+                  ? detailedFileHeader
+                  : null
           }
           boxTwoItems={UpdateHeader}
           setBoxTwoItems={setUpdateHeader}
@@ -1161,10 +1164,10 @@ const Import = () => {
             current === 0
               ? companyHeader
               : current === 1
-              ? vendorHeader
-              : current === 2
-              ? detailedHeader
-              : null
+                ? vendorHeader
+                : current === 2
+                  ? detailedHeader
+                  : null
           }
         />
       </Drawer>
