@@ -11,7 +11,7 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
         { value: 'Contains', label: 'Contains' },
     ];
 
-    const TypeHeader = ['TDS', 'PID', 'AAD'];
+    const TypeHeader = ["Debit note","Payment", "Advance Payment", "TDS", "Invoice"];
 
     const handleTypeChange = (value, index) => {
         const updatedMappings = [...Mappings];

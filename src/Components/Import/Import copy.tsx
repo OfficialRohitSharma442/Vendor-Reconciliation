@@ -143,7 +143,7 @@ const Import = () => {
         reader.onload = (event) => {
           if (event.target) {
             const data = event.target.result;
-            const workbook = XLSX.read(data, { type: "binary" });
+            const workbook = XLSX.read(data, { type: "binary" ,cellDates:true, dateNF: "mm-dd-yyyy" });
             const sheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[sheetName];
             const jsonData = XLSX.utils.sheet_to_json(sheet, {
@@ -417,6 +417,8 @@ const Import = () => {
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/f-case";
         const getGCaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/g-case";
+        const getACaseUrl = 
+          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/a-case";
         try {
           const pCaseResponse = await axios.get(getPCaseUrl, {
             headers: {
@@ -448,6 +450,11 @@ const Import = () => {
               Authorization: `Bearer ${tokens}`,
             },
           });
+          const aCaseResponse = await axios.get(getACaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
 
           const pCaseData = pCaseResponse?.data?.data;
           const kCaseData = kCaseResponse?.data?.data;
@@ -455,12 +462,14 @@ const Import = () => {
           const mCaseData = mCaseResponse?.data?.data;
           const fCaseData = fCaseResponse?.data?.data;
           const gCaseData = gCaseResponse?.data?.data;
+          const aCaseData = aCaseResponse?.data?.data;
           console.log({ pCaseData });
           console.log({ kCaseData });
           console.log({ lCaseData });
           console.log({ mCaseData });
           console.log({ fCaseData });
           console.log({ gCaseData });
+          console.log({ aCaseData });
           const wb = XLSX.utils.book_new();
 
           if (pCaseData && pCaseData.length > 0) {
@@ -494,6 +503,11 @@ const Import = () => {
           if (gCaseData && gCaseData.length > 0) {
             const wsK = XLSX.utils.json_to_sheet(gCaseData);
             XLSX.utils.book_append_sheet(wb, wsK, "G");
+          }
+          // Create "A" sheet if data is available
+          if (aCaseData && aCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(aCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "A");
           }
 
           // Save the Excel file only if at least one sheet is created
