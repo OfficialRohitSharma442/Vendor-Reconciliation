@@ -119,8 +119,7 @@ const Import = () => {
   // ******************for show priview*********************
   const [showfile, setshowfile] = useState<any>([]);
   // *****************state for document mapping *********
-  const [inputValues, setInputValues] = useState([]);
-  const [dropdownValues, setDropdownValues] = useState([]);
+  const [Mappings, setMappings] = useState([{ Type: '', Method: '', Value: '' },]);
 
   const [customFileName, setCustomFileName] = useState<string | null>(null);
   
@@ -319,21 +318,22 @@ const Import = () => {
       content: (
         <>
           <div style={{ display: "grid", placeItems: "center" }}>
-            <p>Select your vendor name</p>
+            <div style={{display:"flex"}}>
+            <p style={{whiteSpace:"nowrap"}}>Select your vendor name</p>
             <Select
               className="Dropdown"
               style={{ width: "300" }}
               placeholder={`select Vendor name`}
-              onChange={(value) => SetvendorName(value)}
-            >
+              onChange={(value) => SetvendorName(value)}  
+              >
               {vendorNameOpation.map((option: any) => (
                 <Option key={option} value={option}>
                   {option}
                 </Option>
               ))}
             </Select>
-
-            <DocTypeMapping />
+            </div>
+            <DocTypeMapping Mappings={Mappings} setMappings={setMappings}/>
           </div>
         </>
       ),
@@ -899,22 +899,7 @@ const Import = () => {
 
   // ************************get reports*********************8
   async function getreport() {
-    const isValidArray1 =
-      inputValues.length == 3 &&
-      inputValues.every(
-        (value) => value !== "" && value !== undefined && value !== null
-      );
-    const isValidArray2 =
-      dropdownValues.length == 3 &&
-      dropdownValues.every(
-        (value) => value !== "" && value !== undefined && value !== null
-      );
-
-    if (
-      // isValidArray1 &&
-      // isValidArray2 
-       // &&
-      vendorName != "" &&
+    if (vendorName != "" &&
       vendorName != undefined &&
       vendorName != null
     ) {

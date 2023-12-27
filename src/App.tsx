@@ -14,10 +14,10 @@ const App = () => {
   const [loading, setloading] = React.useState(true);
   const [token, setToken] = React.useState("");
   const [reload, setReload] = React.useState(false);
-  console.group()
-  console.log(defaultAlgorithm)
-  console.log(darkAlgorithm)
-  console.log(theme)
+  // console.group()
+  // console.log(defaultAlgorithm)
+  // console.log(darkAlgorithm)
+  // console.log(theme)
   React.useEffect(() => {
     const fetchRole = async () => {
       const storedRole = Cookies.get('VR-user_Role');
