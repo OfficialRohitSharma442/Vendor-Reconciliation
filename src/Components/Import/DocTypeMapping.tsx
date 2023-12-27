@@ -46,7 +46,7 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     };
 
     return (
-        <div>
+        <div style={{height:"250px", overflow:"scroll" , width:"700px" , padding:"0px 20px"}}>
             <p>Default Mapping</p>
             <div style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
                 <Select

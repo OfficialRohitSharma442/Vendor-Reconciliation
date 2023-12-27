@@ -121,8 +121,9 @@ const Import = () => {
   // *****************state for document mapping *********
   const [Mappings, setMappings] = useState([{ Type: '', Method: '', Value: '' },]);
 
+  // ************for file name***********8
   const [customFileName, setCustomFileName] = useState<string | null>(null);
-  
+
   // ********************for uplode every file***************
   const props: UploadProps = {
     name: "file",
@@ -152,7 +153,7 @@ const Import = () => {
               raw: false, // Ensure dates are parsed as JavaScript Date objects
               dateNF: "mm-dd-yyyy", // Specify the date format if needed"yyyy-mm-dd"
               cellDates: true, // Parse dates from the cell values
-            }as any);
+            } as any);
 
             const headers: any = jsonData[0];
             const trimmedHeaders = headers.map((str: any) =>
@@ -318,22 +319,22 @@ const Import = () => {
       content: (
         <>
           <div style={{ display: "grid", placeItems: "center" }}>
-            <div style={{display:"flex"}}>
-            <p style={{whiteSpace:"nowrap"}}>Select your vendor name</p>
-            <Select
-              className="Dropdown"
-              style={{ width: "300" }}
-              placeholder={`select Vendor name`}
-              onChange={(value) => SetvendorName(value)}  
+            <div style={{ display: "flex" }}>
+              <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p>
+              <Select
+                className="Dropdown"
+                style={{ width: "300" }}
+                placeholder={`select Vendor name`}
+                onChange={(value) => SetvendorName(value)}
               >
-              {vendorNameOpation.map((option: any) => (
-                <Option key={option} value={option}>
-                  {option}
-                </Option>
-              ))}
-            </Select>
+                {vendorNameOpation.map((option: any) => (
+                  <Option key={option} value={option}>
+                    {option}
+                  </Option>
+                ))}
+              </Select>
             </div>
-            <DocTypeMapping Mappings={Mappings} setMappings={setMappings}/>
+            <DocTypeMapping Mappings={Mappings} setMappings={setMappings} />
           </div>
         </>
       ),
@@ -414,7 +415,7 @@ const Import = () => {
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/m-case";
         const getFCaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/f-case";
-        const getGCaseUrl = 
+        const getGCaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/g-case";
         try {
           const pCaseResponse = await axios.get(getPCaseUrl, {
@@ -629,7 +630,7 @@ const Import = () => {
           (item: any) => item.content
         );
         const convertHeader = companyHeader.map((item: any) => item.content);
-        UpdateHeader.forEach((item: any, idx: any) => {
+        UpdateHeader?.forEach((item: any, idx: any) => {
           const index = convertFileHeader.indexOf(item?.content);
           if (index != -1) {
             convertFileHeader[index] = convertHeader[idx];
@@ -663,19 +664,19 @@ const Import = () => {
   const transformToObjectsFile1 = async (headers: any, data: any) => {
     const vendorNamedropdown: any = [];
     let TransFormToObjectsData = await Promise.all(
-      data.map(async (row: any, idx: number) => {
+      data?.map(async (row: any, idx: number) => {
         const rowData: any = {};
         await Promise.all(
-          headers.map(async (header: any, index: any) => {
+          headers?.map(async (header: any, index: any) => {
             let value = row[index];
             if (value !== "" && value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
-                value = String(value).replace(/[\W_]+/g, "");
+                value = String(value)?.replace(/[\W_]+/g, "");
               }
               if (header === "Vendor Name" && idx !== 0) {
-                vendorNamedropdown.push(value.trim());
+                vendorNamedropdown?.push(value?.trim());
               }
-              rowData[header] = `${value}`.trim();
+              rowData[header] = `${value}`?.trim();
             } else {
               // Handle empty values or show an error message
               // message.error(`Check Your excel file some mandatory filed data is empty.`);
@@ -700,19 +701,19 @@ const Import = () => {
   // **********************for vendor/ first file********************
   const transformToObjectsFile2 = async (headers: any, data: any) => {
     let TransFormToObjectsData = await Promise.all(
-      data.map(async (row: any) => {
+      data?.map(async (row: any) => {
         const rowData: any = {};
         await Promise.all(
-          headers.map(async (header: any, index: any) => {
+          headers?.map(async (header: any, index: any) => {
             let value = row[index];
             // if (value == undefined)
             //   debugger
             console.log(value, index);
             if (value !== "" && value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
-                value = String(value).replace(/[\W_]+/g, "");
+                value = String(value)?.replace(/[\W_]+/g, "");
               }
-              rowData[header] = `${value}`.trim();
+              rowData[header] = `${value}`?.trim();
             } else {
               // Handle empty values or show an error message
               // message.error(`Check Your excel file some mandatory filed data is empty.`);
@@ -723,7 +724,7 @@ const Import = () => {
         return rowData;
       })
     );
-    TransFormToObjectsData = TransFormToObjectsData.slice(1);
+    TransFormToObjectsData = TransFormToObjectsData?.slice(1);
     return TransFormToObjectsData;
   };
 
@@ -792,13 +793,9 @@ const Import = () => {
     }
   }
   // ***********************for detailed File  ************
-  // const sample=[
-  //   {Type:"TDS",Method:"Contains",Value:"TDS"},
-  //   {Type:"PID",Method:"Contains",Value:"PID"},
-  //   {Type:"AAD",Method:"Contains",Value:"SPI"}
-  // ]
 
   const transformToObjectsFile3 = async (headers: any, data: any) => {
+    let alldocmap = Mappings.slice(0, -1);
     let TransFormToObjectsData = await Promise.all(
       data.map(async (row: any) => {
         const rowData: any = {};
@@ -808,30 +805,32 @@ const Import = () => {
             if (value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value).replace(/[\W_]+/g, "");
-                // if (header == "Document Number"){
-                //   let assigdata = "SPI";
-                //   for (let i = 0; i < sample.length; i++) {
-                //     const item = sample[i];
-                //     if (item?.Method === "Contains" && value?.includes(item?.Value)) {
-                //       assigdata = item?.Type;
-                //       break;
-                //     } else if (item?.Method === "StartsWith" && value?.startsWith(item?.Value)) {
-                //       assigdata = item?.Type;
-                //       break;
-                //     } else if (item?.Method === "EndsWith" && value?.endsWith(item?.Value)) {
-                //       assigdata = item?.Type;
-                //       break;
-                //     }
-                //   }
-                //   rowData["DocumentTypeMapped"] = assigdata;
-                // }
+                if (header == "Document Number") {
+                  let assigdata = "SPI";
+                  if (alldocmap?.length > 0) {
+                    for (let i = 0; i < alldocmap?.length; i++) {
+                      const item = alldocmap[i];
+                      if (item?.Method === "Contains" && value?.includes(item?.Value)) {
+                        assigdata = item?.Type;
+                        break;
+                      } else if (item?.Method === "StartsWith" && value?.startsWith(item?.Value)) {
+                        assigdata = item?.Type;
+                        break;
+                      } else if (item?.Method === "EndsWith" && value?.endsWith(item?.Value)) {
+                        assigdata = item?.Type;
+                        break;
+                      }
+                    }
+                  }
+                  rowData["DocumentTypeMapped"] = assigdata;
+                }
               }
-              rowData[header] = `${value}`.trim();
-            } 
+              rowData[header] = `${value}`?.trim();
+            }
             // else {
-              // Handle empty values or show an error message
-              // message.error(`Check Your excel file some mandatory filed data is empty.`);
-              // setsendData(false);
+            // Handle empty values or show an error message
+            // message.error(`Check Your excel file some mandatory filed data is empty.`);
+            // setsendData(false);
             // }
           })
         );
@@ -904,9 +903,9 @@ const Import = () => {
       vendorName != null
     ) {
       try {
-        const transformedData = await transformToObjectsFile3( detailedFileJson[0], detailedFileJson);
+        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
         console.log("Transformed data:", transformedData);
-        const check = await postData(detailPostUrl,transformedData,detailedFileName);
+        const check = await postData(detailPostUrl, transformedData, detailedFileName);
         if (check) {
           await postVendorName();
         }
@@ -963,7 +962,7 @@ const Import = () => {
   }));
 
   const contentStyle: React.CSSProperties = {
-    height: "310px",
+    height: "330px",
     borderRadius: token.borderRadiusLG,
     border: `2px solid ${token.colorBorder}`,
     marginTop: 16,
