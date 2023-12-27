@@ -51,6 +51,37 @@ const DocTypeMapping = () => {
 
     return (
         <div>
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
+                <Select
+                    placeholder="Please add the doc type"
+                    onChange={(value) => handleTypeChange(value, "1")}
+                    className='doc_type_mapping'
+                >
+                    {TypeHeader.map((item) => (
+                        <Option key={item} value={item}>
+                            {item}
+                        </Option>
+                    ))}
+                </Select>
+                <Select
+                    placeholder="Please select Method"
+                    onChange={(value) => handleMethodChange(value, "1")}
+                    className='doc_type_mapping'
+                >
+                    {DocumentOptions.map((item) => (
+                        <Option key={item.value} value={item.value}>
+                            {item.label}
+                        </Option>
+                    ))}
+                </Select>
+                <Input
+                    placeholder="Basic usage"
+                    onChange={(e) => handleValueChange(e, "1")}
+                    // className='doc_type_mapping'
+                />
+                <PlusOutlined onClick={handleAddMapping} />
+            </div>
+
             {mappings.map((mapping, index) => (
                 <div key={index} style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
                     <Select
@@ -94,6 +125,7 @@ const DocTypeMapping = () => {
                     )}
                 </div>
             ))}
+
         </div>
     );
 };

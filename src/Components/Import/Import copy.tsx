@@ -792,11 +792,11 @@ const Import = () => {
     }
   }
   // ***********************for detailed File  ************
-  const sample=[
-    {Type:"TDS",Method:"Contains",Value:"TDS"},
-    {Type:"PID",Method:"Contains",Value:"PID"},
-    {Type:"AAD",Method:"Contains",Value:"SPI"}
-  ]
+  // const sample=[
+  //   {Type:"TDS",Method:"Contains",Value:"TDS"},
+  //   {Type:"PID",Method:"Contains",Value:"PID"},
+  //   {Type:"AAD",Method:"Contains",Value:"SPI"}
+  // ]
 
   const transformToObjectsFile3 = async (headers: any, data: any) => {
     let TransFormToObjectsData = await Promise.all(
@@ -808,23 +808,23 @@ const Import = () => {
             if (value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value).replace(/[\W_]+/g, "");
-                if (header == "Document Number"){
-                  let assigdata = "SPI";
-                  for (let i = 0; i < sample.length; i++) {
-                    const item = sample[i];
-                    if (item?.Method === "Contains" && value?.includes(item?.Value)) {
-                      assigdata = item?.Type;
-                      break;
-                    } else if (item?.Method === "StartsWith" && value?.startsWith(item?.Value)) {
-                      assigdata = item?.Type;
-                      break;
-                    } else if (item?.Method === "EndsWith" && value?.endsWith(item?.Value)) {
-                      assigdata = item?.Type;
-                      break;
-                    }
-                  }
-                  rowData["DocumentTypeMapped"] = assigdata;
-                }
+                // if (header == "Document Number"){
+                //   let assigdata = "SPI";
+                //   for (let i = 0; i < sample.length; i++) {
+                //     const item = sample[i];
+                //     if (item?.Method === "Contains" && value?.includes(item?.Value)) {
+                //       assigdata = item?.Type;
+                //       break;
+                //     } else if (item?.Method === "StartsWith" && value?.startsWith(item?.Value)) {
+                //       assigdata = item?.Type;
+                //       break;
+                //     } else if (item?.Method === "EndsWith" && value?.endsWith(item?.Value)) {
+                //       assigdata = item?.Type;
+                //       break;
+                //     }
+                //   }
+                //   rowData["DocumentTypeMapped"] = assigdata;
+                // }
               }
               rowData[header] = `${value}`.trim();
             } 
@@ -911,24 +911,17 @@ const Import = () => {
       );
 
     if (
-      isValidArray1 &&
-      isValidArray2 
-      // &&
-      // vendorName != "" &&
-      // vendorName != undefined &&
-      // vendorName != null
+      // isValidArray1 &&
+      // isValidArray2 
+       // &&
+      vendorName != "" &&
+      vendorName != undefined &&
+      vendorName != null
     ) {
       try {
-        const transformedData = await transformToObjectsFile3(
-          detailedFileJson[0],
-          detailedFileJson
-        );
+        const transformedData = await transformToObjectsFile3( detailedFileJson[0], detailedFileJson);
         console.log("Transformed data:", transformedData);
-        const check = await postData(
-          detailPostUrl,
-          transformedData,
-          detailedFileName
-        );
+        const check = await postData(detailPostUrl,transformedData,detailedFileName);
         if (check) {
           await postVendorName();
         }
