@@ -90,7 +90,7 @@ const Import = () => {
   // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
-  const [current, setCurrent] = useState(3);
+  const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
   // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
