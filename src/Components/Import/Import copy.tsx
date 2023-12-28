@@ -30,6 +30,7 @@ import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
 import DocTypeMapping from "./DocTypeMapping";
+import * as moment from 'moment';
 const { Option } = Select;
 
 const Import = () => {
@@ -163,6 +164,13 @@ const Import = () => {
   // ************for file name***********8
   const [customFileName, setCustomFileName] = useState<string | null>(null);
 
+  function isDateString(input) {
+    // Attempt to create a Date object from the input
+    const dateObject = new Date(input);
+
+    // Check if the input is a valid date and the dateObject is not Invalid Date
+    return !isNaN(dateObject.getTime());
+  }
   // ********************for uplode every file***************
   const props: UploadProps = {
     name: "file",
@@ -184,6 +192,7 @@ const Import = () => {
             const data = event.target.result;
             const workbook = XLSX.read(data, { type: "binary", cellDates: true, dateNF: "mm-dd-yyyy" });
             const sheetName = workbook.SheetNames[0];
+            console.log("sheetName", sheetName)
             const sheet = workbook.Sheets[sheetName];
             const jsonData = XLSX.utils.sheet_to_json(sheet, {
               header: 1,
@@ -194,6 +203,10 @@ const Import = () => {
               cellDates: true, // Parse dates from the cell values
             } as any);
 
+
+
+
+            console.log(jsonData)
             const headers: any = jsonData[0];
             const trimmedHeaders = headers.map((str: any) =>
               str.trim().replace(/\s+/g, " ")
