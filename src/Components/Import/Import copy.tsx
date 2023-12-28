@@ -3,14 +3,15 @@ import {
   ArrowRightOutlined,
   DownloadOutlined,
   EyeOutlined,
+  ReloadOutlined,
   FileExcelOutlined,
   LoadingOutlined,
+  ExclamationCircleFilled
 } from "@ant-design/icons";
 import {
   Button,
-  Cascader,
+  Checkbox,
   Drawer,
-  Input,
   Modal,
   Select,
   Space,
@@ -24,7 +25,7 @@ import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
@@ -113,8 +114,46 @@ const Import = () => {
   // ************************for vendor name***************
   const [vendorNameOpation, setvendorNameOpation] = useState<any>([]);
   const [vendorName, SetvendorName] = useState("");
+  // *************delete mapping***************
+  const [CompanyMappingID, setCompanyMappingID] = useState("");
+  const [VendorMappingID, setVendorMappingID] = useState("");
+  const [DetailedMappingID, setDetailedMappingID] = useState("");
+
 
   // **************for model************
+  function onChange(checkedValues) {
+    console.log('checked = ', checkedValues);
+  }
+  const plainOptions = ['First File', 'Second File', 'Third File'];
+  const { confirm } = Modal;
+  const showConfirm = ()=> {
+    confirm({
+      title: 'Do You Want To Reset Mapping?',
+      icon: <ExclamationCircleFilled />,
+      content: (<>
+        <Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={onChange} style={{ margin: "10px 0px" }} />
+      </>
+      ),
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk() {
+        getMappingID();
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+  // **************for get mapping id********
+  async function getMappingID() {
+    let first = await getMapping(companyMappingUrl);
+    let second = await getMapping(vendorMappingUrl);
+    let third = await getMapping(detailMappingUrl);
+    let ans= first?._id;
+    setCompanyMappingID(ans);
+    setVendorMappingID(second?._id);
+    setDetailedMappingID(third?._id);
+  }
 
   // ******************for show priview*********************
   const [showfile, setshowfile] = useState<any>([]);
@@ -143,7 +182,7 @@ const Import = () => {
         reader.onload = (event) => {
           if (event.target) {
             const data = event.target.result;
-            const workbook = XLSX.read(data, { type: "binary" ,cellDates:true, dateNF: "mm-dd-yyyy" });
+            const workbook = XLSX.read(data, { type: "binary", cellDates: true, dateNF: "mm-dd-yyyy" });
             const sheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[sheetName];
             const jsonData = XLSX.utils.sheet_to_json(sheet, {
@@ -256,8 +295,11 @@ const Import = () => {
               </Button>
             </div>
             <div style={{ display: "flex", gap: "20px" }}>
+              <Button onClick={showConfirm} type="primary">
+                <ReloadOutlined title="Reset Mapping" />
+              </Button>
               <Button onClick={showfiles} type="primary">
-                <EyeOutlined />
+                <EyeOutlined title="View Excle File" />
               </Button>
               <Button type="primary" size={size} onClick={() => next()}>
                 Next <ArrowRightOutlined />
@@ -387,7 +429,7 @@ const Import = () => {
     }
   }
 
-  // *****************post vendor naem to this function******8
+  // *****************post vendor naem to this function******
 
   async function postVendorName() {
     const alldata: any = Cookies.get("VR-user_Role");
@@ -417,8 +459,15 @@ const Import = () => {
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/f-case";
         const getGCaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/g-case";
-        const getACaseUrl = 
+        const getACaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/a-case";
+        const getICaseUrl = 
+          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/i-case";
+        const getLOneCaseUrl =
+          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/l-one-case";
+        const getMOneCaseUrl =
+          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/m-one-case";
+
         try {
           const pCaseResponse = await axios.get(getPCaseUrl, {
             headers: {
@@ -455,6 +504,23 @@ const Import = () => {
               Authorization: `Bearer ${tokens}`,
             },
           });
+          const iCaseResponse = await axios.get(getICaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
+          // L1
+          const lOneCaseResponse = await axios.get(getLOneCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
+          // M1
+          const mOneCaseResponse = await axios.get(getMOneCaseUrl, {
+            headers: {
+              Authorization: `Bearer ${tokens}`,
+            },
+          });
 
           const pCaseData = pCaseResponse?.data?.data;
           const kCaseData = kCaseResponse?.data?.data;
@@ -463,6 +529,9 @@ const Import = () => {
           const fCaseData = fCaseResponse?.data?.data;
           const gCaseData = gCaseResponse?.data?.data;
           const aCaseData = aCaseResponse?.data?.data;
+          const iCaseData = iCaseResponse?.data?.data;
+          const lOneCaseData = lOneCaseResponse?.data?.data;
+          const mOneCaseData = mOneCaseResponse?.data?.data;
           console.log({ pCaseData });
           console.log({ kCaseData });
           console.log({ lCaseData });
@@ -470,6 +539,9 @@ const Import = () => {
           console.log({ fCaseData });
           console.log({ gCaseData });
           console.log({ aCaseData });
+          console.log({ iCaseData });
+          console.log({ lOneCaseData });
+          console.log({ mOneCaseData });
           const wb = XLSX.utils.book_new();
 
           if (pCaseData && pCaseData.length > 0) {
@@ -508,6 +580,22 @@ const Import = () => {
           if (aCaseData && aCaseData.length > 0) {
             const wsK = XLSX.utils.json_to_sheet(aCaseData);
             XLSX.utils.book_append_sheet(wb, wsK, "A");
+          }
+          // Create "I" sheet if data is available
+          if (iCaseData && iCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(iCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "I");
+          }
+           // Create "L1" sheet if data is available
+           if (lOneCaseData && lOneCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(lOneCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "L1");
+          }
+
+          // Create "M1" sheet if data is available
+          if (mOneCaseData && mOneCaseData.length > 0) {
+            const wsK = XLSX.utils.json_to_sheet(mOneCaseData);
+            XLSX.utils.book_append_sheet(wb, wsK, "M1");
           }
 
           // Save the Excel file only if at least one sheet is created
@@ -1009,7 +1097,7 @@ const Import = () => {
 
   return (
     <>
-      <Spin
+      {/* <Spin
         tip="Please Wait"
         spinning={loading}
         fullscreen={true}
@@ -1017,7 +1105,7 @@ const Import = () => {
         wrapperClassName="overlay"
         className="overlay"
         indicator={<LoadingOutlined />}
-      ></Spin>
+      ></Spin> */}
 
       <div style={{ margin: "20px" }}>
         <Steps current={current} items={items} />
