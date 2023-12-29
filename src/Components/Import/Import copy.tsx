@@ -114,20 +114,20 @@ const Import = () => {
   const [UpdateHeader, setUpdateHeader] = useState<any>([]);
   // ************************for vendor name***************
   const [vendorNameOpation, setvendorNameOpation] = useState<any>([]);
-  const [vendorName, SetvendorName] = useState("");
+  const [vendorName, SetvendorName] = useState<any>("");
   // *************delete mapping***************
-  const [CompanyMappingID, setCompanyMappingID] = useState("");
-  const [VendorMappingID, setVendorMappingID] = useState("");
-  const [DetailedMappingID, setDetailedMappingID] = useState("");
-
-
+  const [deleteMapping,setdeleteMapping] = useState<string[]>([]);
+  useEffect(() => {
+  }, [deleteMapping])
+  
   // **************for model************
   function onChange(checkedValues) {
     console.log('checked = ', checkedValues);
+    setdeleteMapping(checkedValues);
   }
-  const plainOptions = ['First File', 'Second File', 'Third File'];
+  const plainOptions = ["First File", "Second File", "Third File"];
   const { confirm } = Modal;
-  const showConfirm = ()=> {
+  const showConfirm = () => {
     confirm({
       title: 'Do You Want To Reset Mapping?',
       icon: <ExclamationCircleFilled />,
@@ -146,31 +146,49 @@ const Import = () => {
     });
   };
   // **************for get mapping id********
-  async function getMappingID() {
-    let first = await getMapping(companyMappingUrl);
-    let second = await getMapping(vendorMappingUrl);
-    let third = await getMapping(detailMappingUrl);
-    let ans= first?._id;
-    setCompanyMappingID(ans);
-    setVendorMappingID(second?._id);
-    setDetailedMappingID(third?._id);
+  async function deleteMappings(url:any){
+    const alldata: any = Cookies.get("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    try{
+      const response = await axios.delete(url,{
+        headers: {
+          Authorization: ` Bearer ${tokens}`,
+        },
+      });
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+  async function getMappingID(){
+    if(deleteMapping.includes("First File")){
+      let data = await getMapping(companyMappingUrl);
+      if(data?._id != undefined && data?._id != "" && data?._id != null){
+        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${data?._id}`);
+      }
+    }
+    if(deleteMapping.includes("Second File")){
+      let data = await getMapping(vendorMappingUrl);
+      if(data?._id != undefined && data?._id != "" && data?._id != null){
+        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${data?._id}`);
+      }
+    }
+    if(deleteMapping.includes("Third File")){
+      let data = await getMapping(detailMappingUrl);
+      if(data?._id != undefined && data?._id != "" && data?._id != null){
+        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${data?._id}`);
+      }
+    }
   }
 
   // ******************for show priview*********************
   const [showfile, setshowfile] = useState<any>([]);
   // *****************state for document mapping *********
-  const [Mappings, setMappings] = useState([{ Type: '', Method: '', Value: '' },]);
+  const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
 
   // ************for file name***********8
   const [customFileName, setCustomFileName] = useState<string | null>(null);
 
-  function isDateString(input) {
-    // Attempt to create a Date object from the input
-    const dateObject = new Date(input);
-
-    // Check if the input is a valid date and the dateObject is not Invalid Date
-    return !isNaN(dateObject.getTime());
-  }
   // ********************for uplode every file***************
   const props: UploadProps = {
     name: "file",
@@ -373,23 +391,36 @@ const Import = () => {
       title: "Report",
       content: (
         <>
-          <div style={{ display: "grid", placeItems: "center" }}>
-            <div style={{ display: "flex" }}>
-              <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p>
-              <Select
-                className="Dropdown"
-                style={{ width: "300" }}
-                placeholder={`select Vendor name`}
-                onChange={(value) => SetvendorName(value)}
-              >
-                {vendorNameOpation.map((option: any) => (
-                  <Option key={option} value={option}>
-                    {option}
-                  </Option>
-                ))}
-              </Select>
+          <div style={{ margin: "20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ display: "flex" }}>
+                {/* <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p> */}
+                <Select
+                  // className="Dropdown"
+                  style={{ width: "300" }}
+                  placeholder={`select Vendor name`}
+                  onChange={(value) => SetvendorName(value)}
+                >
+                  {vendorNameOpation.map((option: any) => (
+                    <Option key={option} value={option}>
+                      {option}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+            <p style={{textAlign:"center" ,fontWeight:"600"}}>Create Mapppings</p>
+              <div style={{ display: "flex", gap: "20px" }}>
+                <Button onClick={showfiles} type="primary">
+                  <EyeOutlined />
+                </Button>
+                <Button type="primary" onClick={getreport}>
+                  Generate Report
+                </Button>
+              </div>
             </div>
-            <DocTypeMapping Mappings={Mappings} setMappings={setMappings} />
+            <div style={{ display: "grid", placeItems: "center" }}>
+              <DocTypeMapping Mappings={Mappings} setMappings={setMappings} />
+            </div>
           </div>
         </>
       ),
@@ -474,7 +505,7 @@ const Import = () => {
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/g-case";
         const getACaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/a-case";
-        const getICaseUrl = 
+        const getICaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/i-case";
         const getLOneCaseUrl =
           "https://concerned-plum-crayfish.cyclic.app/api/generate-report/l-one-case";
@@ -599,8 +630,8 @@ const Import = () => {
             const wsK = XLSX.utils.json_to_sheet(iCaseData);
             XLSX.utils.book_append_sheet(wb, wsK, "I");
           }
-           // Create "L1" sheet if data is available
-           if (lOneCaseData && lOneCaseData.length > 0) {
+          // Create "L1" sheet if data is available
+          if (lOneCaseData && lOneCaseData.length > 0) {
             const wsK = XLSX.utils.json_to_sheet(lOneCaseData);
             XLSX.utils.book_append_sheet(wb, wsK, "L1");
           }
@@ -915,13 +946,14 @@ const Import = () => {
       data.map(async (row: any) => {
         const rowData: any = {};
         await Promise.all(
+          //first i have value
           headers?.map(async (header: any, index: any) => {
             let value = row[index];
             if (value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value).replace(/[\W_]+/g, "");
-                if (header == "Document Number") {
-                  let assigdata = "SPI";
+                if (header == "Document Number" || header == "Payment Document") {
+                  let assigdata = "";
                   if (alldocmap?.length > 0) {
                     for (let i = 0; i < alldocmap?.length; i++) {
                       const item = alldocmap[i];
@@ -1013,9 +1045,11 @@ const Import = () => {
 
   // ************************get reports*********************8
   async function getreport() {
-    if (vendorName != "" &&
+    if (
+      vendorName != "" &&
       vendorName != undefined &&
-      vendorName != null
+      vendorName != null && 
+      Mappings.length > 1
     ) {
       try {
         const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
@@ -1077,7 +1111,7 @@ const Import = () => {
   }));
 
   const contentStyle: React.CSSProperties = {
-    height: "330px",
+    height: "350px",
     borderRadius: token.borderRadiusLG,
     border: `2px solid ${token.colorBorder}`,
     marginTop: 16,
@@ -1100,7 +1134,7 @@ const Import = () => {
     } else if (current == 1 && vendorFileJson.length > 0) {
       setshowfile(vendorFileJson);
       setOpen(true);
-    } else if (current == 2 && detailedFileJson.length > 0) {
+    } else if ((current == 2 || current ==3 )&& detailedFileJson.length > 0) {
       setshowfile(detailedFileJson);
       setOpen(true);
     } else {
@@ -1134,11 +1168,6 @@ const Import = () => {
             justifyContent: "space-around",
           }}
         >
-          {current === steps.length - 1 && (
-            <Button type="primary" onClick={getreport}>
-              Generate Report
-            </Button>
-          )}
         </div>
       </div>
       <Drawer
