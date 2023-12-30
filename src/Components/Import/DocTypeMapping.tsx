@@ -45,7 +45,7 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
 
     return (
         <div style={{ height: "250px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "750px" }}>
-            {Mappings?.map((mapping, index) => (
+            {Mappings?.map((_, index) => (
                 <div key={index} style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
                     <Select
                         placeholder="Select Column"
