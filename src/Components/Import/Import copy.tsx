@@ -162,19 +162,19 @@ const Import = () => {
   }
   async function getMappingID(){
     if(deleteMapping.includes("First File")){
-      let data = await getMapping(companyMappingUrl);
+      const data = await getMapping(companyMappingUrl);
       if(data?._id != undefined && data?._id != "" && data?._id != null){
         deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${data?._id}`);
       }
     }
     if(deleteMapping.includes("Second File")){
-      let data = await getMapping(vendorMappingUrl);
+      const data = await getMapping(vendorMappingUrl);
       if(data?._id != undefined && data?._id != "" && data?._id != null){
         deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${data?._id}`);
       }
     }
     if(deleteMapping.includes("Third File")){
-      let data = await getMapping(detailMappingUrl);
+      const data = await getMapping(detailMappingUrl);
       if(data?._id != undefined && data?._id != "" && data?._id != null){
         deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${data?._id}`);
       }
@@ -941,7 +941,7 @@ const Import = () => {
   // ***********************for detailed File  ************
 
   const transformToObjectsFile3 = async (headers: any, data: any) => {
-    let alldocmap = Mappings.slice(0, -1);
+    const alldocmap = Mappings.slice(0, -1);
     let TransFormToObjectsData = await Promise.all(
       data.map(async (row: any) => {
         const rowData: any = {};
