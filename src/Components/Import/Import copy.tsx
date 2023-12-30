@@ -36,6 +36,7 @@ const { Option } = Select;
 const Import = () => {
   // @ ts-ignore
   const [loading, setloading] = React.useState(false);
+  const [disable, setdisable] = React.useState(false);
   // @ ts-ignore
   const [loadingpannel, setloadingpannel] = React.useState(false);
   // **************Static Data*********************
@@ -115,11 +116,19 @@ const Import = () => {
   // ************************for vendor name***************
   const [vendorNameOpation, setvendorNameOpation] = useState<any>([]);
   const [vendorName, SetvendorName] = useState<any>("");
+  // ******************for show priview*********************
+  const [showfile, setshowfile] = useState<any>([]);
+  // *****************state for document mapping *********
+  const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
+
+  // ************for file name***********
+  const [customFileName, setCustomFileName] = useState<string | null>(null);
+
   // *************delete mapping***************
-  const [deleteMapping,setdeleteMapping] = useState<string[]>([]);
+  const [deleteMapping, setdeleteMapping] = useState<string[]>([]);
   useEffect(() => {
   }, [deleteMapping])
-  
+
   // **************for model************
   function onChange(checkedValues) {
     console.log('checked = ', checkedValues);
@@ -146,48 +155,41 @@ const Import = () => {
     });
   };
   // **************for get mapping id********
-  async function deleteMappings(url:any){
+  async function deleteMappings(url: any) {
     const alldata: any = Cookies.get("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
-    try{
-      const response = await axios.delete(url,{
+    try {
+      const response = await axios.delete(url, {
         headers: {
           Authorization: ` Bearer ${tokens}`,
         },
       });
     }
-    catch(error){
+    catch (error) {
       console.log(error)
     }
   }
-  async function getMappingID(){
-    if(deleteMapping.includes("First File")){
+  async function getMappingID() {
+    if (deleteMapping.includes("First File")) {
       const data = await getMapping(companyMappingUrl);
-      if(data?._id != undefined && data?._id != "" && data?._id != null){
+      if (data?._id != undefined && data?._id != "" && data?._id != null) {
         deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${data?._id}`);
       }
     }
-    if(deleteMapping.includes("Second File")){
+    if (deleteMapping.includes("Second File")) {
       const data = await getMapping(vendorMappingUrl);
-      if(data?._id != undefined && data?._id != "" && data?._id != null){
+      if (data?._id != undefined && data?._id != "" && data?._id != null) {
         deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${data?._id}`);
       }
     }
-    if(deleteMapping.includes("Third File")){
+    if (deleteMapping.includes("Third File")) {
       const data = await getMapping(detailMappingUrl);
-      if(data?._id != undefined && data?._id != "" && data?._id != null){
+      if (data?._id != undefined && data?._id != "" && data?._id != null) {
         deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${data?._id}`);
       }
     }
   }
 
-  // ******************for show priview*********************
-  const [showfile, setshowfile] = useState<any>([]);
-  // *****************state for document mapping *********
-  const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
-
-  // ************for file name***********8
-  const [customFileName, setCustomFileName] = useState<string | null>(null);
 
   // ********************for uplode every file***************
   const props: UploadProps = {
@@ -292,7 +294,7 @@ const Import = () => {
   // *****************for show uplode every file************
   const uploadFile = (Filename: any) => (
     <>
-      <Dragger {...props}>
+      <Dragger {...props} disabled={disable}>
         <p className="ant-upload-drag-icon">
           {/* <InboxOutlined /> */}
           <FileExcelOutlined />
@@ -332,7 +334,7 @@ const Import = () => {
               <Button onClick={showfiles} type="primary">
                 <EyeOutlined title="View Excle File" />
               </Button>
-              <Button type="primary" size={size} onClick={() => next()}>
+              <Button loading={loading} type="primary" size={size} onClick={() => next()}>
                 Next <ArrowRightOutlined />
               </Button>
             </div>
@@ -352,10 +354,13 @@ const Import = () => {
               </Button>
             </div>
             <div style={{ display: "flex", gap: "20px" }}>
+              <Button onClick={showConfirm} type="primary">
+                <ReloadOutlined title="Reset Mapping" />
+              </Button>
               <Button onClick={showfiles} type="primary">
                 <EyeOutlined />
               </Button>
-              <Button type="primary" size={size} onClick={() => next()}>
+              <Button loading={loading} type="primary" size={size} onClick={() => next()}>
                 Next <ArrowRightOutlined />
               </Button>
             </div>
@@ -375,10 +380,13 @@ const Import = () => {
               </Button>
             </div>
             <div style={{ display: "flex", gap: "20px" }}>
+              <Button onClick={showConfirm} type="primary">
+                <ReloadOutlined title="Reset Mapping" />
+              </Button>
               <Button onClick={showfiles} type="primary">
                 <EyeOutlined />
               </Button>
-              <Button type="primary" size={size} onClick={() => next()}>
+              <Button type="primary" loading={loading} size={size} onClick={() => next()}>
                 Next <ArrowRightOutlined />
               </Button>
             </div>
@@ -394,7 +402,7 @@ const Import = () => {
           <div style={{ margin: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ display: "flex" }}>
-              
+
                 {/* <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p> */}
                 <Select
                   // className="Dropdown"
@@ -409,12 +417,12 @@ const Import = () => {
                   ))}
                 </Select>
               </div>
-            <p style={{textAlign:"center" ,fontWeight:"600"}}>Create Mapppings</p>
+              <p style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</p>
               <div style={{ display: "flex", gap: "20px" }}>
                 <Button onClick={showfiles} type="primary">
                   <EyeOutlined />
                 </Button>
-                <Button type="primary" onClick={getreport}>
+                <Button loading={loading} type="primary" onClick={getreport}>
                   Generate Report
                 </Button>
               </div>
@@ -445,8 +453,11 @@ const Import = () => {
       });
       if (response.status == 201) {
         console.log(response);
-        onClose();
+        setCustomFileName("");
         if (current != 3) {
+          setdisable(false);
+          setloading(false);
+          onClose();
           setCurrent(current + 1);
           setTimeout(() => {
             message.success(`Upload your next file`);
@@ -652,6 +663,7 @@ const Import = () => {
           } else {
             console.log("No data available for either P or K sheets");
           }
+          setloading(false);
           setCurrent(0);
         } catch (error) {
           console.error("Error fetching data or generating Excel file:", error);
@@ -660,6 +672,8 @@ const Import = () => {
       }
     } catch (error) {
       console.log(error);
+      message.error("error in get report post call");
+      setloading(false);
     }
   }
 
@@ -736,6 +750,8 @@ const Import = () => {
   // *************for first file / companyfile ********************
 
   async function companyFileCheck() {
+    setdisable(true);
+    setloading(true);
     const data = await getMapping(companyMappingUrl);
     const header = companyFileJson[0];
     const contentArray: any = [];
@@ -765,6 +781,8 @@ const Import = () => {
         console.error("Error during transformation:", error);
       }
     } else {
+      setdisable(false);
+      setloading(false);
       setOpenPanel(true);
     }
   }
@@ -772,6 +790,8 @@ const Import = () => {
   async function companyFileMapping() {
     if (current == 0) {
       if (UpdateHeader?.length == companyHeader?.length) {
+        setdisable(true);
+        setloading(true);
         saveMapping(companyHeader, UpdateHeader, companyMappingUrl);
         const convertFileHeader = companyFileHeader.map(
           (item: any) => item.content
@@ -792,6 +812,7 @@ const Import = () => {
           );
           console.log("Transformed data:", transformedData);
           if (transformedData != null) {
+            onClose();
             await postData(companyPostUrl, transformedData, companyFileName);
             setTimeout(() => {
               message.success(`Upload your next file`);
@@ -876,6 +897,8 @@ const Import = () => {
   };
 
   async function vendorFileCheck() {
+    setdisable(true);
+    setloading(true);
     const data: any = await getMapping(vendorMappingUrl);
     const header = vendorFileJson[0];
     const contentArray: any = [];
@@ -905,12 +928,16 @@ const Import = () => {
         console.error("Error during transformation:", error);
       }
     } else {
+      setdisable(false);
+      setloading(false);
       setOpenPanel(true);
     }
   }
   async function vendorFileMapping() {
     if (current == 1) {
       if (UpdateHeader?.length == vendorHeader?.length) {
+        setdisable(true);
+        setloading(true);
         saveMapping(vendorHeader, UpdateHeader, vendorMappingUrl);
         const convertFileHeader = vendorFileHeader.map(
           (item: any) => item.content
@@ -930,6 +957,7 @@ const Import = () => {
             Allfilejson
           );
           console.log("Transformed data:", transformedData);
+          onClose();
           await postData(vendorPostUrl, transformedData, vendorfileName);
         } catch (error) {
           console.error("Error during transformation:", error);
@@ -990,6 +1018,8 @@ const Import = () => {
   };
 
   async function detailedFileCheck() {
+    setdisable(true);
+    setloading(true);
     const data: any = await getMapping(detailMappingUrl);
     const header = detailedFileJson[0];
     const contentArray: any = [];
@@ -1012,8 +1042,12 @@ const Import = () => {
       const alldata = detailedFileJson;
       alldata[0] = header;
       setdetailedFileJson(alldata);
+      setdisable(false);
+      setloading(false);
       setCurrent(current + 1);
     } else {
+      setdisable(false);
+      setloading(false);
       setOpenPanel(true);
     }
   }
@@ -1021,6 +1055,8 @@ const Import = () => {
   async function detailedFileMapping() {
     if (current == 2) {
       if (UpdateHeader?.length == detailedHeader?.length) {
+        setdisable(true);
+        setloading(true);
         saveMapping(detailedHeader, UpdateHeader, detailMappingUrl);
         const convertFileHeader = detailedFileHeader.map(
           (item: any) => item.content
@@ -1036,8 +1072,10 @@ const Import = () => {
         Allfilejson[0] = convertFileHeader;
         setcompanyFileHeader(convertHeader);
         setdetailedFileJson(Allfilejson);
-        setCurrent(current + 1);
+        setdisable(false);
+        setloading(false);
         onClose();
+        setCurrent(current + 1);
       } else {
         message.error(`Please select a value for each dropdown.`);
       }
@@ -1049,10 +1087,11 @@ const Import = () => {
     if (
       vendorName != "" &&
       vendorName != undefined &&
-      vendorName != null && 
+      vendorName != null &&
       Mappings.length > 1
     ) {
       try {
+        setloading(true);
         const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
         console.log("Transformed data:", transformedData);
         const check = await postData(detailPostUrl, transformedData, detailedFileName);
@@ -1135,7 +1174,7 @@ const Import = () => {
     } else if (current == 1 && vendorFileJson.length > 0) {
       setshowfile(vendorFileJson);
       setOpen(true);
-    } else if ((current == 2 || current ==3 )&& detailedFileJson.length > 0) {
+    } else if ((current == 2 || current == 3) && detailedFileJson.length > 0) {
       setshowfile(detailedFileJson);
       setOpen(true);
     } else {
@@ -1154,12 +1193,9 @@ const Import = () => {
         className="overlay"
         indicator={<LoadingOutlined />}
       ></Spin> */}
-
       <div style={{ margin: "20px" }}>
         <Steps current={current} items={items} />
-        {/* <Spin spinning={true} fullscreen /> */}
         <div style={{ display: "grid", placeItems: "center" }}>
-          {/* <Spin size="large" /> */}
         </div>
         <div style={contentStyle}>{steps[current]?.content}</div>
         <div
@@ -1181,25 +1217,15 @@ const Import = () => {
         width={900}
         extra={
           <Space>
-            {/* <Button >Cancel</Button> */}
             <Button onClick={showfiles} type="primary">
               <EyeOutlined />
             </Button>
-            <Button onClick={MappingCheck} type="primary">
+            <Button loading={loading} onClick={MappingCheck} type="primary">
               Save
             </Button>
           </Space>
         }
       >
-        <Spin
-          tip="Please Wait"
-          spinning={loadingpannel}
-          fullscreen={true}
-          size="large"
-          className="overlay"
-          indicator={<LoadingOutlined />}
-        ></Spin>
-
         <DragAndDrop
           initialBoxOneItems={
             current === 0
