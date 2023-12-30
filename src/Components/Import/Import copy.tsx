@@ -394,6 +394,7 @@ const Import = () => {
           <div style={{ margin: "20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ display: "flex" }}>
+              
                 {/* <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p> */}
                 <Select
                   // className="Dropdown"
