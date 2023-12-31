@@ -6,9 +6,11 @@ const DownloadReport = async () => {
     const MainUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report";
     const allurl = [
         { url: '/p-one-case', sheetName: 'P1' },
+        { url: '/p-two-case', sheetName: 'P2' },
+        { url: '/k-one-case', sheetName: 'K1' },
+        { url: '/k-two-case', sheetName: 'K2' },
         { url: '/f-case', sheetName: 'F' },
         { url: '/a-case', sheetName: 'A' },
-        { url: '/k-one-case', sheetName: 'K1' },
         { url: '/g-one-case', sheetName: 'G1' },
         { url: '/g-two-case', sheetName: 'G2' },
         { url: '/l-one-case', sheetName: 'L1' },
@@ -20,7 +22,6 @@ const DownloadReport = async () => {
         { url: '/m-three-case', sheetName: 'M3' },
         { url: '/m-four-case', sheetName: 'M4' },
         { url: '/m-five-case', sheetName: 'M5' },
-        { url: '/k-two-case', sheetName: 'K2' },
         { url: '/i-one-case', sheetName: 'I1' },
         { url: '/i-two-case', sheetName: 'I2' },
     ];
