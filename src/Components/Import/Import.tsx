@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {ArrowRightOutlined,DownloadOutlined,EyeOutlined,ReloadOutlined,FileExcelOutlined,ExclamationCircleFilled}from "@ant-design/icons";
-import {Button,Checkbox,Drawer,Modal,Select,Space,Steps,UploadProps,message,theme,} from "antd";
+import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, ReloadOutlined, FileExcelOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+import { Button, Checkbox, Drawer, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
@@ -92,36 +92,15 @@ const Import = () => {
   //***********for loading state */
   const [loading, setloading] = React.useState(false);
   const [disable, setdisable] = React.useState(false);
-
   // *************delete mapping***************
   const [deleteMapping, setDeleteMapping] = useState<string[]>([]);
-  useEffect(() => {
-    console.log(deleteMapping);
-  }, [deleteMapping])
-
-  // **************for model************
-  function onChange(checkedValues) {
-    console.log('checked = ', checkedValues);
-    setDeleteMapping(checkedValues);
-    console.log('deleteMapping = ', deleteMapping);
-  }
+  const [deleteMappingLoading, setDeleteMappingLoading] = useState(false);
+  // **************for model delete ************
+  const [openDeleteMapping, setOpenDeleteMapping] = useState(false);
   const plainOptions = ["First File", "Second File", "Third File"];
-  const { confirm } = Modal;
-  const showConfirm = () => {
-    confirm({
-      title: 'Do You Want To Reset Mapping?',
-      content: (<Checkbox.Group options={plainOptions} onChange={onChange} style={{ margin: "10px 0px" }} />),
-      okText: 'Yes',
-      okType: 'danger',
-      cancelText: 'No',
-      onOk() {
-        getMappingID();
-      },
-      onCancel() {
-        console.log('Cancel');
-      },
-    });
-  };
+  function onChange(checkedValues) {
+    setDeleteMapping(checkedValues);
+  }
   // **************for get mapping id********
   async function deleteMappings(url: any) {
     const alldata: any = Cookies.get("VR-user_Role");
@@ -138,23 +117,33 @@ const Import = () => {
     }
   }
   async function getMappingID() {
-    if (deleteMapping.includes("First File")) {
-      const data = await getMapping(companyMappingUrl);
-      if (data?._id != undefined && data?._id != "" && data?._id != null) {
-        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${data?._id}`);
+    if (deleteMapping.length > 0) {
+      setDeleteMappingLoading(true);
+      if (deleteMapping.includes("First File")) {
+        const data = await getMapping(companyMappingUrl);
+        if (data?._id != undefined && data?._id != "" && data?._id != null) {
+          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${data?._id}`);
+        }
       }
-    }
-    if (deleteMapping.includes("Second File")) {
-      const data = await getMapping(vendorMappingUrl);
-      if (data?._id != undefined && data?._id != "" && data?._id != null) {
-        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${data?._id}`);
+      if (deleteMapping.includes("Second File")) {
+        const data = await getMapping(vendorMappingUrl);
+        if (data?._id != undefined && data?._id != "" && data?._id != null) {
+          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${data?._id}`);
+        }
       }
-    }
-    if (deleteMapping.includes("Third File")) {
-      const data = await getMapping(detailMappingUrl);
-      if (data?._id != undefined && data?._id != "" && data?._id != null) {
-        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${data?._id}`);
+      if (deleteMapping.includes("Third File")) {
+        const data = await getMapping(detailMappingUrl);
+        if (data?._id != undefined && data?._id != "" && data?._id != null) {
+          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${data?._id}`);
+        }
       }
+      setTimeout(() => {
+        message.success("Reset Mapping Successfully")
+        setDeleteMappingLoading(false);
+        setOpenDeleteMapping(false);
+      }, 1000);
+    } else {
+      message.error("Please Select File");
     }
   }
   // ********************for uplode every file***************
@@ -253,7 +242,7 @@ const Import = () => {
             </Button>
           </div>
           <div style={{ display: "flex", gap: "20px" }}>
-            <Button onClick={showConfirm} type="primary">
+            <Button onClick={() => { setOpenDeleteMapping(true) }} type="primary">
               <ReloadOutlined title="Reset Mapping" />
             </Button>
             <Button onClick={showfiles} type="primary">
@@ -394,7 +383,6 @@ const Import = () => {
     }
   }
   // *****************post vendor naem to this function******
-
   async function postVendorName() {
     const alldata: any = Cookies.get("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
@@ -421,13 +409,12 @@ const Import = () => {
       setloading(false);
     }
   }
-
   const handleCancel = () => {
     console.log("Clicked cancel button");
     setOpen(false);
   };
   // ******************save mapping *********
-  async function saveMapping(keyforjson: any,valueforjson: any,urlforpost: any){
+  async function saveMapping(keyforjson: any, valueforjson: any, urlforpost: any) {
     const data = await getMapping(urlforpost);
     if (data != null && data?._id) {
       urlforpost = `${urlforpost}/${data._id}`;
@@ -813,7 +800,7 @@ const Import = () => {
   }
   // ************************get reports*********************
   async function getreport() {
-    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1){
+    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1) {
       try {
         setloading(true);
         const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
@@ -942,12 +929,12 @@ const Import = () => {
       >
         <DragAndDrop
           initialBoxOneItems={current === 0
-              ? companyFileHeader
-              : current === 1
-                ? vendorFileHeader
-                : current === 2
-                  ? detailedFileHeader
-                  : null
+            ? companyFileHeader
+            : current === 1
+              ? vendorFileHeader
+              : current === 2
+                ? detailedFileHeader
+                : null
           }
           boxTwoItems={UpdateHeader}
           setBoxTwoItems={setUpdateHeader}
@@ -1032,6 +1019,18 @@ const Import = () => {
             </table>
           </div>
         </div>
+      </Modal>
+      <Modal
+        title='Do You Want To Reset Mapping?'
+        open={openDeleteMapping}
+        onOk={getMappingID}
+        onCancel={() => { setOpenDeleteMapping(false) }}
+        okText='Reset Mapping'
+        cancelText='Cancel'
+        confirmLoading={deleteMappingLoading}
+      >
+        <p style={{ margin: "0", fontWeight: "500" }}>Select File :</p>
+        <Checkbox.Group options={plainOptions} onChange={onChange} style={{ margin: "10px 0px" }} />
       </Modal>
     </>
   );
