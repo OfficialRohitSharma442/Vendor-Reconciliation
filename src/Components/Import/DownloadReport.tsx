@@ -5,10 +5,10 @@ import * as XLSX from "xlsx";
 const DownloadReport = async () => {
     const MainUrl = "https://concerned-plum-crayfish.cyclic.app/api/generate-report";
     const allurl = [
-        { url: '/p-one-case', sheetName: 'P' },
-        { url: '/k-one-case', sheetName: 'K' },
-        { url: '/g-one-case', sheetName: 'G' },
-        { url: '/i-one-case', sheetName: 'I' },
+        { url: '/p-one-case', sheetName: 'P1' },
+        { url: '/k-one-case', sheetName: 'K1' },
+        { url: '/g-one-case', sheetName: 'G1' },
+        { url: '/i-one-case', sheetName: 'I1' },
         { url: '/l-one-case', sheetName: 'L1' },
         { url: '/m-one-case', sheetName: 'M1' },
         { url: '/f-case', sheetName: 'F' },
