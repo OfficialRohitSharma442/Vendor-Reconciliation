@@ -31,8 +31,9 @@ import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
 import DocTypeMapping from "./DocTypeMapping";
 import * as moment from 'moment';
+import DownloadReport from "./DownloadReport";
 const { Option } = Select;
-
+let deleteMapping: any[] = [];
 const Import = () => {
   // @ ts-ignore
   const [loading, setloading] = React.useState(false);
@@ -125,14 +126,16 @@ const Import = () => {
   const [customFileName, setCustomFileName] = useState<string | null>(null);
 
   // *************delete mapping***************
-  const [deleteMapping, setdeleteMapping] = useState<string[]>([]);
-  useEffect(() => {
-  }, [deleteMapping])
+  // const [deleteMapping, setdeleteMapping] = useState<string[]>([]);
+  // useEffect(() => {
+  //   console.log(deleteMapping);
+  // }, [deleteMapping])
 
   // **************for model************
   function onChange(checkedValues) {
     console.log('checked = ', checkedValues);
-    setdeleteMapping(checkedValues);
+    // setdeleteMapping(checkedValues);
+    deleteMapping.push(checkedValues)
   }
   const plainOptions = ["First File", "Second File", "Third File"];
   const { confirm } = Modal;
@@ -141,7 +144,7 @@ const Import = () => {
       title: 'Do You Want To Reset Mapping?',
       icon: <ExclamationCircleFilled />,
       content: (<>
-        <Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={onChange} style={{ margin: "10px 0px" }} />
+        <Checkbox.Group options={plainOptions} onChange={onChange} style={{ margin: "10px 0px" }} />
       </>
       ),
       okText: 'Yes',
@@ -452,7 +455,7 @@ const Import = () => {
         },
       });
       if (response.status == 201) {
-        console.log(response);
+        // console.log(response);
         setCustomFileName("");
         if (current != 3) {
           setdisable(false);
@@ -503,172 +506,9 @@ const Import = () => {
         },
       });
       if (response.data.success === "ok") {
-        const getPCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/p-case";
-        const getKCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/k-case";
-        const getLCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/l-case";
-        const getMCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/m-case";
-        const getFCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/f-case";
-        const getGCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/g-case";
-        const getACaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/a-case";
-        const getICaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/i-case";
-        const getLOneCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/l-one-case";
-        const getMOneCaseUrl =
-          "https://concerned-plum-crayfish.cyclic.app/api/generate-report/m-one-case";
-
-        try {
-          const pCaseResponse = await axios.get(getPCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          const kCaseResponse = await axios.get(getKCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          const lCaseResponse = await axios.get(getLCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          const mCaseResponse = await axios.get(getMCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          const fCaseResponse = await axios.get(getFCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          const gCaseResponse = await axios.get(getGCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          const aCaseResponse = await axios.get(getACaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          const iCaseResponse = await axios.get(getICaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          // L1
-          const lOneCaseResponse = await axios.get(getLOneCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-          // M1
-          const mOneCaseResponse = await axios.get(getMOneCaseUrl, {
-            headers: {
-              Authorization: `Bearer ${tokens}`,
-            },
-          });
-
-          const pCaseData = pCaseResponse?.data?.data;
-          const kCaseData = kCaseResponse?.data?.data;
-          const lCaseData = lCaseResponse?.data?.data;
-          const mCaseData = mCaseResponse?.data?.data;
-          const fCaseData = fCaseResponse?.data?.data;
-          const gCaseData = gCaseResponse?.data?.data;
-          const aCaseData = aCaseResponse?.data?.data;
-          const iCaseData = iCaseResponse?.data?.data;
-          const lOneCaseData = lOneCaseResponse?.data?.data;
-          const mOneCaseData = mOneCaseResponse?.data?.data;
-          console.log({ pCaseData });
-          console.log({ kCaseData });
-          console.log({ lCaseData });
-          console.log({ mCaseData });
-          console.log({ fCaseData });
-          console.log({ gCaseData });
-          console.log({ aCaseData });
-          console.log({ iCaseData });
-          console.log({ lOneCaseData });
-          console.log({ mOneCaseData });
-          const wb = XLSX.utils.book_new();
-
-          if (pCaseData && pCaseData.length > 0) {
-            const wsP = XLSX.utils.json_to_sheet(pCaseData);
-            XLSX.utils.book_append_sheet(wb, wsP, "P");
-          }
-
-          // Create "K" sheet if data is available
-          if (kCaseData && kCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(kCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "K");
-          }
-
-          // Create "L" sheet if data is available
-          if (lCaseData && lCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(lCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "L");
-          }
-
-          // Create "M" sheet if data is available
-          if (mCaseData && mCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(mCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "M");
-          }
-          // Create "F" sheet if data is available
-          if (fCaseData && fCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(fCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "F");
-          }
-          // Create "G" sheet if data is available
-          if (gCaseData && gCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(gCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "G");
-          }
-          // Create "A" sheet if data is available
-          if (aCaseData && aCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(aCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "A");
-          }
-          // Create "I" sheet if data is available
-          if (iCaseData && iCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(iCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "I");
-          }
-          // Create "L1" sheet if data is available
-          if (lOneCaseData && lOneCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(lOneCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "L1");
-          }
-
-          // Create "M1" sheet if data is available
-          if (mOneCaseData && mOneCaseData.length > 0) {
-            const wsK = XLSX.utils.json_to_sheet(mOneCaseData);
-            XLSX.utils.book_append_sheet(wb, wsK, "M1");
-          }
-
-          // Save the Excel file only if at least one sheet is created
-          if (wb.SheetNames.length > 0) {
-            XLSX.writeFile(wb, "combinedCaseFile.xlsx");
-            console.log(
-              "Excel file with both P and K sheets generated successfully"
-            );
-          } else {
-            console.log("No data available for either P or K sheets");
-          }
-          setloading(false);
-          setCurrent(0);
-        } catch (error) {
-          console.error("Error fetching data or generating Excel file:", error);
-        }
-        return;
+        await DownloadReport();
+        setloading(false);
+        setCurrent(0);
       }
     } catch (error) {
       console.log(error);
@@ -874,9 +714,6 @@ const Import = () => {
         await Promise.all(
           headers?.map(async (header: any, index: any) => {
             let value = row[index];
-            // if (value == undefined)
-            //   debugger
-            console.log(value, index);
             if (value !== "" && value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value)?.replace(/[\W_]+/g, "");
