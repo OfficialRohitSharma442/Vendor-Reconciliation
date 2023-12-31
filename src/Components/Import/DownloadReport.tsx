@@ -19,7 +19,6 @@ const DownloadReport = async () => {
         { url: '/m-two-case', sheetName: 'M2' },
         { url: '/m-three-case', sheetName: 'M3' },
         { url: '/m-four-case', sheetName: 'M4' },
-        { url: '/m-four-case', sheetName: 'M4' },
         { url: '/m-five-case', sheetName: 'M5' },
         { url: '/k-two-case', sheetName: 'K2' },
         { url: '/i-one-case', sheetName: 'I1' },

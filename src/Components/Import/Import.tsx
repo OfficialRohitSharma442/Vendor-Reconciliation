@@ -102,7 +102,6 @@ const Import = () => {
   // **************for model************
   function onChange(checkedValues) {
     console.log('checked = ', checkedValues);
-    // setdeleteMapping(checkedValues);
     setDeleteMapping(checkedValues);
     console.log('deleteMapping = ', deleteMapping);
   }
