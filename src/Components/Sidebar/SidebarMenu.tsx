@@ -14,7 +14,7 @@ const SidebarMenu = () => {
         { label: 'Reports', path: '/Reports', icon: <FileTextOutlined style={{ fontSize: "18px" }} />, key: 'reports' },
         ...(role === "ADMIN" ? [{ label: 'Admin Page', path: '/Settings', icon: <SettingOutlined style={{ fontSize: "15px" }} />, key: 'adminPage' }] : []),
     ];
-    const masterItems = [{ label: 'Super Admin', path: '/admin', icon: <SettingTwoTone />, key: 'superAdmin' }];
+    const masterItems = [{ label: 'Super Admin', path: '/admin', icon: <SettingTwoTone />, key: 'admin' }];
 
     return (
         <Menu

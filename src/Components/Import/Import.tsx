@@ -1,23 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { DownloadOutlined, FileExcelOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Modal,
-  Select,
-  Steps,
-  UploadProps,
-  message,
-  theme,
-} from "antd";
+import {ArrowRightOutlined,DownloadOutlined,EyeOutlined,ReloadOutlined,FileExcelOutlined,ExclamationCircleFilled}from "@ant-design/icons";
+import {Button,Checkbox,Drawer,Modal,Select,Space,Steps,UploadProps,message,theme,} from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
+import DocTypeMapping from "./DocTypeMapping";
+import DownloadReport from "./DownloadReport";
 const { Option } = Select;
+// let deleteMapping: any[] = [];
 const Import = () => {
   // **************Static Data*********************
   const companyHeader = [
@@ -31,24 +26,24 @@ const Import = () => {
     { id: "8", content: "Due Date" },
     { id: "9", content: "Document Date" },
   ];
-  const vendorFileHeader = [
+  const vendorHeader = [
     { id: "1", content: "Business Partner" },
     { id: "2", content: "Business Partner Name" },
     { id: "3", content: "Closing Balance" },
     { id: "4", content: "Invoice Amount" },
     { id: "5", content: "Currency" },
     { id: "6", content: "Due Date" },
-    { id: "7", content: "Docment Date" },
+    { id: "7", content: "Document Date" },
     { id: "8", content: "Document Number" },
     { id: "9", content: "Invoice Number" },
   ];
-  const detailedFileHeader = [
+  const detailedHeader = [
     { id: "1", content: "Due Date" },
     { id: "2", content: "Company Code" },
     { id: "3", content: "Credit Amount(INR)" },
     { id: "4", content: "Debit Amount(INR)" },
     { id: "5", content: "Cheque Rtgs Neft" },
-    { id: "6", content: "Payment Docment" },
+    { id: "6", content: "Payment Document" },
     { id: "7", content: "Reference" },
     { id: "8", content: "Grn Number" },
     { id: "9", content: "Invoice Date" },
@@ -56,193 +51,120 @@ const Import = () => {
     { id: "11", content: "Document Number" },
     { id: "12", content: "Invoice Number" },
   ];
-
-  // @ ts-ignore
-  const [UpdatedCompanyHeader, setUpdatedCompanyHeader] = useState([]);
-
+  // *******************All url *************
+  const companyPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
+  const vendorPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/vendor/dynamic-vendor";
+  const detailPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/complete/dynamic-complete";
+  const companyMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping";
+  const vendorMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping";
+  const detailMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping";
+  // ****************for steps***************************
   // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
-  // @ ts-ignore
-  const [companyFile, setcompanyFile] = useState([]);
+  const [open, setOpen] = useState(false);
+  // ****************for First file / companyfile***************************
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
-  const [companyFileHeaderJson, setcompanyFileHeaderJson] = useState<any>([]);
-  const [companyFileData, setcompanyFileData] = useState<any>([]);
-  const [vendorNameOpation, setvendorNameOpation] = useState<any>([]);
-
+  const [companyFileHeader, setcompanyFileHeader] = useState<any>([]);
   const [companyFileName, setcompanyFileName] = useState("");
-
+  // ****************for Second file / Vendorfile***************************
   const [vendorfileName, setvendorfileName] = useState("");
-
-  const [detailedFileName, setdetailedFileName] = useState("");
-  // @ ts-ignore
-  const [sendData, setsendData] = useState(true);
-  const [companyFileSelectedValues, setcompanyFileSelectedValues] = useState(
-    Array.from({ length: 9 }, () => "")
-  );
-  const [vendorFileSelectedValues, setvendorFileSelectedValues] = useState(
-    Array.from({ length: 9 }, () => "")
-  );
-  const [detailedFileSelectedValues, setdetailedFileSelectedValues] = useState(
-    Array.from({ length: 12 }, () => "")
-  );
-
+  const [vendorFileHeader, setvendorFileHeader] = useState<any>([]);
   const [vendorFileJson, setvendorFileJson] = useState<any>([]);
-  const [vendorFileHeaderJson, setvendorFileHeaderJson] = useState<any>([]);
+  // ****************for Thrid file / detailedFile***************************
+  const [detailedFileName, setdetailedFileName] = useState("");
   const [detailedFileJson, setdetailedFileJson] = useState<any>([]);
-  const [detailedFileHeaderJson, setdetailedFileHeaderJson] = useState<any>([]);
+  const [detailedFileHeader, setdetailedFileHeader] = useState<any>([]);
+  // ************for file name***********
+  const [customFileName, setCustomFileName] = useState<string | null>(null);
+  // ****************for Panle ***************************
+  const [OpenPanel, setOpenPanel] = useState(false);
+  // ***************************for mapping********************
+  const [UpdateHeader, setUpdateHeader] = useState<any>([]);
+  // ************************for vendor name***************
+  const [vendorNameOpation, setvendorNameOpation] = useState<any>([]);
+  const [vendorName, SetvendorName] = useState<any>("");
+  // ******************for show priview*********************
+  const [showfile, setshowfile] = useState<any>([]);
+  // *****************state for document mapping *********
+  const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
+  //***********for loading state */
+  const [loading, setloading] = React.useState(false);
+  const [disable, setdisable] = React.useState(false);
+
+  // *************delete mapping***************
+  const [deleteMapping, setDeleteMapping] = useState<string[]>([]);
+  useEffect(() => {
+    console.log(deleteMapping);
+  }, [deleteMapping])
 
   // **************for model************
-  const [vendorName, SetvendorName] = useState("");
-  const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  //************************** */
-
-  // useEffect(() => {
-  //   const getCall = async () => {
-  //     const alldata: any = localStorage.getItem("VR-user_Role");
-
-  //     const url = "http://localhost:3000/api/generate-report";
-  //     const data = {
-  //       vendorName: "UNIPARTS INDIA LTD",
-  //     };
-  //     const tokens = JSON.parse(alldata).token;
-  //     const response = await axios.post(url, data, {
-  //       headers: {
-  //         Authorization: ` Bearer ${tokens}`,
-  //         responseType: "arraybuffer",
-  //       },
-  //     });
-
-  //     // Create a Blob from the binary data
-  //     const blob = new Blob([response.data], {
-  //       type: response.headers["content-type"],
-  //     });
-
-  //     // Create a download link
-  //     const downloadLink = document.createElement("a");
-  //     downloadLink.href = window.URL.createObjectURL(blob);
-  //     downloadLink.download = "yourFileName.xlsx"; // Specify the file name
-
-  //     // Append the link to the document
-  //     document.body.appendChild(downloadLink);
-
-  //     // Trigger the download
-  //     downloadLink.click();
-
-  //     // Remove the link from the document
-  //     document.body.removeChild(downloadLink);
-  //   };
-  //   getCall();
-  // }, []);
-
-  // WORKING
-
-  // useEffect(() => {
-  //   const getCall = async () => {
-  //     const alldata: any = localStorage.getItem("VR-user_Role");
-
-  //     const url = "http://localhost:3000/api/generate-report";
-  //     const data = {
-  //       vendorName: "UNIPARTS INDIA LTD",
-  //     };
-  //     const tokens = JSON.parse(alldata).token;
-
-  //     try {
-  //       const response = await axios.post(url, data, {
-  //         headers: {
-  //           Authorization: `Bearer ${tokens}`,
-  //         },
-  //         responseType: "arraybuffer",
-  //       });
-
-  //       // Create a Blob from the binary data
-  //       const blob = new Blob([response.data], {
-  //         type: response.headers["content-type"],
-  //       });
-
-  //       // Create a download link
-  //       const downloadLink = document.createElement("a");
-  //       downloadLink.href = window.URL.createObjectURL(blob);
-  //       downloadLink.download = "CasePData.xlsx"; // Specify the file name
-
-  //       // Append the link to the document
-  //       document.body.appendChild(downloadLink);
-
-  //       // Trigger the download
-  //       downloadLink.click();
-
-  //       // Remove the link from the document
-  //       document.body.removeChild(downloadLink);
-  //     } catch (error) {
-  //       console.error("Error downloading file:", error);
-  //       // Handle the error appropriately
-  //     }
-  //   };
-
-  //   getCall();
-  // }, []);
-
-  console.log(companyFileSelectedValues, "lkhk");
-
-  const handleSelectChange2 = (value: any, dropdownIndex: any) => {
-    const updatedSelectedValues = [...vendorFileSelectedValues];
-    updatedSelectedValues[dropdownIndex] = value;
-    setvendorFileSelectedValues(updatedSelectedValues);
+  function onChange(checkedValues) {
+    console.log('checked = ', checkedValues);
+    // setdeleteMapping(checkedValues);
+    setDeleteMapping(checkedValues);
+    console.log('deleteMapping = ', deleteMapping);
+  }
+  const plainOptions = ["First File", "Second File", "Third File"];
+  const { confirm } = Modal;
+  const showConfirm = () => {
+    confirm({
+      title: 'Do You Want To Reset Mapping?',
+      content: (<Checkbox.Group options={plainOptions} onChange={onChange} style={{ margin: "10px 0px" }} />),
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        getMappingID();
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
   };
-
-  const handleSelectChange3 = (value: any, dropdownIndex: any) => {
-    const updatedSelectedValues = [...detailedFileSelectedValues];
-    updatedSelectedValues[dropdownIndex] = value;
-    setdetailedFileSelectedValues(updatedSelectedValues);
-  };
-
-  // const companyFileHeader = [
-  //   "Vendor",
-  //   "Vendor Name",
-  //   "Document Number",
-  //   "Invoice Number",
-  //   "Closing Balance",
-  //   "Invoice Amount",
-  //   "Currency",
-  //   "Due Date",
-  //   "Document Date",
-  // ];
-  // const vendorFileHeader = [
-  //   "Business Partner",
-  //   "Business Partner Name",
-  //   "Closing Balance",
-  //   "Invoice Amount",
-  //   "Currency",
-  //   "Due Date",
-  //   "Docment Date",
-  //   "Document Number",
-  //   "Invoice Number",
-  // ];
-
-  // const detailedFileHeader = [
-  //   "Due Date",
-  //   "Company Code",
-  //   "Credit Amount(INR)",
-  //   "Debit Amount(INR)",
-  //   "Cheque Rtgs Neft",
-  //   "Payment Docment",
-  //   "Reference",
-  //   "Grn Number",
-  //   "Invoice Date",
-  //   "Document Date",
-  //   "Document Number",
-  //   "Invoice Number",
-  // ];
-
+  // **************for get mapping id********
+  async function deleteMappings(url: any) {
+    const alldata: any = Cookies.get("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    try {
+      const response = await axios.delete(url, {
+        headers: {
+          Authorization: ` Bearer ${tokens}`,
+        },
+      });
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+  async function getMappingID() {
+    if (deleteMapping.includes("First File")) {
+      const data = await getMapping(companyMappingUrl);
+      if (data?._id != undefined && data?._id != "" && data?._id != null) {
+        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${data?._id}`);
+      }
+    }
+    if (deleteMapping.includes("Second File")) {
+      const data = await getMapping(vendorMappingUrl);
+      if (data?._id != undefined && data?._id != "" && data?._id != null) {
+        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${data?._id}`);
+      }
+    }
+    if (deleteMapping.includes("Third File")) {
+      const data = await getMapping(detailMappingUrl);
+      if (data?._id != undefined && data?._id != "" && data?._id != null) {
+        deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${data?._id}`);
+      }
+    }
+  }
+  // ********************for uplode every file***************
   const props: UploadProps = {
     name: "file",
     multiple: false,
     accept: ".xlsm, .xlsx,.xls",
     maxCount: 1,
-    // action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
-    showUploadList: true,
+    showUploadList: false,
     customRequest: ({ file, onSuccess, onError }: any) => {
       if (
         file != "" &&
@@ -255,35 +177,43 @@ const Import = () => {
         reader.onload = (event) => {
           if (event.target) {
             const data = event.target.result;
-            const workbook = XLSX.read(data, { type: "binary" });
+            const workbook = XLSX.read(data, { type: "binary", cellDates: true, dateNF: "mm-dd-yyyy" });
             const sheetName = workbook.SheetNames[0];
+            console.log("sheetName", sheetName)
             const sheet = workbook.Sheets[sheetName];
-            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            const jsonData = XLSX.utils.sheet_to_json(sheet, {
+              header: 1,
+              defval: "",
+              blankrows: false,
+              raw: false, // Ensure dates are parsed as JavaScript Date objects
+              dateNF: "mm-dd-yyyy", // Specify the date format if needed"yyyy-mm-dd"
+              cellDates: true, // Parse dates from the cell values
+            } as any);
+            console.log(jsonData)
             const headers: any = jsonData[0];
             const trimmedHeaders = headers.map((str: any) =>
               str.trim().replace(/\s+/g, " ")
             );
             jsonData[0] = trimmedHeaders;
             const newArray = trimmedHeaders.map((content: any, index: any) => ({
-              id: (index + 1).toString(),
+              id: (index + 4).toString(),
               content,
             }));
-            console.log("JSON Data:", jsonData);
-            console.log("Headers:", headers);
+            // console.log("JSON Data:", jsonData);
+            // console.log("Headers:", headers);
             if (current == 0) {
-              setcompanyFile(file);
               setcompanyFileJson(jsonData);
-              setcompanyFileHeaderJson(newArray);
+              setcompanyFileHeader(newArray);
               setcompanyFileName(file.name);
               onSuccess();
-            } else if (current == 2) {
+            } else if (current == 1) {
               setvendorFileJson(jsonData);
-              setvendorFileHeaderJson(trimmedHeaders);
+              setvendorFileHeader(newArray);
               onSuccess();
               setvendorfileName(file.name);
-            } else if (current == 4) {
+            } else if (current == 2) {
               setdetailedFileJson(jsonData);
-              setdetailedFileHeaderJson(trimmedHeaders);
+              setdetailedFileHeader(newArray);
               setdetailedFileName(file.name);
               onSuccess();
             }
@@ -300,10 +230,11 @@ const Import = () => {
     onChange(info) {
       const { status } = info.file;
       if (status !== "uploading") {
-        console.log(info.file, info.fileList);
+        // console.log(info.file, info.fileList);
       }
       if (status === "done") {
         message.success(`${info.file.name} file uploaded successfully.`);
+        setCustomFileName(info?.file?.name);
       } else if (status === "error") {
         message.error(`${info.file.name} file upload failed.`);
       }
@@ -312,527 +243,594 @@ const Import = () => {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
-
-  const uploadFile = (Filename: any) => (
-    <Dragger {...props}>
-      <p className="ant-upload-drag-icon">
-        {/* <InboxOutlined /> */}
-        <FileExcelOutlined />
-      </p>
-      <p className="ant-upload-text">
-        Click or drag file to this area to upload {Filename}
-      </p>
-      <p className="ant-upload-hint">
-        Support for a single or bulk upload. Strictly prohibited from uploading
-        company data or other banned files.
-      </p>
-    </Dragger>
+  //************************for first all three step *******************8
+  const FirstThreeStep = () => (
+    <>
+      <div style={{ margin: "20px" }}>
+        <div className="mainstep">
+          <div>
+            <Button type="primary" icon={<DownloadOutlined />} size={size}>
+              Sample file
+            </Button>
+          </div>
+          <div style={{ display: "flex", gap: "20px" }}>
+            <Button onClick={showConfirm} type="primary">
+              <ReloadOutlined title="Reset Mapping" />
+            </Button>
+            <Button onClick={showfiles} type="primary">
+              <EyeOutlined title="View Excle File" />
+            </Button>
+            <Button loading={loading} type="primary" size={size} onClick={() => next()}>
+              Next <ArrowRightOutlined />
+            </Button>
+          </div>
+        </div>
+        <div>{uploadFile("Company File")}</div>
+      </div>
+    </>
   );
-
+  // *****************for show uplode every file************
+  const uploadFile = (Filename: any) => (
+    <>
+      <Dragger {...props} disabled={disable}>
+        <p className="ant-upload-drag-icon">
+          <FileExcelOutlined />
+        </p>
+        <p className="ant-upload-text">
+          Click or drag file to this area to upload {Filename}
+        </p>
+        <p className="ant-upload-hint">
+          Support for a single or bulk upload. Strictly prohibited from
+          uploading company data or other banned files.
+        </p>
+      </Dragger>
+      {customFileName && (
+        <>
+          <p>{customFileName}</p>
+        </>
+      )}
+    </>
+  );
+  // ***************** main steps****************
   const steps: any = [
     {
       title: "First",
-      content: (
-        <div style={{ margin: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "25px",
-            }}
-          >
-            <div>
-              <Button type="primary" icon={<DownloadOutlined />} size={size}>
-                Sample file
-              </Button>
-            </div>
-          </div>
-          <div>{uploadFile("Company File")}</div>
-        </div>
-      ),
+      content: (FirstThreeStep()),
     },
     {
       title: "Second",
+      content: (FirstThreeStep()),
+    },
+    {
+      title: "Third",
+      content: (
+        FirstThreeStep()
+      ),
+    },
+    {
+      title: "Report",
       content: (
         <>
-          <DragAndDrop
-            initialBoxOneItems={companyFileHeaderJson}
-            initialBoxTwoItems={UpdatedCompanyHeader}
-            defaultStaticContent={companyHeader}
-          />
+          <div style={{ margin: "20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ display: "flex" }}>
+                {/* <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p> */}
+                <Select
+                  // className="Dropdown"
+                  style={{ width: "300" }}
+                  placeholder={`select Vendor name`}
+                  onChange={(value) => SetvendorName(value)}
+                >
+                  {vendorNameOpation.map((option: any) => (
+                    <Option key={option} value={option}>
+                      {option}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+              <p style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</p>
+              <div style={{ display: "flex", gap: "20px" }}>
+                <Button onClick={showfiles} type="primary">
+                  <EyeOutlined />
+                </Button>
+                <Button loading={loading} type="primary" onClick={getreport}>
+                  Generate Report
+                </Button>
+              </div>
+            </div>
+            <div style={{ display: "grid", placeItems: "center" }}>
+              <DocTypeMapping Mappings={Mappings} setMappings={setMappings} />
+            </div>
+          </div>
         </>
-      ),
-      // content: (
-      //   <div className="Step2Main">
-      //     <div className="Step2Note">
-      //       Note: All the fields are mandatory and Select your file column name
-      //       with matched dropdown
-      //     </div>
-      //     <div className="Step2Dropdown">
-      //       {companyFileHeader.map((key: any, index) => (
-      //         <div className="DropdownMaindiv" key={index}>
-      //           <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
-      //           <Select
-      //             key={index}
-      //             className="Dropdown"
-      //             // style={{ width: 300, margin: '8px' }}
-      //             placeholder={`select your ${key} column`}
-      //             onChange={(value) => handleSelectChange(value, index)}
-      //           >
-      //             {companyFileHeaderJson
-      //               .filter(
-      //                 (option: any) =>
-      //                   !companyFileSelectedValues.includes(option)
-      //               )
-      //               .map((option: any) => (
-      //                 <Option key={option} value={option}>
-      //                   {option}
-      //                 </Option>
-      //               ))}
-      //           </Select>
-      //         </div>
-      //       ))}
-      //     </div>
-      //   </div>
-      // ),
-    },
-    {
-      title: "Thrid",
-      content: (
-        <div style={{ margin: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "25px",
-            }}
-          >
-            <div>
-              <Button type="primary" icon={<DownloadOutlined />} size={size}>
-                Sample file
-              </Button>
-            </div>
-          </div>
-          <div>{uploadFile("Company File")}</div>
-        </div>
-      ),
-    },
-    {
-      title: "Foruth",
-      content: (
-        <div className="Step2Main">
-          <div className="Step2Note">
-            Note: All the fields are mandatory and Select your file column name
-            with matched dropdown
-          </div>
-          <div className="Step2Dropdown">
-            {vendorFileHeader.map((key: any, index) => (
-              <div className="DropdownMaindiv" key={index}>
-                <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
-                <Select
-                  key={index}
-                  className="Dropdown"
-                  // style={{ width: 300, margin: '8px' }}
-                  placeholder={`select your ${key} column`}
-                  onChange={(value) => handleSelectChange2(value, index)}
-                >
-                  {vendorFileHeaderJson
-                    .filter(
-                      (option: any) =>
-                        !vendorFileSelectedValues.includes(option)
-                    )
-                    .map((option: any) => (
-                      <Option key={option} value={option}>
-                        {option}
-                      </Option>
-                    ))}
-                </Select>
-              </div>
-            ))}
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Five",
-      content: (
-        <div style={{ margin: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "25px",
-            }}
-          >
-            <div>
-              <Button type="primary" icon={<DownloadOutlined />} size={size}>
-                Sample file
-              </Button>
-            </div>
-          </div>
-          <div>{uploadFile("Company File")}</div>
-        </div>
-      ),
-    },
-    {
-      title: "Last",
-      content: (
-        <div className="Step2Main">
-          <div className="Step2Note">
-            Note: All the fields are mandatory and Select your file column name
-            with matched dropdown
-          </div>
-          <div className="Step2Dropdownlast">
-            {detailedFileHeader.map((key: any, index) => (
-              <div className="DropdownMaindivlast" key={index}>
-                <div style={{ marginLeft: "12px", width: "100%" }}>{key}: </div>
-                <Select
-                  key={index}
-                  className="Dropdown"
-                  // style={{ width: 300, margin: '8px' }}
-                  placeholder={`select your ${key} column`}
-                  onChange={(value) => handleSelectChange3(value, index)}
-                >
-                  {detailedFileHeaderJson
-                    .filter(
-                      (option: any) =>
-                        !detailedFileSelectedValues.includes(option)
-                    )
-                    .map((option: any) => (
-                      <Option key={option} value={option}>
-                        {option}
-                      </Option>
-                    ))}
-                </Select>
-              </div>
-            ))}
-          </div>
-        </div>
       ),
     },
   ];
-
-  async function companyFileHeaderChanged() {
-    if (companyFileJson.length > 0 && companyFileSelectedValues.length > 0) {
-      const data = companyFileJson[0];
-      companyFileSelectedValues.forEach((items, indexs) => {
-        const index = data.indexOf(items);
-        if (index != -1) {
-          data[index] = companyHeader[indexs];
-        }
-      });
-      const ans: any = companyFileJson;
-      ans[0] = data;
-      console.log(data);
-
-      const headers: any = ans[0];
-      const dataRows: any = ans;
-      const vendorNamedropdown: any = [];
-
-      const transformToObjects = (headers: any, data: any) => {
-        let TransFormToObjectsData = data.map((row: any, idx: number) => {
-          const rowData: any = {};
-          headers.forEach((header: any, index: any) => {
-            // rowData[header] = row[index];
-            let value = row[index];
-            if (value != "" && value != undefined && value != null) {
-              if (header == "Invoice Number" || header == "Document Number") {
-                if (value != "" && value != undefined && value != null) {
-                  value = String(value).replace(/[\W_]+/g, "");
-                }
-              }
-              if (header == "Vendor Name") {
-                if (idx !== 0) {
-                  vendorNamedropdown.push(value.trim());
-                }
-              }
-              rowData[header] = `${value}`.trim();
-            } else {
-              // console.log("value", value);
-              // message.error(
-              //   `Check Your excle file some mandatory filed data is empty.`
-              // );
-              // setsendData(false);
-            }
-          });
-          return rowData;
-        });
-
-        console.log("DATA", vendorNamedropdown);
-
-        console.log({ vendorNamedropdown });
-        const set = new Set(vendorNamedropdown);
-        console.log({ set });
-        const uniqueArray = [...set];
-        console.log({ uniqueArray });
-
-        setvendorNameOpation(uniqueArray);
-
-        TransFormToObjectsData = TransFormToObjectsData.slice(1);
-        setcompanyFileData(TransFormToObjectsData);
-      };
-
-      transformToObjects(headers, dataRows);
-      showModal();
-
-      // let response2 = await axios.get(url2,
-      //   {
-      //     headers: {
-      //       'Authorization': ` Bearer ${tokenforcall}`
-      //     }
-      //   }
-      // )
-
-      // console.log(response2);
-      // if (response2) {
-      //   showModal();
-      // }
-    }
-  }
-
-  async function postData(transformedData: any) {
+  // *****************************post all data to this function******
+  async function postData(url: any, data: any, FileName: any) {
     const alldata: any = Cookies.get("VR-user_Role");
-    const url =
-      "https://concerned-plum-crayfish.cyclic.app/api/upload/masterOpen";
-    const data1 = {
-      user: JSON.parse(alldata)?.ID,
-      fileName: companyFileName,
-      data: transformedData,
-    };
-    const url2 =
-      "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllMasterData";
     const tokens = JSON.parse(alldata).token;
-    //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
+    const finaltemp = {
+      user: JSON.parse(alldata)?.ID,
+      fileName: FileName,
+      data: data,
+    };
     try {
-      const response = await axios.post(url, data1, {
+      const response = await axios.post(url, finaltemp, {
         headers: {
           Authorization: ` Bearer ${tokens}`,
         },
       });
       if (response.status == 201) {
-        const response2 = await axios.get(url2, {
-          headers: {
-            Authorization: ` Bearer ${tokens}`,
-          },
-        });
-
-        console.log(response2);
+        // console.log(response);
+        setCustomFileName("");
+        if (current != 3) {
+          setdisable(false);
+          setloading(false);
+          onClose();
+          setCurrent(current + 1);
+          setTimeout(() => {
+            message.success(`Upload your next file`);
+          }, 2000);
+        }
+        if (current == 0) {
+          setcompanyFileJson([]);
+        } else if (current == 1) {
+          setvendorFileJson([]);
+        } else if (current == 2) {
+          setdetailedFileJson([]);
+        }
+        setUpdateHeader([]);
+        message.success(`Your file upload successfully`);
+        return true;
       }
-    } catch (error) {
+    } catch (error: any) {
+      onClose();
       console.log(error);
+      message.error(`${error?.response?.data?.error?.message}`);
+      setTimeout(() => {
+        message.error(`correct and uploading file again`);
+      }, 1000);
+      return false;
     }
   }
+  // *****************post vendor naem to this function******
 
-  async function vendorFileHeaderChanged() {
-    if (vendorFileJson.length > 0 && vendorFileSelectedValues.length > 0) {
-      const data = vendorFileJson[0];
-      vendorFileSelectedValues.forEach((items, indexs) => {
-        const index = data.indexOf(items);
-        if (index != -1) {
-          data[index] = vendorFileHeader[indexs];
-        }
-      });
-      const ans: any = vendorFileJson;
-      ans[0] = data;
-      console.log(data);
-
-      const headers: any = ans[0];
-      const dataRows: any = ans;
-
-      const transformToObjects = (headers: any, data: any) => {
-        return data.map((row: any) => {
-          const rowData: any = {};
-          headers.forEach((header: any, index: any) => {
-            // rowData[header] = row[index];
-            let value = row[index];
-            // Trim all values
-            if (header === "Invoice Number" || header === "Document Number") {
-              if (value != "" && value != undefined && value != null) {
-                value = String(value).replace(/[\W_]+/g, "");
-              }
-            }
-            rowData[header] = `${value}`.trim();
-          });
-          return rowData;
-        });
-      };
-
-      let transformedData = transformToObjects(headers, dataRows);
-      console.log(transformedData);
-      transformedData = transformedData.slice(1);
-      setvendorFileJson(transformedData);
-      const alldata: any = Cookies.get("VR-user_Role");
-
-      const url =
-        "https://concerned-plum-crayfish.cyclic.app/api/upload/vendorOpen";
-      const data1 = {
-        user: JSON.parse(alldata)?.ID,
-        fileName: vendorfileName,
-        data: transformedData,
-      };
-      const url2 =
-        "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllVendorData";
-      const tokens = JSON.parse(alldata).token;
-      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
-      try {
-        const response = await axios.post(url, data1, {
-          headers: {
-            Authorization: ` Bearer ${tokens}`,
-          },
-        });
-        if (response.status == 201) {
-          const response2 = await axios.get(url2, {
-            headers: {
-              Authorization: ` Bearer ${tokens}`,
-            },
-          });
-          console.log(response2);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
-
-  async function detailedFileHeaderChanged() {
-    if (detailedFileJson.length > 0 && detailedFileSelectedValues.length > 0) {
-      const data = detailedFileJson[0];
-      detailedFileSelectedValues.forEach((items, indexs) => {
-        const index = data.indexOf(items);
-        if (index != -1) {
-          data[index] = detailedFileHeader[indexs];
-        }
-      });
-      const ans: any = detailedFileJson;
-      ans[0] = data;
-      console.log(data);
-
-      const headers: any = ans[0];
-      const dataRows: any = ans;
-
-      const transformToObjects = (headers: any, data: any) => {
-        return data.map((row: any) => {
-          const rowData: any = {};
-          headers.forEach((header: any, index: any) => {
-            // rowData[header] = row[index];
-            let value = row[index];
-            // Trim all values
-            if (header == "Invoice Number" || header == "Document Number") {
-              if (value != "" && value != undefined && value != null) {
-                value = String(value).replace(/[\W_]+/g, "");
-              }
-            }
-            rowData[header] = `${value}`.trim();
-          });
-          return rowData;
-        });
-      };
-
-      let transformedData = transformToObjects(headers, dataRows);
-      console.log(transformedData);
-      transformedData = transformedData.slice(1);
-      setdetailedFileJson(transformedData);
-      // let newArray = transformedData.flatMap((items:any) => Array(3).fill(items));
-      const alldata: any = Cookies.get("VR-user_Role");
-
-      const url =
-        "https://concerned-plum-crayfish.cyclic.app/api/upload/CompleteDetails";
-      const data1 = {
-        user: JSON.parse(alldata)?.ID,
-        fileName: detailedFileName,
-        data: transformedData,
-      };
-      const url2 =
-        "https://concerned-plum-crayfish.cyclic.app/api/upload/getAllCompleteDetailsData";
-      const tokens = JSON.parse(alldata).token;
-      //  let tokenforcall = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY4YjlhZDEyZjhmNjBkZjFiODkyMTEiLCJlbWFpbCI6InVzZXIxQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzAxNDQ2OTc1fQ.c8jFToMIpSLRZtXVxQW1Bj8zfaj6RG89CTab97siz2c";
-      try {
-        const response = await axios.post(url, data1, {
-          headers: {
-            Authorization: ` Bearer ${tokens}`,
-          },
-        });
-        if (response.status == 201) {
-          const response2 = await axios.get(url2, {
-            headers: {
-              Authorization: ` Bearer ${tokens}`,
-            },
-          });
-          console.log(response2);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    message.success("Processing complete!");
-  }
-
-  async function postVendorName(name: any) {
+  async function postVendorName() {
     const alldata: any = Cookies.get("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
     const url =
-      "https://concerned-plum-crayfish.cyclic.app/api/generate-report";
+      "https://concerned-plum-crayfish.cyclic.app/api/report/dynamic-report";
     const data = {
       user: JSON.parse(alldata)?.ID,
-      vendorName: name,
+      vendorName: vendorName,
     };
-
     try {
       const response = await axios.post(url, data, {
         headers: {
           Authorization: ` Bearer ${tokens}`,
-          responseType: "arraybuffer",
         },
       });
-      if (response.status == 201) {
-        console.log(response);
+      if (response.data.success === "ok") {
+        await DownloadReport();
+        setloading(false);
+        setCurrent(0);
       }
-      // REPORT
-      // Create a Blob from the binary data
-      const blob = new Blob([response.data], {
-        type: response.headers["content-type"],
-      });
-
-      // Create a download link
-      const downloadLink = document.createElement("a");
-      downloadLink.href = window.URL.createObjectURL(blob);
-      downloadLink.download = "CasePData.xlsx"; // Specify the file name
-
-      // Append the link to the document
-      document.body.appendChild(downloadLink);
-
-      // Trigger the download
-      downloadLink.click();
-
-      // Remove the link from the document
     } catch (error) {
       console.log(error);
+      message.error("error in get report post call");
+      setloading(false);
     }
   }
-
-  const showModal = () => {
-    setOpen(true);
-  };
-
-  const handleOk = () => {
-    setConfirmLoading(true);
-    if (sendData && companyFileData.length > 0) {
-      postData(companyFileData);
-      setTimeout(() => {
-        setOpen(false);
-        setConfirmLoading(false);
-      }, 2000);
-    }
-  };
 
   const handleCancel = () => {
     console.log("Clicked cancel button");
     setOpen(false);
   };
-
+  // ******************save mapping *********
+  async function saveMapping(keyforjson: any,valueforjson: any,urlforpost: any){
+    const data = await getMapping(urlforpost);
+    if (data != null && data?._id) {
+      urlforpost = `${urlforpost}/${data._id}`;
+    }
+    const resultJSON: any = {};
+    keyforjson.forEach((item: any, index: any) => {
+      resultJSON[item.content] = valueforjson[index].content;
+    });
+    const alldata: any = Cookies.get("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    const finaltemp = {
+      data: resultJSON,
+    };
+    if (data != null && data._id) {
+      try {
+        const response = await axios.put(urlforpost, finaltemp, {
+          headers: {
+            Authorization: ` Bearer ${tokens}`,
+          },
+        });
+        if (response.status == 201) {
+          console.log(response);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const response = await axios.post(urlforpost, finaltemp, {
+          headers: {
+            Authorization: ` Bearer ${tokens}`,
+          },
+        });
+        if (response.status == 201) {
+          console.log(response);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+  async function getMapping(url: any) {
+    const alldata: any = Cookies.get("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${tokens}`,
+        },
+      });
+      if (response.data.data[0]) {
+        return response?.data?.data[0];
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  }
+  // *************for first file / companyfile ********************
+  async function companyFileCheck() {
+    setdisable(true);
+    setloading(true);
+    const data = await getMapping(companyMappingUrl);
+    const header = companyFileJson[0];
+    const contentArray: any = [];
+    for (const key in data) {
+      if (key !== "user" && key !== "_id") {
+        // @ ts-ignore
+        contentArray.push(data[key]);
+      }
+    }
+    const allValuesExist = contentArray.every((value) =>
+      header.includes(value)
+    );
+    if (allValuesExist && data != null) {
+      for (const key in data) {
+        const index = header.indexOf(data[key]);
+        if (index !== -1) {
+          header[index] = key;
+        }
+      }
+      const alldata = companyFileJson;
+      alldata[0] = header;
+      try {
+        const transformedData = await transformToObjectsFile1(header, alldata);
+        console.log("Transformed data:", transformedData);
+        await postData(companyPostUrl, transformedData, companyFileName);
+      } catch (error) {
+        console.error("Error during transformation:", error);
+      }
+    } else {
+      setdisable(false);
+      setloading(false);
+      setOpenPanel(true);
+    }
+  }
+  async function companyFileMapping() {
+    if (current == 0) {
+      if (UpdateHeader?.length == companyHeader?.length) {
+        setdisable(true);
+        setloading(true);
+        saveMapping(companyHeader, UpdateHeader, companyMappingUrl);
+        const convertFileHeader = companyFileHeader.map(
+          (item: any) => item.content
+        );
+        const convertHeader = companyHeader.map((item: any) => item.content);
+        UpdateHeader?.forEach((item: any, idx: any) => {
+          const index = convertFileHeader.indexOf(item?.content);
+          if (index != -1) {
+            convertFileHeader[index] = convertHeader[idx];
+          }
+        });
+        const Allfilejson = companyFileJson;
+        Allfilejson[0] = convertFileHeader;
+        try {
+          const transformedData = await transformToObjectsFile1(
+            convertFileHeader,
+            Allfilejson
+          );
+          console.log("Transformed data:", transformedData);
+          if (transformedData != null) {
+            onClose();
+            await postData(companyPostUrl, transformedData, companyFileName);
+            setTimeout(() => {
+              message.success(`Upload your next file`);
+            }, 2000);
+          } else {
+            message.error(`Check and Upload file Again`);
+          }
+        } catch (error) {
+          message.error(`first file upload error`);
+        }
+      } else {
+        message.error(`Please select a value for each dropdown.`);
+      }
+    }
+  }
+  const transformToObjectsFile1 = async (headers: any, data: any) => {
+    const vendorNamedropdown: any = [];
+    let TransFormToObjectsData = await Promise.all(
+      data?.map(async (row: any, idx: number) => {
+        const rowData: any = {};
+        await Promise.all(
+          headers?.map(async (header: any, index: any) => {
+            let value = row[index];
+            if (value !== "" && value !== undefined && value !== null) {
+              if (header === "Invoice Number" || header === "Document Number") {
+                value = String(value)?.replace(/[\W_]+/g, "");
+              }
+              if (header === "Vendor Name" && idx !== 0) {
+                vendorNamedropdown?.push(value?.trim());
+              }
+              rowData[header] = `${value}`?.trim();
+            } else {
+              // Handle empty values or show an error message
+              // message.error(`Check Your excel file some mandatory filed data is empty.`);
+              // setsendData(false);
+            }
+          })
+        );
+        return rowData;
+      })
+    );
+    console.log("DATA", vendorNamedropdown);
+    console.log({ vendorNamedropdown });
+    const set = new Set(vendorNamedropdown);
+    console.log({ set });
+    const uniqueArray = [...set];
+    console.log({ uniqueArray });
+    setvendorNameOpation(uniqueArray);
+    TransFormToObjectsData = TransFormToObjectsData.slice(1);
+    return TransFormToObjectsData;
+  };
+  // **********************for vendor/ first file********************
+  const transformToObjectsFile2 = async (headers: any, data: any) => {
+    let TransFormToObjectsData = await Promise.all(
+      data?.map(async (row: any) => {
+        const rowData: any = {};
+        await Promise.all(
+          headers?.map(async (header: any, index: any) => {
+            let value = row[index];
+            if (value !== "" && value !== undefined && value !== null) {
+              if (header === "Invoice Number" || header === "Document Number") {
+                value = String(value)?.replace(/[\W_]+/g, "");
+              }
+              rowData[header] = `${value}`?.trim();
+            } else {
+              // Handle empty values or show an error message
+              // message.error(`Check Your excel file some mandatory filed data is empty.`);
+              // setsendData(false);
+            }
+          })
+        );
+        return rowData;
+      })
+    );
+    TransFormToObjectsData = TransFormToObjectsData?.slice(1);
+    return TransFormToObjectsData;
+  };
+  async function vendorFileCheck() {
+    setdisable(true);
+    setloading(true);
+    const data: any = await getMapping(vendorMappingUrl);
+    const header = vendorFileJson[0];
+    const contentArray: any = [];
+    for (const key in data) {
+      if (key !== "user" && key !== "_id") {
+        // @ ts-ignore
+        contentArray.push(data[key]);
+      }
+    }
+    const allValuesExist = contentArray.every((value) =>
+      header.includes(value)
+    );
+    if (allValuesExist && data != null) {
+      for (const key in data) {
+        const index = header.indexOf(data[key]);
+        if (index !== -1) {
+          header[index] = key;
+        }
+      }
+      const alldata = vendorFileJson;
+      alldata[0] = header;
+      try {
+        const transformedData = await transformToObjectsFile2(header, alldata);
+        console.log("Transformed data:", transformedData);
+        await postData(vendorPostUrl, transformedData, vendorfileName);
+      } catch (error) {
+        console.error("Error during transformation:", error);
+      }
+    } else {
+      setdisable(false);
+      setloading(false);
+      setOpenPanel(true);
+    }
+  }
+  async function vendorFileMapping() {
+    if (current == 1) {
+      if (UpdateHeader?.length == vendorHeader?.length) {
+        setdisable(true);
+        setloading(true);
+        saveMapping(vendorHeader, UpdateHeader, vendorMappingUrl);
+        const convertFileHeader = vendorFileHeader.map(
+          (item: any) => item.content
+        );
+        const convertHeader = vendorHeader.map((item: any) => item.content);
+        UpdateHeader.forEach((item: any, idx: any) => {
+          const index = convertFileHeader.indexOf(item?.content);
+          if (index != -1) {
+            convertFileHeader[index] = convertHeader[idx];
+          }
+        });
+        const Allfilejson = vendorFileJson;
+        Allfilejson[0] = convertFileHeader;
+        try {
+          const transformedData = await transformToObjectsFile2(
+            convertFileHeader,
+            Allfilejson
+          );
+          console.log("Transformed data:", transformedData);
+          onClose();
+          await postData(vendorPostUrl, transformedData, vendorfileName);
+        } catch (error) {
+          console.error("Error during transformation:", error);
+        }
+      } else {
+        message.error(`Please select a value for each dropdown.`);
+      }
+    }
+  }
+  // ***********************for detailed File  ************
+  const transformToObjectsFile3 = async (headers: any, data: any) => {
+    const alldocmap = Mappings.slice(0, -1);
+    let TransFormToObjectsData = await Promise.all(
+      data.map(async (row: any) => {
+        const rowData: any = {};
+        await Promise.all(
+          //first i have value
+          headers?.map(async (header: any, index: any) => {
+            let value = row[index];
+            if (value !== undefined && value !== null) {
+              if (header === "Invoice Number" || header === "Document Number") {
+                value = String(value).replace(/[\W_]+/g, "");
+                if (header == "Document Number" || header == "Payment Document") {
+                  let assigdata = "";
+                  if (alldocmap?.length > 0) {
+                    for (let i = 0; i < alldocmap?.length; i++) {
+                      const item = alldocmap[i];
+                      if (item?.Method === "Contains" && value?.includes(item?.Value)) {
+                        assigdata = item?.Type;
+                        break;
+                      } else if (item?.Method === "StartsWith" && value?.startsWith(item?.Value)) {
+                        assigdata = item?.Type;
+                        break;
+                      } else if (item?.Method === "EndsWith" && value?.endsWith(item?.Value)) {
+                        assigdata = item?.Type;
+                        break;
+                      }
+                    }
+                  }
+                  rowData["DocumentTypeMapped"] = assigdata;
+                }
+              }
+              rowData[header] = `${value}`?.trim();
+            }
+            // else {
+            // Handle empty values or show an error message
+            // message.error(`Check Your excel file some mandatory filed data is empty.`);
+            // setsendData(false);
+            // }
+          })
+        );
+        return rowData;
+      })
+    );
+    TransFormToObjectsData = TransFormToObjectsData.slice(1);
+    return TransFormToObjectsData;
+  };
+  async function detailedFileCheck() {
+    setdisable(true);
+    setloading(true);
+    const data: any = await getMapping(detailMappingUrl);
+    const header = detailedFileJson[0];
+    const contentArray: any = [];
+    for (const key in data) {
+      if (key !== "user" && key !== "_id") {
+        // @ ts-ignore
+        contentArray.push(data[key]);
+      }
+    }
+    const allValuesExist = contentArray.every((value) =>
+      header.includes(value)
+    );
+    if (allValuesExist && data != null) {
+      for (const key in data) {
+        const index = header.indexOf(data[key]);
+        if (index !== -1) {
+          header[index] = key;
+        }
+      }
+      const alldata = detailedFileJson;
+      alldata[0] = header;
+      setdetailedFileJson(alldata);
+      setdisable(false);
+      setloading(false);
+      setCurrent(current + 1);
+    } else {
+      setdisable(false);
+      setloading(false);
+      setOpenPanel(true);
+    }
+  }
+  async function detailedFileMapping() {
+    if (current == 2) {
+      if (UpdateHeader?.length == detailedHeader?.length) {
+        setdisable(true);
+        setloading(true);
+        saveMapping(detailedHeader, UpdateHeader, detailMappingUrl);
+        const convertFileHeader = detailedFileHeader.map(
+          (item: any) => item.content
+        );
+        const convertHeader = detailedHeader.map((item: any) => item.content);
+        UpdateHeader.forEach((item: any, idx: any) => {
+          const index = convertFileHeader.indexOf(item?.content);
+          if (index != -1) {
+            convertFileHeader[index] = convertHeader[idx];
+          }
+        });
+        const Allfilejson = detailedFileJson;
+        Allfilejson[0] = convertFileHeader;
+        setcompanyFileHeader(convertHeader);
+        setdetailedFileJson(Allfilejson);
+        setdisable(false);
+        setloading(false);
+        onClose();
+        setCurrent(current + 1);
+      } else {
+        message.error(`Please select a value for each dropdown.`);
+      }
+    }
+  }
+  // ************************get reports*********************
+  async function getreport() {
+    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1){
+      try {
+        setloading(true);
+        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
+        console.log("Transformed data:", transformedData);
+        const check = await postData(detailPostUrl, transformedData, detailedFileName);
+        if (check) {
+          await postVendorName();
+        }
+      } catch (error) {
+        console.error("Error during transformation:", error);
+      }
+    } else {
+      message.error("please fill all data");
+    }
+  }
+  // *********************for click on next step***********
   const next = () => {
     if (current == 0) {
       if (
@@ -840,67 +838,37 @@ const Import = () => {
         companyFileJson.length != null &&
         companyFileJson.length > 0
       ) {
-        setCurrent(current + 1);
+        companyFileCheck();
       } else {
         message.error(`Please upload excle file.`);
       }
     } else if (current == 1) {
-      const allValuesSelected = companyFileSelectedValues.every(
-        (value) => value !== ""
-      );
-      if (allValuesSelected) {
-        companyFileHeaderChanged();
-        setCurrent(current + 1);
-      } else {
-        message.error(`Please select a value for each dropdown.`);
-      }
-    } else if (current == 2) {
       if (
         vendorFileJson.length != undefined &&
         vendorFileJson.length != null &&
         vendorFileJson.length > 0
       ) {
-        setCurrent(current + 1);
+        vendorFileCheck();
       } else {
         message.error(`Please upload excle file.`);
       }
-    } else if (current == 3) {
-      const allValuesSelected = vendorFileSelectedValues.every(
-        (value) => value !== ""
-      );
-      if (allValuesSelected) {
-        vendorFileHeaderChanged();
-        setCurrent(current + 1);
-      } else {
-        message.error(`Please select a value for each dropdown.`);
-      }
-    } else if (current == 4) {
+    } else if (current == 2) {
       if (
         detailedFileJson.length != undefined &&
         detailedFileJson.length != null &&
         detailedFileJson.length > 0
       ) {
-        setCurrent(current + 1);
+        detailedFileCheck();
       } else {
         message.error(`Please upload excle file.`);
       }
-    } else if (current == 5) {
-      const allValuesSelected = detailedFileSelectedValues.every(
-        (value) => value !== ""
-      );
-      if (allValuesSelected) {
-        detailedFileHeaderChanged();
-        if (vendorName != "" && vendorName != null && vendorName != undefined) {
-          postVendorName(vendorName);
-        }
-      } else {
-        message.error(`Please select a value for each dropdown.`);
-      }
     }
   };
-  // const prev = () => {
-  //   setCurrent(current - 1);
-  // };
+
+  const onClose = () => {
+    setOpenPanel(false);
+  };
+
   const items = steps.map((item: any) => ({
     key: item.title,
     title: item.title,
@@ -908,21 +876,43 @@ const Import = () => {
 
   const contentStyle: React.CSSProperties = {
     height: "350px",
-    // textAlign: 'center',
-    // display: "grid",
-    // placeItems: "center",
-    // color: token.colorTextTertiary,
-    // backgroundColor: token.colorFillAlter,
     borderRadius: token.borderRadiusLG,
     border: `2px solid ${token.colorBorder}`,
-    // border: `2px dashed ${token.colorBorder}`,
     marginTop: 16,
   };
+
+  function MappingCheck() {
+    if (current == 0) {
+      companyFileMapping();
+    } else if (current == 1) {
+      vendorFileMapping();
+    } else if (current == 2) {
+      detailedFileMapping();
+    }
+  }
+
+  function showfiles() {
+    if (current == 0 && companyFileJson.length > 0) {
+      setshowfile(companyFileJson);
+      setOpen(true);
+    } else if (current == 1 && vendorFileJson.length > 0) {
+      setshowfile(vendorFileJson);
+      setOpen(true);
+    } else if ((current == 2 || current == 3) && detailedFileJson.length > 0) {
+      setshowfile(detailedFileJson);
+      setOpen(true);
+    } else {
+      message.error("Please Upload file");
+    }
+  }
+
   return (
     <>
       <div style={{ margin: "20px" }}>
         <Steps current={current} items={items} />
-        <div style={contentStyle}>{steps[current].content}</div>
+        <div style={{ display: "grid", placeItems: "center" }}>
+        </div>
+        <div style={contentStyle}>{steps[current]?.content}</div>
         <div
           style={{
             marginTop: 24,
@@ -930,47 +920,121 @@ const Import = () => {
             justifyContent: "space-around",
           }}
         >
-          {/* {current > 0 && (
-            <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
-              Previous
-            </Button>
-          )} */}
-          {current < steps.length - 1 && (
-            <Button type="primary" onClick={() => next()}>
-              Next
-            </Button>
-          )}
-          {current === steps.length - 1 && (
-            <Button type="primary" onClick={next}>
-              Generate Report
-            </Button>
-          )}
         </div>
       </div>
-
+      <Drawer
+        title={`large Drawer`}
+        placement="right"
+        size={"large"}
+        onClose={onClose}
+        open={OpenPanel}
+        zIndex={1000}
+        width={900}
+        extra={
+          <Space>
+            <Button onClick={showfiles} type="primary">
+              <EyeOutlined />
+            </Button>
+            <Button loading={loading} onClick={MappingCheck} type="primary">
+              Save
+            </Button>
+          </Space>
+        }
+      >
+        <DragAndDrop
+          initialBoxOneItems={current === 0
+              ? companyFileHeader
+              : current === 1
+                ? vendorFileHeader
+                : current === 2
+                  ? detailedFileHeader
+                  : null
+          }
+          boxTwoItems={UpdateHeader}
+          setBoxTwoItems={setUpdateHeader}
+          defaultStaticContent={
+            current === 0
+              ? companyHeader
+              : current === 1
+                ? vendorHeader
+                : current === 2
+                  ? detailedHeader
+                  : null
+          }
+        />
+      </Drawer>
       <Modal
         title="Title"
         open={open}
-        onOk={handleOk}
-        confirmLoading={confirmLoading}
         onCancel={handleCancel}
+        style={{ padding: "10px" }}
+        width={950}
+        okButtonProps={{ style: { display: "none" } }}
+        zIndex={10000}
       >
-        <p>Select your vendor name</p>
-        <Select
-          className="Dropdown"
-          // style={{ width: 300, margin: '8px' }}
-          placeholder={`select Vender naem`}
-          onChange={(value) => SetvendorName(value)}
-        >
-          {vendorNameOpation.map((option: any) => (
-            <Option key={option} value={option}>
-              {option}
-            </Option>
-          ))}
-        </Select>
+        <div className="Prev_excelFile">
+          <div
+            style={{
+              overflowX: "auto",
+              maxHeight: "320px" /* Set the max height for the table body */,
+            }}
+          >
+            <table
+              style={{
+                borderCollapse: "collapse",
+                width: "100%",
+                border: "1px solid #ddd",
+                position: "relative",
+              }}
+            >
+              <thead>
+                <tr>
+                  {showfile?.[0] &&
+                    showfile?.[0].map((header: any, index: any) => (
+                      <th
+                        key={index}
+                        style={{
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                          backgroundColor: "green",
+                          color: "white",
+                          fontSize: "13px",
+                          fontFamily: "Arial, sans-serif",
+                          whiteSpace: "nowrap",
+                          height: "30px",
+                          position: "sticky",
+                          top: "0",
+                        }}
+                      >
+                        {header}
+                      </th>
+                    ))}
+                </tr>
+              </thead>
+              <tbody style={{ overflowY: "scroll" }}>
+                {showfile?.slice(1)?.map((row: any, rowIndex: any) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell: any, cellIndex: any) => (
+                      <td
+                        key={cellIndex}
+                        style={{
+                          border: "1px solid #ddd",
+                          padding: "8px",
+                          fontSize: "12px",
+                          fontFamily: "Arial, sans-serif",
+                        }}
+                      >
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </Modal>
     </>
   );
 };
-
 export default Import;

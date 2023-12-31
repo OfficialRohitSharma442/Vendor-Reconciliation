@@ -3,7 +3,6 @@
     outline: 2px dashed transparent; /* Initial state - adjust width and color as needed */
     animation: rotateBorder 3s infinite linear;
 }
-
 @keyframes rotateBorder {
     0% {
         outline-color: transparent;

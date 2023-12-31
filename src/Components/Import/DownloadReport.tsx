@@ -20,6 +20,7 @@ const DownloadReport = async () => {
         { url: '/m-four-case', sheetName: 'M4' },
         { url: '/m-five-case', sheetName: 'M5' }
     ];
+    // ************** Fetch data*******
     const fetchData = async (url, sheetName) => {
         const alldata: any = Cookies.get("VR-user_Role");
         const tokens = JSON.parse(alldata).token;
@@ -42,17 +43,23 @@ const DownloadReport = async () => {
             return null;
         }
     };
-
+    // ************** generate excle file*******
     const generateExcelFile = async () => {
         try {
             const promises = allurl.map(({ url, sheetName }) => fetchData(url, sheetName));
-            const results = await Promise.all(promises);
+            const results = await Promise.allSettled(promises);
             const wb = XLSX.utils.book_new();
             results.forEach(result => {
-                if (result) {
-                    const wsK = XLSX.utils.json_to_sheet(result.data);
-                    XLSX.utils.book_append_sheet(wb, wsK, result.sheetName);
-                }
+                // if (result && result?.data) {
+                //     const wsK = XLSX.utils.json_to_sheet(result.value?.data);
+                //     XLSX.utils.book_append_sheet(wb, wsK, result.sheetName);
+                // }
+                if (result.status === 'fulfilled' && result?.value && result.value?.data) {
+                    const wsK = XLSX.utils.json_to_sheet(result.value?.data);
+                    XLSX.utils.book_append_sheet(wb, wsK, result.value.sheetName);
+                  } else if (result.status === 'rejected' && result.reason) {
+                    console.error(`Error fetching data: ${result.reason}`);
+                  }
             });
             if (wb.SheetNames.length > 0) {
                 XLSX.writeFile(wb, "combinedCaseFile.xlsx");

@@ -1,12 +1,8 @@
 import React, { useEffect } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import "./dragdrop.css"
 import { HolderOutlined } from "@ant-design/icons";
 import { message } from 'antd';
-
-
 const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultStaticContent }: any) => {
     interface BoxItem {
         id: string;
@@ -16,21 +12,15 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
     useEffect(() => {
         setBoxOneItems(initialBoxOneItems);
     }, [initialBoxOneItems])
-
     // console.log(boxTwoItems);       
     const onDragEnd = (result: any) => {
         const { source, destination } = result;
-
         if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
             return;
         }
-
         const sourceList = source.droppableId;
         const destinationList = destination.droppableId;
-
         // Validate if moving item to the static column
-
-
         if (destinationList === "droppable-2" && boxTwoItems.length >= defaultStaticContent.length) {
             // You can show an alert or any other form of feedback to the user
             alert('Cannot add more items to the static column.');
@@ -68,21 +58,17 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
             }
         }
     };
-
     const itemStyle = {
         border: '1px solid gray',
-        // padding: '1rem',
         backgroundColor: 'white',
         marginBottom: '0.5rem',
         display: 'flex',
         alignItems: 'center',
         fontWeight: "500",
         padding: "5px",
-        // background:"#f4f4f4"
     };
     const itemStyle1 = {
         border: '1px solid gray',
-        // padding: '1rem',
         backgroundColor: 'white',
         marginBottom: '0.5rem',
         display: 'flex',
@@ -91,7 +77,6 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
         padding: "5px",
         background: "#fafafa"
     };
-
     return (
         <>
             <DragDropContext onDragEnd={onDragEnd}>
@@ -194,7 +179,6 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
                             )}
                         </Droppable>
                     </div>
-
                     {/* Droppable for boxOneItems */}
                     <div>
                         <p style={{ margin: "5px", textAlign: "center", fontSize: "15px", fontWeight: "bold" }}>Uploaded file Column</p>
@@ -251,7 +235,4 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
         </>
     );
 };
-
-
-
 export default DragAndDrop;
