@@ -912,7 +912,7 @@ const Import = () => {
         </div>
       </div>
       <Drawer
-        title={`large Drawer`}
+        title={`File Mapping`}
         placement="right"
         size={"large"}
         onClose={onClose}
