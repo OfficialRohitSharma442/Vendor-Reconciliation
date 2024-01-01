@@ -40,8 +40,9 @@ const DownloadReport = async () => {
             }
             else{
                 console.log(`No Data find for this ${sheetName} sheet`);
-                let nodata = [{NODATA: "No Data find for this sheeet",}]
-                return { sheetName, data:nodata };
+                // let nodata = [{NODATA: "No Data find for this sheeet",}]
+                // return { sheetName, data:nodata };
+                return null;
             }
         } catch (error) {
             console.error(`Error fetching data from ${url}:`, error);

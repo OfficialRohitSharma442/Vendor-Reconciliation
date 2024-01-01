@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, ReloadOutlined, FileExcelOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, ReloadOutlined, FileExcelOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Drawer, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
@@ -400,6 +400,7 @@ const Import = () => {
       });
       if (response.data.success === "ok") {
         await DownloadReport();
+        setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
         setloading(false);
         setCurrent(0);
       }
@@ -698,11 +699,13 @@ const Import = () => {
           headers?.map(async (header: any, index: any) => {
             let value = row[index];
             if (value !== undefined && value !== null) {
-              if (header === "Invoice Number" || header === "Document Number") {
+              if (header === "Invoice Number" || header === "Document Number" || header === "Payment Document"){
                 value = String(value).replace(/[\W_]+/g, "");
                 if (header == "Document Number" || header == "Payment Document") {
+                  if(rowData["DocumentTypeMapped"])
+                  console.log(rowData["DocumentTypeMapped"]);
                   let assigdata = "";
-                  if (alldocmap?.length > 0) {
+                  if (alldocmap?.length > 0 && value != "") {
                     for (let i = 0; i < alldocmap?.length; i++) {
                       const item = alldocmap[i];
                       if (item?.Method === "Contains" && value?.includes(item?.Value)) {
