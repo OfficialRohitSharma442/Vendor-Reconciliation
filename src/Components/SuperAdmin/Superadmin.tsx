@@ -17,6 +17,7 @@ interface DataType {
   address: string;
 }
 type DataIndex = keyof DataType;
+let tokena = ""
 const Superadmin: React.FC = () => {
 
   const [searchText, setSearchText] = useState("");
@@ -31,9 +32,9 @@ const Superadmin: React.FC = () => {
     if (storedRole) {
 
       const parsedData = JSON.parse(storedRole);
+      tokena = parsedData?.token
 
-      const token = parsedData?.token;
-      getAdmins(token);
+      getAdmins(tokena);
     }
   }, []);
   async function getAdmins(token: string) {
@@ -245,7 +246,7 @@ const Superadmin: React.FC = () => {
         // @ ts-ignore
         open={open}
         onClose={onClose}
-        showDetaillistData={() => getAdmins(token)}
+        showDetaillistData={() => getAdmins(tokena)}
       />
     </div>
   );
