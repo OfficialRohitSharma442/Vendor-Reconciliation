@@ -7,6 +7,7 @@ import Highlighter from "react-highlight-words";
 import { Context } from "../Context/Context";
 import AddAdmin from "./AddAdmin";
 // import { getAllUsers } from '../utils/getallusers';
+import Cookies from 'js-cookie';
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import axios from "axios";
 interface DataType {
@@ -17,7 +18,7 @@ interface DataType {
 }
 type DataIndex = keyof DataType;
 const Superadmin: React.FC = () => {
-  const { token } = React.useContext(Context);
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -25,8 +26,16 @@ const Superadmin: React.FC = () => {
   const [allusers, setAllusers] = React.useState<any>([]);
 
   React.useEffect(() => {
-    getAdmins(token);
-  }, [token]);
+    const storedRole = Cookies.get('VR-user_Role');
+
+    if (storedRole) {
+
+      const parsedData = JSON.parse(storedRole);
+
+      const token = parsedData?.token;
+      getAdmins(token);
+    }
+  }, []);
   async function getAdmins(token: string) {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -135,19 +144,19 @@ const Superadmin: React.FC = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
     ),
-  
+
     onFilter: (value, record) =>
       record[dataIndex]
         .toString()
         .toLowerCase()
         .includes((value as string).toLowerCase()),
-   
+
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-   
+
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
