@@ -699,7 +699,7 @@ const Import = () => {
           headers?.map(async (header: any, index: any) => {
             let value = row[index];
             if (value !== undefined && value !== null) {
-              if (header === "Invoice Number" || header === "Document Number" || header === "Payment Document"){
+              if (header === "Invoice Number" || header === "Document Number"){
                 value = String(value).replace(/[\W_]+/g, "");
                 if (header == "Document Number" || header == "Payment Document") {
                   if(rowData["DocumentTypeMapped"])
