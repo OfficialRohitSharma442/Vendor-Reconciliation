@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, ReloadOutlined, FileExcelOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Drawer, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
+import { Button, Checkbox, DatePicker, DatePickerProps, Drawer, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, {useState } from "react";
+import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
 import DocTypeMapping from "./DocTypeMapping";
 import DownloadReport from "./DownloadReport";
 const { Option } = Select;
-// let deleteMapping: any[] = [];
 const Import = () => {
   // **************Static Data*********************
   const companyHeader = [
@@ -101,6 +100,12 @@ const Import = () => {
   function onChange(checkedValues) {
     setDeleteMapping(checkedValues);
   }
+  // **********************date**********
+  const [dateVendor, setdateVendor] = useState<any>("");
+  const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
+    console.log(date, dateString);
+    setdateVendor(dateString);
+  };
   // **************for get mapping id********
   async function deleteMappings(url: any) {
     const alldata: any = Cookies.get("VR-user_Role");
@@ -299,10 +304,15 @@ const Import = () => {
       title: "Report",
       content: (
         <>
-          <div style={{ margin: "20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <div style={{ display: "flex" }}>
+          <div style={{ margin: "0px 20px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between",alignItems:"center" }}>
+              <div>
+              <h2 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h2>
+              </div>
+              <div style={{ display: "flex", gap: "20px" }}>
                 {/* <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p> */}
+                {/* <label style={{ marginRight: '8px' }}>Vendor name *</label> */}
+                <span style={{color:"red"}}>*</span>
                 <Select
                   // className="Dropdown"
                   style={{ width: "300" }}
@@ -314,10 +324,8 @@ const Import = () => {
                       {option}
                     </Option>
                   ))}
-                </Select>
-              </div>
-              <p style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</p>
-              <div style={{ display: "flex", gap: "20px" }}>
+                </Select><span style={{color:"red"}}>*</span>
+                <DatePicker format="MM/DD/YYYY" onChange={onChangeDate} />
                 <Button onClick={showfiles} type="primary">
                   <EyeOutlined />
                 </Button>
@@ -387,10 +395,11 @@ const Import = () => {
     const alldata: any = Cookies.get("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
     const url =
-      "https://concerned-plum-crayfish.cyclic.app/api/report/dynamic-report";
+      "https://concerned-plum-crayfish.cyclic.app/api/v2/report/dynamic-report";
     const data = {
       user: JSON.parse(alldata)?.ID,
       vendorName: vendorName,
+      dateTypeMapped:dateVendor
     };
     try {
       const response = await axios.post(url, data, {
@@ -691,45 +700,60 @@ const Import = () => {
   // ***********************for detailed File  ************
   const transformToObjectsFile3 = async (headers: any, data: any) => {
     const alldocmap = Mappings.slice(0, -1);
+    const documentMap = alldocmap?.filter(item => item?.Column === "Document Number");
+    const paymentMap = alldocmap?.filter(item => item?.Column === "Payment Document");
     let TransFormToObjectsData = await Promise.all(
-      data.map(async (row: any) => {
+      data?.map(async (row: any) => {
         const rowData: any = {};
         await Promise.all(
-          //first i have value
           headers?.map(async (header: any, index: any) => {
             let value = row[index];
             if (value !== undefined && value !== null) {
-              if (header === "Invoice Number" || header === "Document Number"){
+              if (header === "Invoice Number" || header === "Document Number" || header == "Payment Document") {
                 value = String(value).replace(/[\W_]+/g, "");
-                if (header == "Document Number" || header == "Payment Document") {
-                  if(rowData["DocumentTypeMapped"])
-                  console.log(rowData["DocumentTypeMapped"]);
-                  let assigdata = "";
-                  if (alldocmap?.length > 0 && value != "") {
-                    for (let i = 0; i < alldocmap?.length; i++) {
-                      const item = alldocmap[i];
-                      if (item?.Method === "Contains" && value?.includes(item?.Value)) {
-                        assigdata = item?.Type;
+                if (header == "Document Number") {
+                  // if (rowData["DocumentTypeMapped"])
+                  //   console.log(rowData["DocumentTypeMapped"]);
+                  let DocumentTypeMapped = "";
+                  if (documentMap?.length > 0 && value != "") {
+                    for (let i = 0; i < documentMap?.length; i++) {
+                      const item = documentMap[i];
+                      if (item?.Method === "Contains" && value?.toLowerCase().includes(item?.Value.toLowerCase())) {
+                        DocumentTypeMapped = item?.Type;
                         break;
-                      } else if (item?.Method === "StartsWith" && value?.startsWith(item?.Value)) {
-                        assigdata = item?.Type;
+                      } else if (item?.Method === "StartsWith" && value?.toLowerCase().startsWith(item?.Value.toLowerCase())) {
+                        DocumentTypeMapped = item?.Type;
                         break;
-                      } else if (item?.Method === "EndsWith" && value?.endsWith(item?.Value)) {
-                        assigdata = item?.Type;
+                      } else if (item?.Method === "EndsWith" && value?.toLowerCase().endsWith(item?.Value.toLowerCase())) {
+                        DocumentTypeMapped = item?.Type;
                         break;
                       }
                     }
                   }
-                  rowData["DocumentTypeMapped"] = assigdata;
+                  rowData["DocumentTypeMapped"] = DocumentTypeMapped;
+                }
+                else if (header == "Payment Document") {
+                  let PaymentTypeMapped = "";
+                  if (paymentMap?.length > 0 && value != "") {
+                    for (let i = 0; i < paymentMap?.length; i++) {
+                      const item = paymentMap[i];
+                      if (item?.Method === "Contains" && value?.toLowerCase().includes(item?.Value.toLowerCase())) {
+                        PaymentTypeMapped = item?.Type;
+                        break;
+                      } else if (item?.Method === "StartsWith" && value?.toLowerCase().startsWith(item?.Value.toLowerCase())) {
+                        PaymentTypeMapped = item?.Type;
+                        break;
+                      } else if (item?.Method === "EndsWith" && value?.toLowerCase().endsWith(item?.Value.toLowerCase())) {
+                        PaymentTypeMapped = item?.Type;
+                        break;
+                      }
+                    }
+                  }
+                  rowData["PaymentTypeMapped"] = PaymentTypeMapped;
                 }
               }
               rowData[header] = `${value}`?.trim();
             }
-            // else {
-            // Handle empty values or show an error message
-            // message.error(`Check Your excel file some mandatory filed data is empty.`);
-            // setsendData(false);
-            // }
           })
         );
         return rowData;
@@ -803,7 +827,7 @@ const Import = () => {
   }
   // ************************get reports*********************
   async function getreport() {
-    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1) {
+    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1 && dateVendor != "" && dateVendor != undefined && dateVendor != undefined) {
       try {
         setloading(true);
         const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
@@ -864,7 +888,7 @@ const Import = () => {
   }));
 
   const contentStyle: React.CSSProperties = {
-    height: "350px",
+    height: "360px",
     borderRadius: token.borderRadiusLG,
     border: `2px solid ${token.colorBorder}`,
     marginTop: 16,
@@ -953,7 +977,7 @@ const Import = () => {
         />
       </Drawer>
       <Modal
-        title="Title"
+        title={`Preview ${customFileName}`}
         open={open}
         onCancel={handleCancel}
         style={{ padding: "10px" }}

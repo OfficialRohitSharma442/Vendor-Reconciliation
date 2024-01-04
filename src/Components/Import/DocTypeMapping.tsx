@@ -2,7 +2,7 @@ import { Input, Select, Button, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 const { Option } = Select;
 const DocTypeMapping = ({ Mappings, setMappings }: any) => {
-    // console.log(Mappings);
+    console.log(Mappings);
     const DocumentOptions = ['Starts With', 'Ends With', 'Contains'];
     const TypeHeader = ["Debit note", "Payment", "Advance Payment", "TDS", "Invoice"];
     const Columns = ["Document Number", "Payment Document"];
@@ -36,15 +36,18 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
             message.error("Field should not be empty")
         }
     };
-
     const handleDeleteMapping = (index) => {
         const updatedMappings = [...Mappings];
+        setMappings([]);
+        // updatedMappings[index] = { Column: ' ', Type: ' ', Method: ' ', Value: ' ' };
+        // updatedMappings?.splice(index, 1);
+        updatedMappings[index] = { Column: ' ', Type: ' ', Method: ' ', Value: ' ' };
         updatedMappings?.splice(index, 1);
         setMappings(updatedMappings);
     };
 
     return (
-        <div style={{ height: "250px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "750px" }}>
+        <div style={{ height: "270px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "100%" }}>
             {Mappings?.map((_, index) => (
                 <div key={index} style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
                     <Select
