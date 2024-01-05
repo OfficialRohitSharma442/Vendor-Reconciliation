@@ -3,7 +3,7 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 const { Option } = Select;
 const DocTypeMapping = ({ Mappings, setMappings }: any) => {
-    console.log(Mappings);
+    // console.log(Mappings);
     const DocumentOptions = ['Contains','Starts With', 'Ends With'];
     const TypeHeader = ["Debit note","Advance Payment", "TDS", "Invoice"];
     const option = ["Payment"];

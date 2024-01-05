@@ -24,7 +24,7 @@ const Adduser: React.FC<AddAdminProps> = ({
 
   const handleOnCreateUser = async () => {
     try {
-      console.log(userdata);
+      // console.log(userdata);
       const alldata: any = Cookies.get("VR-user_Role");
       const token = JSON.parse(alldata).token;
       setloading(true);
@@ -39,7 +39,7 @@ const Adduser: React.FC<AddAdminProps> = ({
       );
       if (response.status === 201) {
         // Update the state with the response data
-        console.log(response);
+        // console.log(response);
         messageApi.open({
           type: "success",
           content: "User Added Successfully",

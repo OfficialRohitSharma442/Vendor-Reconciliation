@@ -204,7 +204,7 @@ const Import = () => {
               dateNF: "mm-dd-yyyy", // Specify the date format if needed"yyyy-mm-dd"
               cellDates: true, // Parse dates from the cell values
             } as any);
-            console.log(jsonData)
+            // console.log(jsonData)
             const headers: any = jsonData[0];
             const trimmedHeaders = headers.map((str: any) =>
               str.trim().replace(/\s+/g, " ")
@@ -539,7 +539,7 @@ const Import = () => {
       alldata[0] = header;
       try {
         const transformedData = await transformToObjectsFile1(header, alldata);
-        console.log("Transformed data:", transformedData);
+        // console.log("Transformed data:", transformedData);
         await postData(companyPostUrl, transformedData, companyFileName);
       } catch (error) {
         console.error("Error during transformation:", error);
@@ -573,7 +573,7 @@ const Import = () => {
             convertFileHeader,
             Allfilejson
           );
-          console.log("Transformed data:", transformedData);
+          // console.log("Transformed data:", transformedData);
           if (transformedData != null) {
             onClose();
             await postData(companyPostUrl, transformedData, companyFileName);
