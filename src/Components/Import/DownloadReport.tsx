@@ -68,14 +68,14 @@ const DownloadReport = async () => {
 
             const res = await getReco("https://concerned-plum-crayfish.cyclic.app/api/generate-report/reco");
             if (res != null && res != undefined && res != "") {
-                const all = res.map(item => item?.data);
-                console.log(all);
-                let first = [`Vendor Code: ${res[0]["Vendor Name"]}`];
-                let second = [`Vendor Name: ${res[0]["Vendor Code"]}`];
-                const headers = Object.keys(all[0]);
+                const all = res?.map(item => item?.data);
+                // console.log(all);
+                let first = [`Vendor Name: ${res[0]["Vendor Name"]}`];
+                let second = [`Vendor Code: ${res[0]["Vendor Code"]}`];
+                const headers = Object?.keys(all[0]);
                 const allData = [first, second, [], [], headers];
                 let total = 0;
-                all.forEach(obj => {
+                all?.forEach(obj => {
                     const rowData: any = headers.map((header) => {
                         if (header == "Company") {
                             total = total + parseInt(obj[header]);
@@ -98,10 +98,13 @@ const DownloadReport = async () => {
             }
             if (newFile.SheetNames.length > 0) {
                 XLSX.writeFile(newFile, "combinedCaseFile.xlsx");
-                console.log("Excel file generated successfully");
+                // console.log("Excel file generated successfully");
             } else {
                 console.log("No data available for any sheets");
             }
+            // setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
+            // setloading(false);
+            // setCurrent(0);
         } catch (error) {
             console.error("Error generating Excel file:", error);
         }
@@ -125,6 +128,7 @@ const DownloadReport = async () => {
             return error;
         }
     }
-    await generateExcelFile();
+   await generateExcelFile();
+   return true;
 }
 export default DownloadReport

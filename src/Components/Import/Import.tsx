@@ -435,7 +435,7 @@ const Import = () => {
         },
       });
       if (response.data.success === "ok") {
-        await DownloadReport();
+       const res= await DownloadReport();
         setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
         setloading(false);
         setCurrent(0);

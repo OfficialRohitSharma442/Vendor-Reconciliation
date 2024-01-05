@@ -4,7 +4,7 @@ import { useState } from 'react';
 const { Option } = Select;
 const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     console.log(Mappings);
-    const DocumentOptions = ['Starts With', 'Ends With', 'Contains'];
+    const DocumentOptions = ['Contains','Starts With', 'Ends With'];
     const TypeHeader = ["Debit note","Advance Payment", "TDS", "Invoice"];
     const option = ["Payment"];
     const Columns = ["Document Number", "Payment Document"];
