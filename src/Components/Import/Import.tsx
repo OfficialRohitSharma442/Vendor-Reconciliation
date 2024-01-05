@@ -11,6 +11,7 @@ import DragAndDrop from "../utils/Drag-and-Drop";
 import "./Import.css";
 import DocTypeMapping from "./DocTypeMapping";
 import DownloadReport from "./DownloadReport";
+import MappingHeadersTable from "../utils/antTable";
 const { Option } = Select;
 const Import = () => {
   // **************Static Data*********************
@@ -89,8 +90,12 @@ const Import = () => {
   // *****************state for document mapping *********
   const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
   //***********for loading state */
+  const [resetMapLoading, setresetMapLoading] = useState("");
   const [loading, setloading] = React.useState(false);
   const [disable, setdisable] = React.useState(false);
+  /******** state for Reset mapping preview***************/
+  const [resmappingprevdata, setResMappingPrevdata] = React.useState<any>([])
+  const [mappingModal, setMappingModal] = React.useState(false);
   // *************delete mapping***************
   const [deleteMapping, setDeleteMapping] = useState<string[]>([]);
   const [deleteMappingLoading, setDeleteMappingLoading] = useState(false);
@@ -150,6 +155,23 @@ const Import = () => {
     } else {
       message.error("Please Select File");
     }
+  }
+  async function resetMappingView(filetype) {
+    setresetMapLoading(filetype);
+    if (filetype === "First File") {
+      const res = await getMapping(companyMappingUrl);
+      setResMappingPrevdata(Object.entries(res).filter(([key]) => key !== "_id"))
+      setMappingModal(true)
+    } else if (filetype === "Second File") {
+      const res = await getMapping(vendorMappingUrl);
+      setResMappingPrevdata(Object.entries(res).filter(([key]) => key !== "_id"))
+      setMappingModal(true)
+    } else {
+      const res = await getMapping(detailMappingUrl);
+      setResMappingPrevdata(Object.entries(res).filter(([key]) => key !== "_id"))
+      setMappingModal(true)
+    }
+    setresetMapLoading("");
   }
   // ********************for uplode every file***************
   const props: UploadProps = {
@@ -923,6 +945,17 @@ const Import = () => {
       message.error("Please Upload file");
     }
   }
+  const optionsWithButtons = plainOptions.map((option) => ({
+    label: (
+      <div>
+        <span>{option}</span>
+        <Button loading={resetMapLoading == option} type="link">
+            <EyeOutlined onClick={() => { resetMappingView(option) }} />
+        </Button>
+      </div>
+    ),
+    value: option,
+  }));
 
   return (
     <>
@@ -1062,8 +1095,19 @@ const Import = () => {
         confirmLoading={deleteMappingLoading}
       >
         <p style={{ margin: "0", fontWeight: "500" }}>Select File :</p>
-        <Checkbox.Group options={plainOptions} onChange={onChange} style={{ margin: "10px 0px" }} />
+        <Checkbox.Group options={optionsWithButtons} onChange={onChange} style={{ margin: "10px 0px" }} />
       </Modal>
+      <Modal
+        title="Mapping Preview"
+        open={mappingModal}
+        onCancel={() => setMappingModal(false)}
+        width={800}
+        okButtonProps={{ style: { display: "none" } }}
+        cancelButtonProps={{ style: { display: "none" } }}
+        zIndex={10000}
+      >
+        <MappingHeadersTable contents={resmappingprevdata} />
+      </Modal >
     </>
   );
 };
