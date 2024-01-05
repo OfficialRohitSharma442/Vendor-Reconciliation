@@ -1,15 +1,23 @@
 import { Input, Select, Button, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useState } from 'react';
 const { Option } = Select;
 const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     console.log(Mappings);
     const DocumentOptions = ['Starts With', 'Ends With', 'Contains'];
-    const TypeHeader = ["Debit note", "Payment", "Advance Payment", "TDS", "Invoice"];
+    const TypeHeader = ["Debit note","Advance Payment", "TDS", "Invoice"];
+    const option = ["Payment"];
     const Columns = ["Document Number", "Payment Document"];
+    const [isSecondDropdownEnabled, setIsSecondDropdownEnabled] = useState(false);
     const handleColumnChange = (value, index) => {
         const updatedMappings = [...Mappings];
         updatedMappings[index].Column = value;
         setMappings(updatedMappings);
+        if (value === "Payment Document") {
+            setIsSecondDropdownEnabled(true);
+        } else {
+            setIsSecondDropdownEnabled(false);
+        }
     };
     const handleTypeChange = (value, index) => {
         const updatedMappings = [...Mappings];
@@ -38,9 +46,6 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     };
     const handleDeleteMapping = (index) => {
         const updatedMappings = [...Mappings];
-        setMappings([]);
-        // updatedMappings[index] = { Column: ' ', Type: ' ', Method: ' ', Value: ' ' };
-        // updatedMappings?.splice(index, 1);
         updatedMappings[index] = { Column: ' ', Type: ' ', Method: ' ', Value: ' ' };
         updatedMappings?.splice(index, 1);
         setMappings(updatedMappings);
@@ -48,12 +53,14 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
 
     return (
         <div style={{ height: "270px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "100%" }}>
-            {Mappings?.map((_, index) => (
+            {Mappings?.map((mapping, index) => (
                 <div key={index} style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
                     <Select
                         placeholder="Select Column"
                         onChange={(value) => handleColumnChange(value, index)}
                     // defaultValue={mapping?.Type != "" ? mapping?.Type : undefined}
+                    disabled={mapping?.Column == "Payment Document" && index != Mappings.length-1?true:false}
+                    className='doc_type_mapping'
                     >
                         {Columns?.map((item) => (
                             <Option key={item} value={item}>
@@ -66,19 +73,27 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
                         // defaultValue={mapping?.Type != "" ? mapping?.Type : undefined}
                         onChange={(value) => handleTypeChange(value, index)}
                     // value={mapping}
-                    // className='doc_type_mapping'
+                    disabled={mapping?.Column == "Payment Document" && index != Mappings.length-1?true:false}
+                    className='doc_type_mapping'
                     >
-                        {TypeHeader?.map((item) => (
+                        {isSecondDropdownEnabled ? 
+                        option?.map((item) => (
                             <Option key={item} value={item}>
                                 {item}
                             </Option>
-                        ))}
+                        ))
+                        :TypeHeader?.map((item) => (
+                            <Option key={item} value={item}>
+                                {item}
+                            </Option>
+                        ))
+                        }
                     </Select>
                     <Select
                         placeholder="Method"
                         // defaultValue={mapping?.Method != "" ? mapping?.Method : undefined}
                         onChange={(value) => handleMethodChange(value, index)}
-                    // className='doc_type_mapping'
+                    className='doc_type_mapping'
                     >
                         {DocumentOptions?.map((item) => (
                             <Option key={item} value={item}>
@@ -89,7 +104,7 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
                     <Input
                         placeholder="Text"
                         onChange={(e) => handleValueChange(e, index)}
-                    // className='doc_type_mapping'
+                    className='doc_type_mapping'
                     />
                     {index === Mappings?.length - 1 ? (
                         <PlusOutlined onClick={handleAddMapping}  style={{ fontSize: '20px' }}   />

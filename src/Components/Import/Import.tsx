@@ -305,27 +305,32 @@ const Import = () => {
       content: (
         <>
           <div style={{ margin: "0px 20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between",alignItems:"center" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-              <h2 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h2>
+                <h2 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h2>
               </div>
               <div style={{ display: "flex", gap: "20px" }}>
-                {/* <p style={{ whiteSpace: "nowrap" }}>Select your vendor name</p> */}
-                {/* <label style={{ marginRight: '8px' }}>Vendor name *</label> */}
-                <span style={{color:"red"}}>*</span>
-                <Select
-                  // className="Dropdown"
-                  style={{ width: "300" }}
-                  placeholder={`select Vendor name`}
-                  onChange={(value) => SetvendorName(value)}
-                >
-                  {vendorNameOpation.map((option: any) => (
-                    <Option key={option} value={option}>
-                      {option}
-                    </Option>
-                  ))}
-                </Select><span style={{color:"red"}}>*</span>
-                <DatePicker format="MM/DD/YYYY" onChange={onChangeDate} />
+                <div>
+                  <label style={{ marginRight: "5px", fontWeight: "500" }}>Vendor Name :</label>
+                  {/* <span style={{color:"red"}}>*</span> */}
+                  <Select
+                    // className="Dropdown"
+                    style={{ width: "300" }}
+                    placeholder={`select Vendor name`}
+                    onChange={(value) => SetvendorName(value)}
+                  >
+                    {vendorNameOpation.map((option: any) => (
+                      <Option key={option} value={option}>
+                        {option}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+                {/* <span style={{color:"red"}}>*</span> */}
+                <div>
+                  <label style={{ marginRight: "5px", fontWeight: "500" }}>Select Date :</label>
+                  <DatePicker format="MM/DD/YYYY" onChange={onChangeDate} />
+                </div>
                 <Button onClick={showfiles} type="primary">
                   <EyeOutlined />
                 </Button>
@@ -399,7 +404,7 @@ const Import = () => {
     const data = {
       user: JSON.parse(alldata)?.ID,
       vendorName: vendorName,
-      dateTypeMapped:dateVendor
+      dateTypeMapped: dateVendor
     };
     try {
       const response = await axios.post(url, data, {
