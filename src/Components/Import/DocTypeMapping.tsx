@@ -3,22 +3,16 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 const { Option } = Select;
 const DocTypeMapping = ({ Mappings, setMappings }: any) => {
-    // console.log(Mappings);
+    console.log(Mappings);
     const DocumentOptions = ['Contains', 'Starts With', 'Ends With'];
     const TypeHeader = ["Debit note", "Advance Payment", "TDS", "Invoice"];
     const option = ["Payment"];
     const Columns = ["Document Number", "Payment Document"];
-    const [isSecondDropdownEnabled, setIsSecondDropdownEnabled] = useState(false);
     const handleColumnChange = (value, index) => {
         const updatedMappings = [...Mappings];
         updatedMappings[index].Column = value;
         updatedMappings[index].Type = "";
         setMappings(updatedMappings);
-        if (value === "Payment Document") {
-            setIsSecondDropdownEnabled(true);
-        } else {
-            setIsSecondDropdownEnabled(false);
-        }
     };
     const handleTypeChange = (value, index) => {
         const updatedMappings = [...Mappings];
@@ -74,7 +68,7 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
                         onChange={(value) => handleTypeChange(value, index)}
                         className='doc_type_mapping'
                     >
-                        {isSecondDropdownEnabled ?
+                        {mapping.Column == "Payment Document" ?
                             option?.map((item) => (
                                 <Option key={item} value={item}>
                                     {item}

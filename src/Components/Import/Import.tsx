@@ -387,15 +387,15 @@ const Import = () => {
       if (response.status == 201) {
         // console.log(response);
         setCustomFileName("");
-        if (current != 3) {
+        if (current <= 2) {
           setdisable(false);
           setloading(false);
           onClose();
           setCurrent(current + 1);
-          setTimeout(() => {
-            message.success(`Upload your next file`);
-          }, 2000);
+          message.success(`File uploaded successfully. Upload your next file.`);
         }
+        else
+          message.success(`File uploaded successfully. Please Wait`);
         if (current == 0) {
           setcompanyFileJson([]);
         } else if (current == 1) {
@@ -404,7 +404,6 @@ const Import = () => {
           setdetailedFileJson([]);
         }
         setUpdateHeader([]);
-        message.success(`Your file upload successfully`);
         return true;
       }
     } catch (error: any) {
@@ -414,6 +413,7 @@ const Import = () => {
       setTimeout(() => {
         message.error(`correct and uploading file again`);
       }, 1000);
+      setloading(false);
       return false;
     }
   }
@@ -435,7 +435,7 @@ const Import = () => {
         },
       });
       if (response.data.success === "ok") {
-       const res= await DownloadReport();
+        const res = await DownloadReport();
         setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
         setloading(false);
         setCurrent(0);
@@ -577,9 +577,6 @@ const Import = () => {
           if (transformedData != null) {
             onClose();
             await postData(companyPostUrl, transformedData, companyFileName);
-            setTimeout(() => {
-              message.success(`Upload your next file`);
-            }, 2000);
           } else {
             message.error(`Check and Upload file Again`);
           }
@@ -725,7 +722,7 @@ const Import = () => {
     }
   }
   // ***********************for detailed File  ************
-  const transformToObjectsFile3 = async (headers: any, data: any,alldocmap:any) => {
+  const transformToObjectsFile3 = async (headers: any, data: any, alldocmap: any) => {
     // const alldocmap = Mappings.slice(0, -1);
     const documentMap = alldocmap?.filter(item => item?.Column === "Document Number");
     const paymentMap = alldocmap?.filter(item => item?.Column === "Payment Document");
@@ -817,6 +814,7 @@ const Import = () => {
       setdisable(false);
       setloading(false);
       setCurrent(current + 1);
+      message.success(`Complete Documents Mapping`);
     } else {
       setdisable(false);
       setloading(false);
@@ -847,6 +845,7 @@ const Import = () => {
         setloading(false);
         onClose();
         setCurrent(current + 1);
+        message.success(`Complete Documents Mapping`);
       } else {
         message.error(`Please select a value for each dropdown.`);
       }
@@ -854,12 +853,12 @@ const Import = () => {
   }
   // ************************get reports*********************
   async function getreport() {
-    let allmap=Mappings.slice(0, -1);
+    let allmap = Mappings.slice(0, -1);
     const isValid = allmap?.length > 0 && allmap?.every(item => item?.Column?.trim() !== '' && item?.Type?.trim() !== '' && item?.Method?.trim() !== '' && item?.Value?.trim() !== '');
     if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1 && allmap.length > 0 && isValid && dateVendor != "" && dateVendor != undefined && dateVendor != undefined) {
       try {
         setloading(true);
-        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson,allmap);
+        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson, allmap);
         console.log("Transformed data:", transformedData);
         const check = await postData(detailPostUrl, transformedData, detailedFileName);
         if (check) {
@@ -952,7 +951,7 @@ const Import = () => {
       <div>
         <span>{option}</span>
         <Button loading={resetMapLoading == option} type="link">
-            <EyeOutlined onClick={() => { resetMappingView(option) }} />
+          <EyeOutlined onClick={() => { resetMappingView(option) }} />
         </Button>
       </div>
     ),
@@ -1100,7 +1099,7 @@ const Import = () => {
         <Checkbox.Group options={optionsWithButtons} onChange={onChange} style={{ margin: "10px 0px" }} />
       </Modal>
       <Modal
-        title="Mapping Preview"
+        title="Saved Mapping"
         open={mappingModal}
         onCancel={() => setMappingModal(false)}
         width={800}

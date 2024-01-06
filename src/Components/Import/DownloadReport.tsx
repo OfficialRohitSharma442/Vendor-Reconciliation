@@ -74,25 +74,31 @@ const DownloadReport = async () => {
                 let second = [`Vendor Code: ${res[0]["Vendor Code"]}`];
                 const headers = Object?.keys(all[0]);
                 const allData = [first, second, [], [], headers];
-                let total = 0;
+                let company = 0;
+                let vendor = 0;
+                let difference = 0;
                 all?.forEach(obj => {
                     const rowData: any = headers.map((header) => {
-                        if (header == "Company") {
-                            total = total + parseInt(obj[header]);
+                        if (header == "Company Open") {
+                            const Value = parseInt(obj[header]);
+                            company = isNaN(Value) ? company : company + Value;
+                        }
+                        else if (header == "Vendor Open") {
+                            const Value = parseInt(obj[header]);
+                            vendor = isNaN(Value) ? vendor : vendor + Value;
+                        }
+                        else if (header == "Difference") {
+                            const Value = parseInt(obj[header]);
+                            difference = isNaN(Value) ? difference : difference + Value;
                         }
                         return obj[header]
                     });
                     allData.push(rowData);
                 });
-                let arr = ["Total", "  ", `${total}`];
+
+                let arr = ["Total", " ", `${company}`, `${vendor}`, `${difference}`];
                 allData.push(arr);
                 const ws = XLSX.utils.aoa_to_sheet(allData);
-
-                // const boldEnlargeStyle = {
-                //     font: { bold: true, size: 16 }
-                // };
-
-                // XLSXStyle.utils.sheet_set_range_style(ws, { s: { r: 0, c: 0 }, e: { r: 1, c: allData[0].length - 1 } }, boldEnlargeStyle);
 
                 XLSX.utils.book_append_sheet(newFile, ws, 'Reco');
             }
@@ -102,9 +108,6 @@ const DownloadReport = async () => {
             } else {
                 console.log("No data available for any sheets");
             }
-            // setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
-            // setloading(false);
-            // setCurrent(0);
         } catch (error) {
             console.error("Error generating Excel file:", error);
         }
@@ -128,7 +131,7 @@ const DownloadReport = async () => {
             return error;
         }
     }
-   await generateExcelFile();
-   return true;
+    await generateExcelFile();
+    return true;
 }
 export default DownloadReport

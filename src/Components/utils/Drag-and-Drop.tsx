@@ -88,7 +88,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
 
                         }}
                     >
-                        <p style={{ margin: "5px", textAlign: "center", fontSize: "15px", fontWeight: "bold" }}>Static Column</p>
+                        <p style={{ margin: "5px", textAlign: "center",  fontWeight: "bold" }}>Static Column</p>
                         <div
                             style={{
                                 border: '1px solid #ccc',
@@ -130,7 +130,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
 
                     {/* Droppable for boxTwoItems */}
                     <div>
-                        <p style={{ margin: "5px", textAlign: "center", fontSize: "15px", fontWeight: "bold" }}>Drop Column</p>
+                        <p style={{ margin: "5px", textAlign: "center", fontWeight: "bold" }}>Drop Column</p>
 
                         <Droppable droppableId="droppable-2">
 
@@ -181,7 +181,7 @@ const DragAndDrop = ({ initialBoxOneItems, boxTwoItems, setBoxTwoItems, defaultS
                     </div>
                     {/* Droppable for boxOneItems */}
                     <div>
-                        <p style={{ margin: "5px", textAlign: "center", fontSize: "15px", fontWeight: "bold" }}>Uploaded file Column</p>
+                        <p style={{ margin: "5px", textAlign: "center", fontWeight: "bold" }}>Uploaded file Column</p>
 
                         <Droppable droppableId="droppable-1">
                             {(provided, snapshot) => (
