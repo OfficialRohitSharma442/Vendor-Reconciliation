@@ -4,14 +4,15 @@ import { useState } from 'react';
 const { Option } = Select;
 const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     // console.log(Mappings);
-    const DocumentOptions = ['Contains','Starts With', 'Ends With'];
-    const TypeHeader = ["Debit note","Advance Payment", "TDS", "Invoice"];
+    const DocumentOptions = ['Contains', 'Starts With', 'Ends With'];
+    const TypeHeader = ["Debit note", "Advance Payment", "TDS", "Invoice"];
     const option = ["Payment"];
     const Columns = ["Document Number", "Payment Document"];
     const [isSecondDropdownEnabled, setIsSecondDropdownEnabled] = useState(false);
     const handleColumnChange = (value, index) => {
         const updatedMappings = [...Mappings];
         updatedMappings[index].Column = value;
+        updatedMappings[index].Type = "";
         setMappings(updatedMappings);
         if (value === "Payment Document") {
             setIsSecondDropdownEnabled(true);
@@ -58,9 +59,8 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
                     <Select
                         placeholder="Select Column"
                         onChange={(value) => handleColumnChange(value, index)}
-                    // defaultValue={mapping?.Type != "" ? mapping?.Type : undefined}
-                    disabled={mapping?.Column == "Payment Document" && index != Mappings.length-1?true:false}
-                    className='doc_type_mapping'
+                        value={mapping.Column || undefined}
+                        className='doc_type_mapping'
                     >
                         {Columns?.map((item) => (
                             <Option key={item} value={item}>
@@ -70,30 +70,28 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
                     </Select>
                     <Select
                         placeholder="Documents Type"
-                        // defaultValue={mapping?.Type != "" ? mapping?.Type : undefined}
+                        value={mapping.Type || undefined}
                         onChange={(value) => handleTypeChange(value, index)}
-                    // value={mapping}
-                    disabled={mapping?.Column == "Payment Document" && index != Mappings.length-1?true:false}
-                    className='doc_type_mapping'
+                        className='doc_type_mapping'
                     >
-                        {isSecondDropdownEnabled ? 
-                        option?.map((item) => (
-                            <Option key={item} value={item}>
-                                {item}
-                            </Option>
-                        ))
-                        :TypeHeader?.map((item) => (
-                            <Option key={item} value={item}>
-                                {item}
-                            </Option>
-                        ))
+                        {isSecondDropdownEnabled ?
+                            option?.map((item) => (
+                                <Option key={item} value={item}>
+                                    {item}
+                                </Option>
+                            ))
+                            : TypeHeader?.map((item) => (
+                                <Option key={item} value={item}>
+                                    {item}
+                                </Option>
+                            ))
                         }
                     </Select>
                     <Select
                         placeholder="Method"
-                        // defaultValue={mapping?.Method != "" ? mapping?.Method : undefined}
                         onChange={(value) => handleMethodChange(value, index)}
-                    className='doc_type_mapping'
+                        className='doc_type_mapping'
+                        value={mapping.Method || undefined}
                     >
                         {DocumentOptions?.map((item) => (
                             <Option key={item} value={item}>
@@ -104,10 +102,11 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
                     <Input
                         placeholder="Text"
                         onChange={(e) => handleValueChange(e, index)}
-                    className='doc_type_mapping'
+                        className='doc_type_mapping'
+                        value={mapping.Value || undefined}
                     />
                     {index === Mappings?.length - 1 ? (
-                        <PlusOutlined onClick={handleAddMapping}  style={{ fontSize: '20px' }}   />
+                        <PlusOutlined onClick={handleAddMapping} style={{ fontSize: '20px' }} />
                     ) : (
                         <Button type="link" icon={<DeleteOutlined />} onClick={() => handleDeleteMapping(index)}>
                             Delete

@@ -725,8 +725,8 @@ const Import = () => {
     }
   }
   // ***********************for detailed File  ************
-  const transformToObjectsFile3 = async (headers: any, data: any) => {
-    const alldocmap = Mappings.slice(0, -1);
+  const transformToObjectsFile3 = async (headers: any, data: any,alldocmap:any) => {
+    // const alldocmap = Mappings.slice(0, -1);
     const documentMap = alldocmap?.filter(item => item?.Column === "Document Number");
     const paymentMap = alldocmap?.filter(item => item?.Column === "Payment Document");
     let TransFormToObjectsData = await Promise.all(
@@ -854,10 +854,12 @@ const Import = () => {
   }
   // ************************get reports*********************
   async function getreport() {
-    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1 && dateVendor != "" && dateVendor != undefined && dateVendor != undefined) {
+    let allmap=Mappings.slice(0, -1);
+    const isValid = allmap?.length > 0 && allmap?.every(item => item?.Column?.trim() !== '' && item?.Type?.trim() !== '' && item?.Method?.trim() !== '' && item?.Value?.trim() !== '');
+    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1 && allmap.length > 0 && isValid && dateVendor != "" && dateVendor != undefined && dateVendor != undefined) {
       try {
         setloading(true);
-        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson);
+        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson,allmap);
         console.log("Transformed data:", transformedData);
         const check = await postData(detailPostUrl, transformedData, detailedFileName);
         if (check) {
