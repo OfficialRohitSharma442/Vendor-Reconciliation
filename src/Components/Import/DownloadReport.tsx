@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from "js-cookie";
+import moment from 'moment';
 import * as XLSX from "xlsx";
 // import * as XLSXStyle from 'xlsx-style';
 const DownloadReport = async () => {
@@ -72,8 +73,14 @@ const DownloadReport = async () => {
                 // console.log(all);
                 let first = [`Vendor Name: ${res[0]["Vendor Name"]}`];
                 let second = [`Vendor Code: ${res[0]["Vendor Code"]}`];
+                let formattedDate = "";
+                if(res[0]["period"]){
+                const inputDateString = res[0]["period"];
+                formattedDate = moment(inputDateString).format('DD/MM/YYYY');
+                }
+                let BalanceOutstanding = [`Balance outstanding ${formattedDate}`, " ", `${res[0]["companyTotal"]}`, `${res[0]["vendorTotal"]}`];
                 const headers = Object?.keys(all[0]);
-                const allData = [first, second, [], [], headers];
+                const allData = [first, second, [], [], headers, BalanceOutstanding];
                 let company = 0;
                 let vendor = 0;
                 let difference = 0;
