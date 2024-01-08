@@ -53,7 +53,11 @@ const AddAdmin: React.FC<AddAdminProps> = ({
           type: "success",
           content: "User Added Successfully",
         });
-        messageApi.destroy();
+        setTimeout(() => {
+          messageApi.destroy();
+          onClose();
+        }, 2000)
+        // messageApi.destroy();
         // }, 2000)
       } else {
         messageApi.open({
@@ -61,22 +65,23 @@ const AddAdmin: React.FC<AddAdminProps> = ({
           content: "Somting went worng...",
         });
         setTimeout(() => {
+          onClose();
           messageApi.destroy();
         }, 2000);
       }
     } catch (error: any) {
-      // console.log(error.response.status);
-      // messageApi.open({
-      //     type: 'warning',
-      //     content: `${status == 400 ? "user Not found" : "invalid user name or Password "}`,
-      // });
-      // setTimeout(() => {
-      //     messageApi.destroy()
-      // }, 2000)
+
+      messageApi.open({
+        type: "error",
+        content: error?.response?.data?.error,
+      });
+      setTimeout(() => {
+        messageApi.destroy();
+      }, 2000)
     } finally {
       setloading(false);
       showDetaillistData();
-      onClose();
+
     }
   };
   const handleOnChangeEventHandler = (
@@ -92,7 +97,7 @@ const AddAdmin: React.FC<AddAdminProps> = ({
     <>
       {contextHolder}
       <Drawer
-        title="Create a new account"
+        title="Create a new Admin"
         width={720}
         onClose={onClose}
         open={open}
@@ -112,7 +117,17 @@ const AddAdmin: React.FC<AddAdminProps> = ({
               <Form.Item
                 name="fullName"
                 label="Name"
-                rules={[{ required: true, message: "Please enter user name" }]}
+                rules={[
+                  { required: true, message: "Please enter user name" },
+                  {
+                    validator: (_, value) => {
+                      if (!value || value.match(/^[a-zA-Z0-9]+$/)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject("Please enter a valid Name (only letters and numbers, no spaces)");
+                    },
+                  },
+                ]}
               >
                 <Input
                   name="fullName"
@@ -125,7 +140,20 @@ const AddAdmin: React.FC<AddAdminProps> = ({
               <Form.Item
                 name="email"
                 label="Email"
-                rules={[{ required: true, message: "Please enter Email" }]}
+                rules={[{ required: true, message: "Please enter Email" },
+                {
+                  validator: (_, value) => {
+                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                    if (!value || (value.match(emailRegex) && value.indexOf('@') === value.lastIndexOf('@') && value.indexOf('@') > 0 && value.indexOf('@') < value.length - 1)) {
+                      return Promise.resolve();
+                    }
+
+                    return Promise.reject("Please enter a valid Email address without special characters, except for one '@'");
+                  },
+                },
+
+                ]}
               >
                 <Input
                   style={{ width: "100%" }}
@@ -141,7 +169,17 @@ const AddAdmin: React.FC<AddAdminProps> = ({
               <Form.Item
                 name="user Name"
                 label="User Name"
-                rules={[{ required: true, message: "please Enter User Name" }]}
+                rules={[
+                  { required: true, message: "please Enter User Name" },
+                  {
+                    validator: (_, value) => {
+                      if (!value || value.match(/^[a-zA-Z0-9]+$/)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject("Please enter a valid User Name (only letters and numbers, no spaces)");
+                    },
+                  },
+                ]}
               >
                 <Input
                   style={{ width: "100%" }}
@@ -149,14 +187,28 @@ const AddAdmin: React.FC<AddAdminProps> = ({
                   placeholder="Please enter Username"
                   onChange={handleOnChangeEventHandler}
                 />
-               
+
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="password"
                 label="Password"
-                rules={[{ required: true, message: "Please enter password" }]}
+                rules={[
+
+                  { required: true, message: "Please enter password" },
+                  {
+                    min: 8, // Minimum password length
+                    message: "Password must be at least 8 characters",
+                  },
+                  {
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, // Requires at least one lowercase letter, one uppercase letter, and one number
+                    message: "Password must include at least one lowercase letter, one uppercase letter, and one number",
+                  },
+
+
+
+                ]}
               >
                 <Input.Password
                   style={{ width: "100%" }}
@@ -168,7 +220,7 @@ const AddAdmin: React.FC<AddAdminProps> = ({
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          {/* <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="Organization"
@@ -215,20 +267,22 @@ const AddAdmin: React.FC<AddAdminProps> = ({
                   placeholder="please enter url description"
                 />
               </Form.Item>
-              <Space>
-                <Button
-                  loading={loading}
-                  onClick={handleaddadmin}
-                  type="primary"
-                >
-                  Submit
-                </Button>
-                <Button onClick={onClose}>Cancel</Button>
-              </Space>
-            </Col>
-          </Row>
+              
+          </Row> */}
+          <Space>
+            <Button
+              loading={loading}
+              onClick={handleaddadmin}
+              type="primary"
+              disabled={(admindata.username == "" || admindata.email == "" || admindata.password == "" || admindata.fullName == "")}
+            >
+              Submit
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </Space>
+
         </Form>
-      </Drawer>
+      </Drawer >
     </>
   );
 };

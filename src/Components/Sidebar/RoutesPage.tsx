@@ -12,9 +12,9 @@ const RoutesPage = () => {
     const { role } = React.useContext(Context);
     return (
         <Routes>
-            {role == "USER" && <Route path="/Home" element={<Home />} ></Route>}
+            {/* {role == "USER" && <Route path="/Home" element={<Home />} ></Route>} */}
             {role == "USER" && <Route path="/Import" element={<Import />} ></Route>}
-            <Route path="/VenderPage" element={<Vendor />} ></Route>
+            {/* <Route path="/VenderPage" element={<Vendor />} ></Route> */}
             <Route path="/Reports" element={<Reports />} ></Route>
             {(role == "ADMIN" || role == "MASTER") && <Route path="/Settings" element={<Adminmain />} ></Route>}
             {role == "MASTER" && <Route path="/admin" element={<Superadmin />} ></Route>}

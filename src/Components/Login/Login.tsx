@@ -18,21 +18,25 @@ const Login = () => {
     const handleLogin = async () => {
         try {
             setloading(true);
-
             let response = await axios.post("https://concerned-plum-crayfish.cyclic.app/api/user/login", data);
-
-
             if (response?.status == 200) {
                 // Update the state with the response data
                 Cookies.set('VR-user_Role', JSON.stringify(response?.data), { expires: 1 });
                 // localStorage.setItem("VR-user_Role", JSON.stringify(response?.data))
+                ;
                 setRole(response?.data?.role)
                 messageApi.open({
                     type: 'success',
                     content: 'User Loged in Successfully',
                 });
                 messageApi.destroy()
-                navigate('/home');
+                if (response?.data?.role === "USER") {
+                    navigate('/import');
+                } else if (response?.data?.role === "ADMIN") {
+                    navigate('/settings');
+                } else {
+                    navigate('/admin');
+                }
                 // }, 2000)
             } else {
                 messageApi.open({
@@ -44,17 +48,28 @@ const Login = () => {
                 }, 2000)
             }
         } catch (error: any) {
-            debugger;
+            ;
             // console.log(error.response.status);
-            const { status } = error;
+            const { status } = error.response;
 
-            messageApi.open({
-                type: 'warning',
-                content: `${status == 400 ? "user Not found" : "invalid user name or Password "}`,
-            });
+            if (status === 404) {
+                messageApi.open({
+                    type: 'error',
+                    content: `user Not found`,
+                });
+            } else if (status === 400) {
+                messageApi.open({
+                    type: 'error',
+                    content: `Password is worng Please check the password !`,
+                });
+            } else if (status === 401) {
+                messageApi.open({
+                    type: 'error',
+                    content: `Authentication failed. Your session may have expired. Please log in again to access the requested content.`,
+                });
+            }
             setTimeout(() => {
                 messageApi.destroy()
-
             }, 2000)
 
         } finally {
@@ -90,10 +105,10 @@ const Login = () => {
             >
                 <h1 style={{ textAlign: 'center', marginBottom: 20, fontSize: '1.5rem', color: '#333' }}>Login</h1>
                 <Form.Item
-                    label={<span style={{ fontWeight: 'bold', color: '#666' }}>Username</span>}
-                    name="username"
-                    rules={[{ required: true, message: 'Please input your username!' }]}
-                    id="username"
+                    label={<span style={{ fontWeight: 'bold', color: '#666' }}>Email</span>}
+                    name="Email"
+                    rules={[{ required: true, message: 'Please input your Email Address!' }]}
+                    id="email"
                 >
                     <Input size="large" type='Email' name="email" onChange={onhandlechange} placeholder="Email ID" style={{ height: '40px', width: '100%' }} />
                 </Form.Item>
