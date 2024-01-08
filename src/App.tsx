@@ -7,32 +7,25 @@ import Cookies from 'js-cookie';
 import LoaderSVG from './Components/utils/Loding';
 import { ConfigProvider, theme } from 'antd';
 import "./App.css"
-
 const App = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
   const [role, setRole] = useState<any>("ADMIN");
   const [loading, setloading] = React.useState(true);
   const [token, setToken] = React.useState("");
   const [reload, setReload] = React.useState(false);
-  // console.group()
-  // console.log(defaultAlgorithm)
-  // console.log(darkAlgorithm)
-  // console.log(theme)
+
   React.useEffect(() => {
     const fetchRole = async () => {
+
       const storedRole = Cookies.get('VR-user_Role');
-
       if (storedRole) {
-
         const parsedData = JSON.parse(storedRole);
         const role = parsedData?.role;
         const token = parsedData?.token;
         setToken(token)
         setRole(role);
         setloading(false)
-
       } else {
-
         setRole(undefined);
         setloading(false)
       }

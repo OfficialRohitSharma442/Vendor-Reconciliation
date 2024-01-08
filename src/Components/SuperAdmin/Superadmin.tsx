@@ -220,7 +220,7 @@ const Superadmin: React.FC = () => {
   ];
 
   return (
-    <div style={{ flexGrow: "1" }}>
+    <div style={{ flexGrow: "1", margin: "10px" }}>
       <div
         style={{
           display: "flex",

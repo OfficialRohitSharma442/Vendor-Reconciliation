@@ -982,6 +982,8 @@ const Import = () => {
         open={OpenPanel}
         zIndex={1000}
         width={900}
+        className="drag-n-drop-Drawer"
+        
         extra={
           <Space>
             <Button onClick={showfiles} type="primary">

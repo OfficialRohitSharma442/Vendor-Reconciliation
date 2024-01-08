@@ -66,5 +66,13 @@
     align-items: center;
     margin-bottom: 25px;
   }
-
-  /* for loding in save button  */
+  .drag-n-drop-Drawer{
+    
+        .ant-drawer-body{
+            padding: 0px;
+        }
+        .ant-drawer-header{
+          padding: 10px 24px;
+        }
+    /* }     */
+}

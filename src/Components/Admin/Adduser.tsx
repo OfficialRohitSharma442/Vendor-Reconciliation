@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import React, { ChangeEvent } from "react";
 
+
 interface AddAdminProps {
   open: boolean;
   onClose: () => void;
@@ -22,9 +23,9 @@ const Adduser: React.FC<AddAdminProps> = ({
   });
   const [loading, setloading] = React.useState(false);
 
+
   const handleOnCreateUser = async () => {
     try {
-      // console.log(userdata);
       const alldata: any = Cookies.get("VR-user_Role");
       const token = JSON.parse(alldata).token;
       setloading(true);
@@ -37,15 +38,21 @@ const Adduser: React.FC<AddAdminProps> = ({
           },
         }
       );
+      setuserdata({
+        username: "",
+        email: "",
+        password: "",
+        fullName: "",
+      })
       if (response.status === 201) {
-        // Update the state with the response data
-        // console.log(response);
         messageApi.open({
           type: "success",
           content: "User Added Successfully",
         });
-        messageApi.destroy();
-        // }, 2000)
+        setTimeout(() => {
+          messageApi.destroy();
+          onClose();
+        }, 1000)
       } else {
         messageApi.open({
           type: "warning",
@@ -56,12 +63,17 @@ const Adduser: React.FC<AddAdminProps> = ({
         }, 2000);
       }
     } catch (error: any) {
-      /* empty */
+      messageApi.open({
+        type: "error",
+        content: error?.response?.data?.error,
+      });
+      setTimeout(() => {
+        messageApi.destroy();
+      }, 2000)
     } finally {
       setloading(false);
-      // showDetaillistData()
       getuserdata();
-      onClose();
+
     }
   };
   const handleOnChangeEventHandler = (
@@ -80,7 +92,9 @@ const Adduser: React.FC<AddAdminProps> = ({
       <Drawer
         title="Create a new account"
         width={720}
-        onClose={onClose}
+        onClose={() => {
+          onClose()
+        }}
         open={open}
         styles={{
           body: {
@@ -95,7 +109,17 @@ const Adduser: React.FC<AddAdminProps> = ({
               <Form.Item
                 name="fullName"
                 label="Name"
-                rules={[{ required: true, message: "Please enter Name" }]}
+                rules={[
+                  { required: true, message: "Please enter Name" },
+                  {
+                    validator: (_, value) => {
+                      if (!value || value.match(/^[a-zA-Z0-9]+$/)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject("Please enter a valid Name (only letters and numbers, no spaces)");
+                    },
+                  },
+                ]}
               >
                 <Input
                   name="fullName"
@@ -108,7 +132,17 @@ const Adduser: React.FC<AddAdminProps> = ({
               <Form.Item
                 label="User Name"
                 name="username"
-                rules={[{ required: true, message: "Please enter User Name" }]}
+                rules={[
+                  { required: true, message: "Please enter User Name" },
+                  {
+                    validator: (_, value) => {
+                      if (!value || value.match(/^[a-zA-Z0-9]+$/)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject("Please enter a valid User Name (only letters and numbers, no spaces)");
+                    },
+                  },
+                ]}
               >
                 <Input
                   style={{ width: "100%" }}
@@ -126,7 +160,17 @@ const Adduser: React.FC<AddAdminProps> = ({
               <Form.Item
                 name="email"
                 label="Email"
-                rules={[{ required: true, message: "Please Enter Email" }]}
+                rules={[{ required: true, message: "Please Enter Email" }, {
+                  validator: (_, value) => {
+                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                    if (!value || (value.match(emailRegex) && value.indexOf('@') === value.lastIndexOf('@') && value.indexOf('@') > 0 && value.indexOf('@') < value.length - 1)) {
+                      return Promise.resolve();
+                    }
+
+                    return Promise.reject("Please enter a valid Email address without special characters, except for one '@'");
+                  },
+                },]}
               >
                 <Input
                   style={{ width: "100%" }}
@@ -144,6 +188,14 @@ const Adduser: React.FC<AddAdminProps> = ({
                 label="Password"
                 rules={[
                   { required: true, message: "Please Enter the Password" },
+                  {
+                    min: 8, // Minimum password length
+                    message: "Password must be at least 8 characters",
+                  },
+                  {
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, // Requires at least one lowercase letter, one uppercase letter, and one number
+                    message: "Password must include at least one lowercase letter, one uppercase letter, and one number",
+                  },
                 ]}
               >
                 <Input.Password
@@ -162,6 +214,7 @@ const Adduser: React.FC<AddAdminProps> = ({
               loading={loading}
               onClick={handleOnCreateUser}
               type="primary"
+              disabled={(userdata.username == "" || userdata.email == "" || userdata.password == "" || userdata.fullName == "")}
             >
               Submit
             </Button>

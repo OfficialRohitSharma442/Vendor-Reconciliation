@@ -8,10 +8,10 @@ const SidebarMenu = () => {
     const { role } = React.useContext(Context);
     const navigate = useNavigate();
     const items = [
-        { label: 'Home', path: '/Home', icon: <HomeOutlined style={{ fontSize: "18px" }} />, key: 'home' },
-        { label: 'Import', path: '/Import', icon: <ImportOutlined style={{ fontSize: "18px" }} />, key: 'import' },
-        { label: 'Add Vendor', path: '/VenderPage', icon: <UserAddOutlined style={{ fontSize: "18px" }} />, key: 'VenderPage' },
-        { label: 'Reports', path: '/Reports', icon: <FileTextOutlined style={{ fontSize: "18px" }} />, key: 'reports' },
+        // { label: 'Home', path: '/Home', icon: <HomeOutlined style={{ fontSize: "18px" }} />, key: 'home' },
+        ...(role === "USER" ? [{ label: 'Import', path: '/Import', icon: <ImportOutlined style={{ fontSize: "18px" }} />, key: 'import' }] : []),
+        // { label: 'Add Vendor', path: '/VenderPage', icon: <UserAddOutlined style={{ fontSize: "18px" }} />, key: 'VenderPage' },
+        // { label: 'Reports', path: '/Reports', icon: <FileTextOutlined style={{ fontSize: "18px" }} />, key: 'reports' },
         ...(role === "ADMIN" ? [{ label: 'Admin Page', path: '/Settings', icon: <SettingOutlined style={{ fontSize: "15px" }} />, key: 'Settings' }] : []),
     ];
     const masterItems = [{ label: 'Super Admin', path: '/admin', icon: <SettingTwoTone />, key: 'admin' }];
@@ -25,7 +25,7 @@ const SidebarMenu = () => {
             defaultSelectedKeys={['/Home']}
         >
             {(role === "MASTER" ? masterItems : items).map((item) => (
-                <Menu.Item key={item.key} icon={item.icon} style={{ fontSize: "16px", marginTop: 10, marginBottom: 10 }}>
+                <Menu.Item key={item.key} icon={item.icon} style={{ fontSize: "16px", marginTop: 10, marginBottom: 10 }} >
                     {item.label}
                 </Menu.Item>
             ))}
