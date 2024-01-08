@@ -16,40 +16,40 @@ const { Option } = Select;
 const Import = () => {
   // **************Static Data*********************
   const companyHeader = [
+    { id: "4", content: "Invoice Number" },
+    { id: "5", content: "Closing Balance" },
     { id: "1", content: "Vendor" },
     { id: "2", content: "Vendor Name" },
     { id: "3", content: "Document Number" },
-    { id: "4", content: "Invoice Number" },
-    { id: "5", content: "Closing Balance" },
     { id: "6", content: "Invoice Amount" },
     { id: "7", content: "Currency" },
     { id: "8", content: "Due Date" },
     { id: "9", content: "Document Date" },
   ];
   const vendorHeader = [
+    { id: "9", content: "Invoice Number" },
+    { id: "3", content: "Closing Balance" },
+    { id: "7", content: "Invoice Date" },
+    { id: "8", content: "Document Number" },
     { id: "1", content: "Business Partner" },
     { id: "2", content: "Business Partner Name" },
-    { id: "3", content: "Closing Balance" },
     { id: "4", content: "Invoice Amount" },
     { id: "5", content: "Currency" },
     { id: "6", content: "Due Date" },
-    { id: "7", content: "Document Date" },
-    { id: "8", content: "Document Number" },
-    { id: "9", content: "Invoice Number" },
   ];
   const detailedHeader = [
+    { id: "12", content: "Invoice Number" },
+    { id: "9", content: "Invoice Date" },
+    { id: "11", content: "Document Number" },
+    { id: "6", content: "Payment Document" },
+    { id: "10", content: "Document Date" },
     { id: "1", content: "Due Date" },
-    { id: "2", content: "Company Code" },
     { id: "3", content: "Credit Amount(INR)" },
     { id: "4", content: "Debit Amount(INR)" },
+    { id: "2", content: "Company Code" },
     { id: "5", content: "Cheque Rtgs Neft" },
-    { id: "6", content: "Payment Document" },
     { id: "7", content: "Reference" },
     { id: "8", content: "Grn Number" },
-    { id: "9", content: "Invoice Date" },
-    { id: "10", content: "Document Date" },
-    { id: "11", content: "Document Number" },
-    { id: "12", content: "Invoice Number" },
   ];
   // *******************All url *************
   const companyPostUrl = "https://concerned-plum-crayfish.cyclic.app/api/master/dynamic-master";
@@ -259,7 +259,7 @@ const Import = () => {
     },
   };
   //************************for first all three step *******************8
-  const FirstThreeStep = () => (
+  const FirstThreeStep = (filename) => (
     <>
       <div style={{ margin: "20px" }}>
         <div className="mainstep">
@@ -280,7 +280,7 @@ const Import = () => {
             </Button>
           </div>
         </div>
-        <div>{uploadFile("Company File")}</div>
+        <div>{uploadFile(filename)}</div>
       </div>
     </>
   );
@@ -292,7 +292,7 @@ const Import = () => {
           <FileExcelOutlined />
         </p>
         <p className="ant-upload-text">
-          Click or drag file to this area to upload {Filename}
+          Click or drag file to this area to upload {Filename} File
         </p>
         <p className="ant-upload-hint">
           Support for a single or bulk upload. Strictly prohibited from
@@ -309,17 +309,17 @@ const Import = () => {
   // ***************** main steps****************
   const steps: any = [
     {
-      title: "First",
-      content: (FirstThreeStep()),
+      title: "Company Open",
+      content: (FirstThreeStep("Company Open")),
     },
     {
-      title: "Second",
-      content: (FirstThreeStep()),
+      title: "Vendor Open",
+      content: (FirstThreeStep("Vendor Open")),
     },
     {
-      title: "Third",
+      title: "Company SOA",
       content: (
-        FirstThreeStep()
+        FirstThreeStep("Company SOA")
       ),
     },
     {
@@ -371,6 +371,7 @@ const Import = () => {
   ];
   // *****************************post all data to this function******
   async function postData(url: any, data: any, FileName: any) {
+    if(true){
     const alldata: any = Cookies.get("VR-user_Role");
     const tokens = JSON.parse(alldata).token;
     const finaltemp = {
@@ -416,6 +417,7 @@ const Import = () => {
       setloading(false);
       return false;
     }
+  }
   }
   // *****************post vendor naem to this function******
   async function postVendorName() {

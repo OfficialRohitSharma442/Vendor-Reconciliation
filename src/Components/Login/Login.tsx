@@ -50,24 +50,33 @@ const Login = () => {
         } catch (error: any) {
             ;
             // console.log(error.response.status);
-            const { status } = error.response;
+            if (error.response) {
+                const { status } = error?.response;
 
-            if (status === 404) {
+                if (status === 404) {
+                    messageApi.open({
+                        type: 'error',
+                        content: `user Not found`,
+                    });
+                } else if (status === 400) {
+                    messageApi.open({
+                        type: 'error',
+                        content: `Password is worng Please check the password !`,
+                    });
+                } else if (status === 401) {
+                    messageApi.open({
+                        type: 'error',
+                        content: `Authentication failed. Your session may have expired. Please log in again to access the requested content.`,
+                    });
+                }
+            }
+            else{
                 messageApi.open({
                     type: 'error',
-                    content: `user Not found`,
-                });
-            } else if (status === 400) {
-                messageApi.open({
-                    type: 'error',
-                    content: `Password is worng Please check the password !`,
-                });
-            } else if (status === 401) {
-                messageApi.open({
-                    type: 'error',
-                    content: `Authentication failed. Your session may have expired. Please log in again to access the requested content.`,
+                    content: `An error occurred. Please try again later.`,
                 });
             }
+
             setTimeout(() => {
                 messageApi.destroy()
             }, 2000)
