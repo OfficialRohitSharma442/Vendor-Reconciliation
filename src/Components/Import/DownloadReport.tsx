@@ -76,7 +76,7 @@ const DownloadReport = async () => {
                 let formattedDate = "";
                 if(res[0]["period"]){
                 const inputDateString = res[0]["period"];
-                formattedDate = moment(inputDateString).format('DD/MM/YYYY');
+                formattedDate = moment(inputDateString).format('MM/DD/YYYY');
                 }
                 let BalanceOutstanding = [`Balance outstanding   ${formattedDate}`, " ", `${res[0]["companyTotal"]}`, `${res[0]["vendorTotal"]}`];
                 const headers = Object?.keys(all[0]);

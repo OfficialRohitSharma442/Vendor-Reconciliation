@@ -29,7 +29,7 @@ const Import = () => {
   const vendorHeader = [
     { id: "9", content: "Invoice Number" },
     { id: "3", content: "Closing Balance" },
-    { id: "7", content: "Invoice Date" },
+    { id: "7", content: "Document Date" },
     { id: "8", content: "Document Number" },
     { id: "1", content: "Business Partner" },
     { id: "2", content: "Business Partner Name" },
