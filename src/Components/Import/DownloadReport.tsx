@@ -78,7 +78,7 @@ const DownloadReport = async () => {
                 const inputDateString = res[0]["period"];
                 formattedDate = moment(inputDateString).format('DD/MM/YYYY');
                 }
-                let BalanceOutstanding = [`Balance outstanding ${formattedDate}`, " ", `${res[0]["companyTotal"]}`, `${res[0]["vendorTotal"]}`];
+                let BalanceOutstanding = [`Balance outstanding   ${formattedDate}`, " ", `${res[0]["companyTotal"]}`, `${res[0]["vendorTotal"]}`];
                 const headers = Object?.keys(all[0]);
                 const allData = [first, second, [], [], headers, BalanceOutstanding];
                 let company = 0;
@@ -111,7 +111,6 @@ const DownloadReport = async () => {
             }
             if (newFile.SheetNames.length > 0) {
                 XLSX.writeFile(newFile, "combinedCaseFile.xlsx");
-                // console.log("Excel file generated successfully");
             } else {
                 console.log("No data available for any sheets");
             }
