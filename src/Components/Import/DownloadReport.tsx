@@ -108,6 +108,16 @@ const DownloadReport = async () => {
                 const ws = XLSX.utils.aoa_to_sheet(allData);
 
                 XLSX.utils.book_append_sheet(newFile, ws, 'Reco');
+
+                const defaultWidth: any = 160;
+                const wscols: any = [];
+
+                const totalColumns = headers.length;
+                for (let i = 0; i < totalColumns; i++) {
+                    wscols.push({ wpx: defaultWidth });
+                }
+                ws['!cols'] = wscols;
+
             }
             if (newFile.SheetNames.length > 0) {
                 XLSX.writeFile(newFile, "combinedCaseFile.xlsx");
