@@ -62,6 +62,9 @@ const DownloadReport = async () => {
                 if (result.status === 'fulfilled' && result?.value && result.value?.data) {
                     const wsK = XLSX.utils.json_to_sheet(result.value?.data);
                     XLSX.utils.book_append_sheet(newFile, wsK, result.value.sheetName);
+                    const defaultWidth: any = 100;
+                    const wscols = Array.from({ length: 10 }, () => ({ wpx: defaultWidth }));
+                    newFile.Sheets[result.value.sheetName]['!cols'] = wscols;
                 } else if (result.status === 'rejected' && result.reason) {
                     console.error(`Error fetching data: ${result.reason}`);
                 }
@@ -74,9 +77,9 @@ const DownloadReport = async () => {
                 let first = [`Vendor Name: ${res[0]["Vendor Name"]}`];
                 let second = [`Vendor Code: ${res[0]["Vendor Code"]}`];
                 let formattedDate = "";
-                if(res[0]["period"]){
-                const inputDateString = res[0]["period"];
-                formattedDate = moment(inputDateString).format('MM/DD/YYYY');
+                if (res[0]["period"]) {
+                    const inputDateString = res[0]["period"];
+                    formattedDate = moment(inputDateString).format('MM/DD/YYYY');
                 }
                 let BalanceOutstanding = [`Balance outstanding   ${formattedDate}`, " ", `${res[0]["companyTotal"]}`, `${res[0]["vendorTotal"]}`];
                 const headers = Object?.keys(all[0]);
@@ -109,9 +112,8 @@ const DownloadReport = async () => {
 
                 XLSX.utils.book_append_sheet(newFile, ws, 'Reco');
 
-                const defaultWidth: any = 160;
+                const defaultWidth: any = 180;
                 const wscols: any = [];
-
                 const totalColumns = headers.length;
                 for (let i = 0; i < totalColumns; i++) {
                     wscols.push({ wpx: defaultWidth });

@@ -58,6 +58,7 @@ const Import = () => {
   const companyMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping";
   const vendorMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping";
   const detailMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping";
+  const DocMappingUrl = "https://concerned-plum-crayfish.cyclic.app/api/mapping/document-mapping";
   // ****************for steps***************************
   // @ ts-ignore
   const [size, setSize] = useState<SizeType>();
@@ -437,6 +438,7 @@ const Import = () => {
         },
       });
       if (response.data.success === "ok") {
+        SaveDocMapping(DocMappingUrl,Mappings);
         const res = await DownloadReport();
         setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
         setloading(false);
@@ -504,14 +506,52 @@ const Import = () => {
           Authorization: `Bearer ${tokens}`,
         },
       });
-      if (response.data.data[0]) {
-        return response?.data?.data[0];
+      if (response?.data?.data[0]) {
+        return response?.data?.data[0];  
       } else {
         return null;
       }
     } catch (error) {
       console.error(error);
       return error;
+    }
+  }
+  async function SaveDocMapping(urlforpost:any,postdata:any){
+    let data = await getMapping(urlforpost);
+    if (data != null && data?._id) {
+      urlforpost = `${urlforpost}/${data._id}`;
+    }
+    const alldata: any = Cookies.get("VR-user_Role");
+    const tokens = JSON.parse(alldata).token;
+    const finaltemp = {
+      data: postdata,
+    };
+    if (data != null && data._id) {
+      try {
+        const response = await axios.put(urlforpost, finaltemp, {
+          headers: {
+            Authorization: ` Bearer ${tokens}`,
+          },
+        });
+        if (response.status == 201) {
+          console.log(response);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const response = await axios.post(urlforpost, finaltemp, {
+          headers: {
+            Authorization: ` Bearer ${tokens}`,
+          },
+        });
+        if (response.status == 201) {
+          console.log(response);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
   // *************for first file / companyfile ********************
@@ -791,6 +831,11 @@ const Import = () => {
   async function detailedFileCheck() {
     setdisable(true);
     setloading(true);
+    const docmap = await getMapping(DocMappingUrl);
+    if(docmap?.data?.length > 0){
+      console.log(docmap.data);
+      setMappings(docmap.data);
+    }
     const data: any = await getMapping(detailMappingUrl);
     const header = detailedFileJson[0];
     const contentArray: any = [];
