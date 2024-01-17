@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { DownloadOutlined, ShareAltOutlined, DeleteOutlined,FileExcelOutlined } from "@ant-design/icons";
+import { DownloadOutlined, ShareAltOutlined, DeleteOutlined, FileExcelOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
 import axios from 'axios';
 import Meta from 'antd/es/card/Meta';
@@ -102,8 +102,8 @@ const Reports = () => {
                         const headerRow = Object.keys(result.value.data[0]);
                         worksheet.addRow(headerRow);
                         result.value.data.forEach(data => {
-                          const dataRow = Object.values(data);
-                          worksheet.addRow(dataRow);
+                            const dataRow = Object.values(data);
+                            worksheet.addRow(dataRow);
                         });
                         worksheet?.columns?.forEach(column => {
                             column.width = 18;
@@ -270,35 +270,38 @@ const Reports = () => {
     return (
         <>
             <div style={{ margin: '16px' }}>
-                <div className='' style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                    {AllReports?.map((item:any) => {
-                        return (
-                            <>
-                                <Card
-                                    style={{ width: 270, borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
-                                    actions={[
-                                        <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={() => downloadExcelFile(item?.reportId, false)} key="download" />,
-                                        <Button style={{ border: "none" }} icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
-                                        <Button style={{ border: "none" }} icon={<ShareAltOutlined />} onClick={() => prepareFile(item?.reportId)} key="preview" />,
-                                    ]}
-                                >
-                                    <Meta
-                                        avatar={
-                                        <FileExcelOutlined style={{fontSize:"40px",color:"green"}}/>
+                {AllReports?
+                    <div className='' style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+                        {AllReports?.map((item: any) => {
+                            return (
+                                <>
+                                    <Card
+                                        style={{ width: 270, borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                                        actions={[
+                                            <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={() => downloadExcelFile(item?.reportId, false)} key="download" />,
+                                            <Button style={{ border: "none" }} icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
+                                            <Button style={{ border: "none" }} icon={<ShareAltOutlined />} onClick={() => prepareFile(item?.reportId)} key="preview" />,
+                                        ]}
+                                    >
+                                        <Meta
+                                            avatar={
+                                                <FileExcelOutlined style={{ fontSize: "40px", color: "green" }} />
 
-                                        }
-                                        title="Excel File.xlsx"
-                                        description={
-                                                <span style={{display:"flex",alignItems:"center"}}><b style={{color:"black",marginRight:"2px", fontWeight:"400"}}>Created Date: </b> <span>{moment(item?.createdAt).format('MM/DD/YYYY')}</span></span>
-                                        }
-                                        style={{ padding: 0, height: 100, }}
-                                    />
-                                </Card>
-                            </>
-                        )
-                    })
-                    }
-                </div>
+                                            }
+                                            title="Excel File.xlsx"
+                                            description={
+                                                <span style={{ display: "flex", alignItems: "center" }}><b style={{ color: "black", marginRight: "2px", fontWeight: "400" }}>Created Date: </b> <span>{moment(item?.createdAt).format('MM/DD/YYYY')}</span></span>
+                                            }
+                                            style={{ padding: 0, height: 100, }}
+                                        />
+                                    </Card>
+                                </>
+                            )
+                        })
+                        }
+                    </div>
+                    : <div style={{display:"grid",alignItems:"center",justifyContent:"center",height:"100vh"}}><div>No Report Found</div></div>
+                }
             </div>
             <Modal title='Share Report'
                 open={sendEmailModel}
