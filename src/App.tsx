@@ -1,12 +1,12 @@
 
-import Sidebar from './Components/Sidebar/Sidebar'
-import { Context } from "./Components/Context/Context"
-import React, { useContext, useState } from 'react'
-import Login from './Components/Login/Login';
-import Cookies from 'js-cookie';
-import LoaderSVG from './Components/utils/Loding';
 import { ConfigProvider, theme } from 'antd';
-import "./App.css"
+import Cookies from 'js-cookie';
+import React, { useState } from 'react';
+import "./App.css";
+import { Context } from "./Components/Context/Context";
+import Login from './Components/Login/Login';
+import Sidebar from './Components/Sidebar/Sidebar';
+import LoaderSVG from './Components/utils/Loding';
 const App = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
   const [role, setRole] = useState<any>("ADMIN");

@@ -27,7 +27,7 @@ const DownloadReport = async () => {
         { url: '/i-two-case', sheetName: 'I2' },
     ];
     // ************** Fetch data*******
-    const fetchData = async (url, sheetName) => {
+    const fetchData = async (url:string, sheetName:string) => {
         const alldata: any = Cookies.get("VR-user_Role");
         const tokens = JSON.parse(alldata).token;
         try {

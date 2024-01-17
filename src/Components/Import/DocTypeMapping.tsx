@@ -1,6 +1,5 @@
-import { Input, Select, Button, message } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Input, Select, message } from 'antd';
 const { Option } = Select;
 const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     console.log(Mappings);

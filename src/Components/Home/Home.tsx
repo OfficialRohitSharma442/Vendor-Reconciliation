@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import BarLineChart from '../utils/BarLineChart';
 
 const Home = () => {
 

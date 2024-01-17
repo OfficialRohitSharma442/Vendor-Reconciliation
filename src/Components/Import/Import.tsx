@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, ReloadOutlined, FileExcelOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, FileExcelOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Button, Checkbox, DatePicker, DatePickerProps, Drawer, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
@@ -8,10 +8,11 @@ import Cookies from "js-cookie";
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
-import "./Import.css";
+import MappingHeadersTable from "../utils/antTable";
 import DocTypeMapping from "./DocTypeMapping";
 import DownloadReport from "./DownloadReport";
-import MappingHeadersTable from "../utils/antTable";
+import "./Import.css";
+import ShowFile from "./ShowFile";
 const { Option } = Select;
 const Import = () => {
   // **************Static Data*********************
@@ -90,6 +91,7 @@ const Import = () => {
   const [showfile, setshowfile] = useState<any>([]);
   // *****************state for document mapping *********
   const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
+  const [DocModel,setDocModel] = useState(false);
   //***********for loading state */
   const [resetMapLoading, setresetMapLoading] = useState("");
   const [loading, setloading] = React.useState(false);
@@ -354,6 +356,9 @@ const Import = () => {
                   <label style={{ marginRight: "5px", fontWeight: "500" }}>Select Date :</label>
                   <DatePicker format="MM/DD/YYYY" onChange={onChangeDate} />
                 </div>
+                <Button onClick={() => {  setDocModel(true) }} type="primary">
+                  <ReloadOutlined title="Reset Mapping" />
+                </Button>
                 <Button onClick={showfiles} type="primary">
                   <EyeOutlined />
                 </Button>
@@ -372,53 +377,53 @@ const Import = () => {
   ];
   // *****************************post all data to this function******
   async function postData(url: any, data: any, FileName: any) {
-    if(true){
-    const alldata: any = Cookies.get("VR-user_Role");
-    const tokens = JSON.parse(alldata).token;
-    const finaltemp = {
-      user: JSON.parse(alldata)?.ID,
-      fileName: FileName,
-      data: data,
-    };
-    try {
-      const response = await axios.post(url, finaltemp, {
-        headers: {
-          Authorization: ` Bearer ${tokens}`,
-        },
-      });
-      if (response.status == 201) {
-        // console.log(response);
-        setCustomFileName("");
-        if (current <= 2) {
-          setdisable(false);
-          setloading(false);
-          onClose();
-          setCurrent(current + 1);
-          message.success(`File uploaded successfully. Upload your next file.`);
+    if (true) {
+      const alldata: any = Cookies.get("VR-user_Role");
+      const tokens = JSON.parse(alldata).token;
+      const finaltemp = {
+        user: JSON.parse(alldata)?.ID,
+        fileName: FileName,
+        data: data,
+      };
+      try {
+        const response = await axios.post(url, finaltemp, {
+          headers: {
+            Authorization: ` Bearer ${tokens}`,
+          },
+        });
+        if (response.status == 201) {
+          // console.log(response);
+          setCustomFileName("");
+          if (current <= 2) {
+            setdisable(false);
+            setloading(false);
+            onClose();
+            setCurrent(current + 1);
+            message.success(`File uploaded successfully. Upload your next file.`);
+          }
+          else
+            message.success(`File uploaded successfully. Please Wait`);
+          if (current == 0) {
+            setcompanyFileJson([]);
+          } else if (current == 1) {
+            setvendorFileJson([]);
+          } else if (current == 2) {
+            setdetailedFileJson([]);
+          }
+          setUpdateHeader([]);
+          return true;
         }
-        else
-          message.success(`File uploaded successfully. Please Wait`);
-        if (current == 0) {
-          setcompanyFileJson([]);
-        } else if (current == 1) {
-          setvendorFileJson([]);
-        } else if (current == 2) {
-          setdetailedFileJson([]);
-        }
-        setUpdateHeader([]);
-        return true;
+      } catch (error: any) {
+        onClose();
+        console.log(error);
+        message.error(`${error?.response?.data?.error?.message}`);
+        setTimeout(() => {
+          message.error(`correct and uploading file again`);
+        }, 1000);
+        setloading(false);
+        return false;
       }
-    } catch (error: any) {
-      onClose();
-      console.log(error);
-      message.error(`${error?.response?.data?.error?.message}`);
-      setTimeout(() => {
-        message.error(`correct and uploading file again`);
-      }, 1000);
-      setloading(false);
-      return false;
     }
-  }
   }
   // *****************post vendor naem to this function******
   async function postVendorName() {
@@ -438,7 +443,7 @@ const Import = () => {
         },
       });
       if (response.data.success === "ok") {
-        SaveDocMapping(DocMappingUrl,Mappings);
+        SaveDocMapping(DocMappingUrl, Mappings);
         const res = await DownloadReport();
         setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
         setloading(false);
@@ -450,10 +455,6 @@ const Import = () => {
       setloading(false);
     }
   }
-  const handleCancel = () => {
-    console.log("Clicked cancel button");
-    setOpen(false);
-  };
   // ******************save mapping *********
   async function saveMapping(keyforjson: any, valueforjson: any, urlforpost: any) {
     const data = await getMapping(urlforpost);
@@ -507,7 +508,7 @@ const Import = () => {
         },
       });
       if (response?.data?.data[0]) {
-        return response?.data?.data[0];  
+        return response?.data?.data[0];
       } else {
         return null;
       }
@@ -516,7 +517,7 @@ const Import = () => {
       return error;
     }
   }
-  async function SaveDocMapping(urlforpost:any,postdata:any){
+  async function SaveDocMapping(urlforpost: any, postdata: any) {
     let data = await getMapping(urlforpost);
     if (data != null && data?._id) {
       urlforpost = `${urlforpost}/${data._id}`;
@@ -832,7 +833,7 @@ const Import = () => {
     setdisable(true);
     setloading(true);
     const docmap = await getMapping(DocMappingUrl);
-    if(docmap?.data?.length > 0){
+    if (docmap?.data?.length > 0) {
       console.log(docmap.data);
       setMappings(docmap.data);
     }
@@ -1030,7 +1031,6 @@ const Import = () => {
         zIndex={1000}
         width={900}
         className="drag-n-drop-Drawer"
-        
         extra={
           <Space>
             <Button onClick={showfiles} type="primary">
@@ -1067,72 +1067,15 @@ const Import = () => {
       <Modal
         title={`Preview ${customFileName}`}
         open={open}
-        onCancel={handleCancel}
-        style={{ padding: "10px" }}
-        width={950}
+        onCancel={()=> setOpen(false)}
+        style={{ padding: "10px",top:"0px" }}
+        width={"100%"}
         okButtonProps={{ style: { display: "none" } }}
-        zIndex={10000}
+        // zIndex={10000}
+        footer={null}
       >
-        <div className="Prev_excelFile">
-          <div
-            style={{
-              overflowX: "auto",
-              maxHeight: "320px" /* Set the max height for the table body */,
-            }}
-          >
-            <table
-              style={{
-                borderCollapse: "collapse",
-                width: "100%",
-                border: "1px solid #ddd",
-                position: "relative",
-              }}
-            >
-              <thead>
-                <tr>
-                  {showfile?.[0] &&
-                    showfile?.[0].map((header: any, index: any) => (
-                      <th
-                        key={index}
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                          backgroundColor: "green",
-                          color: "white",
-                          fontSize: "13px",
-                          fontFamily: "Arial, sans-serif",
-                          whiteSpace: "nowrap",
-                          height: "30px",
-                          position: "sticky",
-                          top: "0",
-                        }}
-                      >
-                        {header}
-                      </th>
-                    ))}
-                </tr>
-              </thead>
-              <tbody style={{ overflowY: "scroll" }}>
-                {showfile?.slice(1)?.map((row: any, rowIndex: any) => (
-                  <tr key={rowIndex}>
-                    {row.map((cell: any, cellIndex: any) => (
-                      <td
-                        key={cellIndex}
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                          fontSize: "12px",
-                          fontFamily: "Arial, sans-serif",
-                        }}
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div>
+          <ShowFile data={showfile} />
         </div>
       </Modal>
       <Modal
@@ -1158,6 +1101,11 @@ const Import = () => {
       >
         <MappingHeadersTable contents={resmappingprevdata} />
       </Modal >
+      <Modal title='Do You Want To Reset Document Mapping?' 
+        open={DocModel} 
+        onOk={() => {setMappings([{ Column: '', Type: '', Method: '', Value: '' },]),  setDocModel(false)}} 
+        onCancel={()=> setDocModel(false)}>
+      </Modal>
     </>
   );
 };

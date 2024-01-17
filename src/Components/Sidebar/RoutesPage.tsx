@@ -1,13 +1,10 @@
 import React from 'react'
 import { Route, Routes } from "react-router-dom"
 import Adminmain from "../Admin/adminmain"
-import Vendor from "../Vendor/vendor"
-import Import from "../Import/Import"
-import Superadmin from '../SuperAdmin/Superadmin'
-import Reports from '../Reports/Reports'
 import { Context } from '../Context/Context'
-import Login from '../Login/Login'
-import Home from '../Home/Home'
+import Import from "../Import/Import"
+import Reports from '../Reports/Reports'
+import Superadmin from '../SuperAdmin/Superadmin'
 const RoutesPage = () => {
     const { role } = React.useContext(Context);
     return (
