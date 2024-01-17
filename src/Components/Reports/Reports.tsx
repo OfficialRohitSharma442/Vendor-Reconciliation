@@ -42,6 +42,7 @@ const Reports = () => {
     async function getReportList() {
         const alldata: any = Cookies.get("VR-user_Role");
         const tokens = JSON.parse(alldata).token;
+        console.log(tokens);
         try {
             const response = await axios.get(getReportListUrl, {
                 headers: {
@@ -213,28 +214,6 @@ const Reports = () => {
         } else {
             if (file != null) {
                 try {
-                    // const datas = [
-                    //     ['Name', 'Age'],
-                    //     ['John', '24'],
-                    //     ['Umesh', '21'],
-                    // ];
-
-                    // const wb = XLSX.utils.book_new();
-                    // const ws = XLSX.utils.aoa_to_sheet(datas);
-                    // XLSX.utils.book_append_sheet(wb, ws, 'sheet1');
-
-                    // // const blob = await XLSX.write(wb, { bookType: 'xlsx', type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-
-                    // const workbook = new ExcelJS.Workbook();
-                    // const worksheet = workbook.addWorksheet('Sheet1');
-                    // worksheet.addRow(['Name', 'Age']);
-                    // worksheet.addRow(['John', 24]);
-                    // worksheet.addRow(['Umesh', 21]);
-
-                    // const buffer = await workbook.xlsx.writeBuffer();
-                    // const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
                     const formData = new FormData();
                     formData.append('file', file, 'workbook.xlsx'); // 'workbook.xlsx' is the filename
                     formData.append('emails', Email);
@@ -246,8 +225,10 @@ const Reports = () => {
                                 Authorization: ` Bearer ${tokens}`,
                             },
                         });
-                        if (response) {
-                            console.log(response)
+                        if (response?.status == 200) {
+                            console.log(response);
+                            setsendEmailModel(false);
+                            message.success("Thank you! Your message has been successfully sent.")
                         }
                     }
                     catch (error: any) {
@@ -270,7 +251,7 @@ const Reports = () => {
     return (
         <>
             <div style={{ margin: '16px' }}>
-                {AllReports?
+                {AllReports.length > 0?
                     <div className='' style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
                         {AllReports?.map((item: any) => {
                             return (

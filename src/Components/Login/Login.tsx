@@ -21,6 +21,7 @@ const Login = () => {
                 // Update the state with the response data
                 Cookies.set('VR-user_Role', JSON.stringify(response?.data), { expires: 1 });
                 // localStorage.setItem("VR-user_Role", JSON.stringify(response?.data))
+                console.log(JSON.stringify(response?.data))
                 ;
                 setRole(response?.data?.role)
                 messageApi.open({
