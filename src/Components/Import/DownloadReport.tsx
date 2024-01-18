@@ -28,6 +28,7 @@ const DownloadReport = async () => {
         { url: '/i-one-case', sheetName: 'I1' },
         { url: '/i-two-case', sheetName: 'I2' },
         { url: '/i-three-case', sheetName: 'I3' },
+        { url: '/threshold-one-case', sheetName: 'Threshold' },
     ];
     // ************** Fetch data*******
     const fetchData = async (url:string, sheetName:string) => {

@@ -60,6 +60,9 @@
   .doc_type_mapping{
     min-width: 200px;
   }
+  .Threshold{
+    min-width: 100px;
+  }
   .mainstep{
     display: flex;
     justify-content: space-between;

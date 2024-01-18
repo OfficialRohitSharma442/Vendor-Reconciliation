@@ -120,11 +120,11 @@ const Import = () => {
   };
   function Thresholdcheck(value) {
     const newValue = parseInt(value, 10);
-    if (!isNaN(newValue)) {
       if (newValue >= 0) {
         setThreshold(newValue);
+      }else{
+        setThreshold(0);
       }
-    }
   }
   // **************for get mapping id********
   async function deleteMappings(url: any) {
@@ -343,9 +343,9 @@ const Import = () => {
         <>
           <div style={{ margin: "10px 20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div>
-                {/* <h2 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h2> */}
-              </div>
+              {/* <div>
+                <h2 style={{ textAlign: "center", fontWeight: "600",whiteSpace:"nowrap"}}>Create Mapppings</h2>
+              </div> */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div>
                   <label style={{ marginRight: "5px", fontWeight: "500" }}>Vendor Name :</label>
@@ -372,14 +372,17 @@ const Import = () => {
                   <label style={{ marginRight: "5px", fontWeight: "500" }}>Select Date :</label>
                   <Input
                     style={{ width: "10px" }}
-                    placeholder="Text"
-                    type="number"
+                    placeholder="Enter your threshold"
+                    type="text"
                     onChange={(e) => Thresholdcheck(e.target.value)}
-                    className='doc_type_mapping'
+                    className='Threshold'
                     value={Threshold}
                   />
                 </div>
-                <Button onClick={() => { setDocModel(true) }} type="primary">
+              
+              </div>
+              <div style={{display:"flex",gap:"12px",alignItems:"center"}}>
+              <Button onClick={() => { setDocModel(true) }} type="primary">
                   <ReloadOutlined title="Reset Mapping" />
                 </Button>
                 <Button onClick={showfiles} type="primary">
