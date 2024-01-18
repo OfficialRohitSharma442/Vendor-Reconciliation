@@ -8,9 +8,11 @@ const DownloadReport = async () => {
     const allurl = [
         { url: '/p-one-case', sheetName: 'P1' },
         { url: '/p-two-case', sheetName: 'P2' },
+        { url: '/p-three-case', sheetName: 'P3' },
         { url: '/k-one-case', sheetName: 'K1' },
         { url: '/k-two-case', sheetName: 'K2' },
         { url: '/f-case', sheetName: 'F' },
+        { url: '/f-two-case', sheetName: 'F2' },
         { url: '/a-case', sheetName: 'A' },
         { url: '/g-one-case', sheetName: 'G1' },
         { url: '/g-two-case', sheetName: 'G2' },
@@ -25,6 +27,7 @@ const DownloadReport = async () => {
         { url: '/m-five-case', sheetName: 'M5' },
         { url: '/i-one-case', sheetName: 'I1' },
         { url: '/i-two-case', sheetName: 'I2' },
+        { url: '/i-three-case', sheetName: 'I3' },
     ];
     // ************** Fetch data*******
     const fetchData = async (url:string, sheetName:string) => {

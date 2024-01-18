@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import axios from 'axios';
 import Meta from 'antd/es/card/Meta';
 import * as XLSX from "xlsx";
-import { Avatar, Button, Card, Input, Modal, message } from 'antd';
+import { Button, Card, Input, Modal, message } from 'antd';
 import moment from 'moment';
 import * as ExcelJS from 'exceljs';
 interface Report {
@@ -16,9 +16,11 @@ const Reports = () => {
     const allurl = [
         { url: '/p-one-case', sheetName: 'P1' },
         { url: '/p-two-case', sheetName: 'P2' },
+        { url: '/p-three-case', sheetName: 'P3' },
         { url: '/k-one-case', sheetName: 'K1' },
         { url: '/k-two-case', sheetName: 'K2' },
         { url: '/f-case', sheetName: 'F' },
+        { url: '/f-two-case', sheetName: 'F2' },
         { url: '/a-case', sheetName: 'A' },
         { url: '/g-one-case', sheetName: 'G1' },
         { url: '/g-two-case', sheetName: 'G2' },
@@ -33,6 +35,7 @@ const Reports = () => {
         { url: '/m-five-case', sheetName: 'M5' },
         { url: '/i-one-case', sheetName: 'I1' },
         { url: '/i-two-case', sheetName: 'I2' },
+        { url: '/i-three-case', sheetName: 'I3' },
     ];
     const [AllReports, setAllReports] = useState<Report[]>([]);
     const [sendEmailModel, setsendEmailModel] = useState(false);
@@ -284,6 +287,36 @@ const Reports = () => {
                     : <div style={{display:"grid",alignItems:"center",justifyContent:"center",height:"100vh"}}><div>No Report Found</div></div>
                 }
             </div>
+            {/* <List
+                grid={{ gutter: 16, column: 4 }}
+                dataSource={AllReports}
+                style={{margin:"0"}}
+                renderItem={(item:any) => (
+                    <List.Item>
+                        <Card
+                            style={{ width: 270, borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                            actions={[
+                                <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={() => downloadExcelFile(item?.reportId, false)} key="download" />,
+                                <Button style={{ border: "none" }} icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
+                                <Button style={{ border: "none" }} icon={<ShareAltOutlined />} onClick={() => prepareFile(item?.reportId)} key="preview" />,
+                            ]}
+                        >
+                            <Meta
+                                avatar={
+                                    <FileExcelOutlined style={{ fontSize: "40px", color: "green" }} />
+                                }
+                                title="Excel File.xlsx"
+                                description={
+                                    <span style={{ display: "flex", alignItems: "center" }}><b style={{ color: "black", marginRight: "2px", fontWeight: "400" }}>Created Date: </b> <span>{moment(item?.createdAt).format('MM/DD/YYYY')}</span></span>
+                                }
+                                style={{ padding: 0, height: 100, }}
+                            />
+                        </Card>
+                    </List.Item>
+                )}
+            /> */}
+
+
             <Modal title='Share Report'
                 open={sendEmailModel}
                 onOk={SendMail}

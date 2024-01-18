@@ -46,68 +46,72 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     };
 
     return (
-        <div style={{ height: "270px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "100%" }}>
-            {Mappings?.map((mapping, index) => (
-                <div key={index} style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
-                    <Select
-                        placeholder="Select Column"
-                        onChange={(value) => handleColumnChange(value, index)}
-                        value={mapping.Column || undefined}
-                        className='doc_type_mapping'
-                    >
-                        {Columns?.map((item) => (
-                            <Option key={item} value={item}>
-                                {item}
-                            </Option>
-                        ))}
-                    </Select>
-                    <Select
-                        placeholder="Documents Type"
-                        value={mapping.Type || undefined}
-                        onChange={(value) => handleTypeChange(value, index)}
-                        className='doc_type_mapping'
-                    >
-                        {mapping.Column == "Payment Document" ?
-                            option?.map((item) => (
+        <>
+            <h3 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h3>
+            <div style={{ height: "270px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "100%" }}>
+                {Mappings?.map((mapping, index) => (
+                    <div key={index} style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
+                        <Select
+                            placeholder="Select Column"
+                            onChange={(value) => handleColumnChange(value, index)}
+                            value={mapping.Column || undefined}
+                            className='doc_type_mapping'
+                        >
+                            {Columns?.map((item) => (
                                 <Option key={item} value={item}>
                                     {item}
                                 </Option>
-                            ))
-                            : TypeHeader?.map((item) => (
+                            ))}
+                        </Select>
+                        <Select
+                            placeholder="Documents Type"
+                            value={mapping.Type || undefined}
+                            onChange={(value) => handleTypeChange(value, index)}
+                            className='doc_type_mapping'
+                        >
+                            {mapping.Column == "Payment Document" ?
+                                option?.map((item) => (
+                                    <Option key={item} value={item}>
+                                        {item}
+                                    </Option>
+                                ))
+                                : TypeHeader?.map((item) => (
+                                    <Option key={item} value={item}>
+                                        {item}
+                                    </Option>
+                                ))
+                            }
+                        </Select>
+                        <Select
+                            placeholder="Method"
+                            onChange={(value) => handleMethodChange(value, index)}
+                            className='doc_type_mapping'
+                            value={mapping.Method || undefined}
+                        >
+                            {DocumentOptions?.map((item) => (
                                 <Option key={item} value={item}>
                                     {item}
                                 </Option>
-                            ))
-                        }
-                    </Select>
-                    <Select
-                        placeholder="Method"
-                        onChange={(value) => handleMethodChange(value, index)}
-                        className='doc_type_mapping'
-                        value={mapping.Method || undefined}
-                    >
-                        {DocumentOptions?.map((item) => (
-                            <Option key={item} value={item}>
-                                {item}
-                            </Option>
-                        ))}
-                    </Select>
-                    <Input
-                        placeholder="Text"
-                        onChange={(e) => handleValueChange(e, index)}
-                        className='doc_type_mapping'
-                        value={mapping.Value || undefined}
-                    />
-                    {index === Mappings?.length - 1 ? (
-                        <PlusOutlined onClick={handleAddMapping} style={{ fontSize: '20px' }} />
-                    ) : (
-                        <Button type="link" icon={<DeleteOutlined />} onClick={() => handleDeleteMapping(index)}>
-                            Delete
-                        </Button>
-                    )}
-                </div>
-            ))}
-        </div>
+                            ))}
+                        </Select>
+                        <Input
+                            placeholder="Text"
+                            onChange={(e) => handleValueChange(e, index)}
+                            className='doc_type_mapping'
+                            value={mapping.Value || undefined}
+                        />
+                        {index === Mappings?.length - 1 ? (
+                            <PlusOutlined onClick={handleAddMapping} style={{ fontSize: '20px' }} />
+                        ) : (
+                            <Button type="link" icon={<DeleteOutlined />} onClick={() => handleDeleteMapping(index)}>
+                                Delete
+                            </Button>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </>
+
     );
 };
 

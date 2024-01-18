@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, FileExcelOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, Checkbox, DatePicker, DatePickerProps, Drawer, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
+import { Button, Checkbox, DatePicker, DatePickerProps, Drawer, Input, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
@@ -70,6 +70,9 @@ const Import = () => {
   const [companyFileJson, setcompanyFileJson] = useState<any>([]);
   const [companyFileHeader, setcompanyFileHeader] = useState<any>([]);
   const [companyFileName, setcompanyFileName] = useState("");
+  const [companyFileHeaderPost, setcompanyFileHeaderPost] = useState<any>([]);
+  const [companyFileDataPost, setcompanyFileDataPost] = useState<any>([]);
+
   // ****************for Second file / Vendorfile***************************
   const [vendorfileName, setvendorfileName] = useState("");
   const [vendorFileHeader, setvendorFileHeader] = useState<any>([]);
@@ -91,7 +94,7 @@ const Import = () => {
   const [showfile, setshowfile] = useState<any>([]);
   // *****************state for document mapping *********
   const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
-  const [DocModel,setDocModel] = useState(false);
+  const [DocModel, setDocModel] = useState(false);
   //***********for loading state */
   const [resetMapLoading, setresetMapLoading] = useState("");
   const [loading, setloading] = React.useState(false);
@@ -108,12 +111,21 @@ const Import = () => {
   function onChange(checkedValues) {
     setDeleteMapping(checkedValues);
   }
-  // **********************date**********
+  // **********************date and threshold**********
+  const [Threshold, setThreshold] = useState<number>(0);
   const [dateVendor, setdateVendor] = useState<any>("");
   const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
     console.log(date, dateString);
     setdateVendor(dateString);
   };
+  function Thresholdcheck(value) {
+    const newValue = parseInt(value, 10);
+    if (!isNaN(newValue)) {
+      if (newValue >= 0) {
+        setThreshold(newValue);
+      }
+    }
+  }
   // **************for get mapping id********
   async function deleteMappings(url: any) {
     const alldata: any = Cookies.get("VR-user_Role");
@@ -329,10 +341,10 @@ const Import = () => {
       title: "Report",
       content: (
         <>
-          <div style={{ margin: "0px 20px" }}>
+          <div style={{ margin: "10px 20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <h2 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h2>
+                {/* <h2 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h2> */}
               </div>
               <div style={{ display: "flex", gap: "20px" }}>
                 <div>
@@ -356,7 +368,18 @@ const Import = () => {
                   <label style={{ marginRight: "5px", fontWeight: "500" }}>Select Date :</label>
                   <DatePicker format="MM/DD/YYYY" onChange={onChangeDate} />
                 </div>
-                <Button onClick={() => {  setDocModel(true) }} type="primary">
+                <div>
+                  <label style={{ marginRight: "5px", fontWeight: "500" }}>Select Date :</label>
+                  <Input
+                    style={{ width: "10px" }}
+                    placeholder="Text"
+                    type="number"
+                    onChange={(e) => Thresholdcheck(e.target.value)}
+                    className='doc_type_mapping'
+                    value={Threshold}
+                  />
+                </div>
+                <Button onClick={() => { setDocModel(true) }} type="primary">
                   <ReloadOutlined title="Reset Mapping" />
                 </Button>
                 <Button onClick={showfiles} type="primary">
@@ -432,9 +455,10 @@ const Import = () => {
     const url =
       "https://concerned-plum-crayfish.cyclic.app/api/v2/report/dynamic-report";
     const data = {
-      user: JSON.parse(alldata)?.ID,
+      // user: JSON.parse(alldata)?.ID,
       vendorName: vendorName,
-      dateTypeMapped: dateVendor
+      dateTypeMapped: dateVendor,
+      threshold: Threshold
     };
     try {
       const response = await axios.post(url, data, {
@@ -448,6 +472,9 @@ const Import = () => {
         setMappings([{ Column: '', Type: '', Method: '', Value: '' },]);
         setloading(false);
         setCurrent(0);
+        setThreshold(0);
+        setcompanyFileDataPost([]);
+        setcompanyFileHeaderPost([]);
       }
     } catch (error) {
       console.log(error);
@@ -580,13 +607,22 @@ const Import = () => {
       }
       const alldata = companyFileJson;
       alldata[0] = header;
-      try {
-        const transformedData = await transformToObjectsFile1(header, alldata);
-        // console.log("Transformed data:", transformedData);
-        await postData(companyPostUrl, transformedData, companyFileName);
-      } catch (error) {
-        console.error("Error during transformation:", error);
-      }
+      setcompanyFileHeaderPost(header);
+      setcompanyFileDataPost(alldata);
+      const transformedData = await transformToObjectsFile1(header, alldata, []);
+      console.log(transformedData);
+      setdisable(false);
+      setloading(false);
+      onClose();
+      setCustomFileName("");
+      setCurrent(current + 1);
+      message.success(`File uploaded successfully. Upload your next file.`);
+      // try {
+      //   // console.log("Transformed data:", transformedData);
+      //   await postData(companyPostUrl, transformedData, companyFileName);
+      // } catch (error) {
+      //   console.error("Error during transformation:", error);
+      // }
     } else {
       setdisable(false);
       setloading(false);
@@ -611,28 +647,40 @@ const Import = () => {
         });
         const Allfilejson = companyFileJson;
         Allfilejson[0] = convertFileHeader;
-        try {
-          const transformedData = await transformToObjectsFile1(
-            convertFileHeader,
-            Allfilejson
-          );
-          // console.log("Transformed data:", transformedData);
-          if (transformedData != null) {
-            onClose();
-            await postData(companyPostUrl, transformedData, companyFileName);
-          } else {
-            message.error(`Check and Upload file Again`);
-          }
-        } catch (error) {
-          message.error(`first file upload error`);
-        }
+        setcompanyFileHeaderPost(convertFileHeader);
+        setcompanyFileDataPost(Allfilejson);
+        const transformedData = await transformToObjectsFile1(convertFileHeader, Allfilejson, []);
+        console.log(transformedData);
+        setCustomFileName("");
+        setdisable(false);
+        setloading(false);
+        onClose();
+        setCurrent(current + 1);
+        message.success(`File uploaded successfully. Upload your next file.`);
+        // try {
+        //   const transformedData = await transformToObjectsFile1(
+        //     convertFileHeader,
+        //     Allfilejson
+        //   );
+        //   // console.log("Transformed data:", transformedData);
+        //   if (transformedData != null) {
+        //     onClose();
+        //     await postData(companyPostUrl, transformedData, companyFileName);
+        //   } else {
+        //     message.error(`Check and Upload file Again`);
+        //   }
+        // } catch (error) {
+        //   message.error(`first file upload error`);
+        // }
       } else {
         message.error(`Please select a value for each dropdown.`);
       }
     }
   }
-  const transformToObjectsFile1 = async (headers: any, data: any) => {
+
+  const transformToObjectsFile1 = async (headers: any, data: any, alldocmap: any) => {
     const vendorNamedropdown: any = [];
+    const documentMap = alldocmap?.filter(item => item?.Column === "Document Number" && (item?.Type == "Advance Payment" || item?.Type == "Debit note"));
     let TransFormToObjectsData = await Promise.all(
       data?.map(async (row: any, idx: number) => {
         const rowData: any = {};
@@ -642,6 +690,25 @@ const Import = () => {
             if (value !== "" && value !== undefined && value !== null) {
               if (header === "Invoice Number" || header === "Document Number") {
                 value = String(value)?.replace(/[\W_]+/g, "");
+                if (header == "Document Number") {
+                  let DocumentTypeMapped = "";
+                  if (documentMap?.length > 0 && value != "") {
+                    for (let i = 0; i < documentMap?.length; i++) {
+                      const item = documentMap[i];
+                      if (item?.Method === "Contains" && value?.toLowerCase().includes(item?.Value.toLowerCase())) {
+                        DocumentTypeMapped = item?.Type;
+                        break;
+                      } else if (item?.Method === "StartsWith" && value?.toLowerCase().startsWith(item?.Value.toLowerCase())) {
+                        DocumentTypeMapped = item?.Type;
+                        break;
+                      } else if (item?.Method === "EndsWith" && value?.toLowerCase().endsWith(item?.Value.toLowerCase())) {
+                        DocumentTypeMapped = item?.Type;
+                        break;
+                      }
+                    }
+                  }
+                  rowData["DocumentTypeMapped"] = DocumentTypeMapped;
+                }
               }
               if (header === "Vendor Name" && idx !== 0) {
                 vendorNamedropdown?.push(value?.trim());
@@ -903,14 +970,20 @@ const Import = () => {
   async function getreport() {
     let allmap = Mappings.slice(0, -1);
     const isValid = allmap?.length > 0 && allmap?.every(item => item?.Column?.trim() !== '' && item?.Type?.trim() !== '' && item?.Method?.trim() !== '' && item?.Value?.trim() !== '');
-    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1 && allmap.length > 0 && isValid && dateVendor != "" && dateVendor != undefined && dateVendor != undefined) {
+    if (vendorName != "" && vendorName != undefined && vendorName != null && Mappings.length > 1 && allmap.length > 0 && isValid && dateVendor != "" && dateVendor != undefined && dateVendor != undefined && Threshold >= 0) {
       try {
         setloading(true);
-        const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson, allmap);
-        console.log("Transformed data:", transformedData);
-        const check = await postData(detailPostUrl, transformedData, detailedFileName);
-        if (check) {
-          await postVendorName();
+        if (companyFileDataPost.length > 0 && companyFileHeaderPost.length > 0) {
+          const transformedDatafile1 = await transformToObjectsFile1(companyFileHeaderPost, companyFileDataPost, allmap);
+          await postData(companyPostUrl, transformedDatafile1, companyFileName);
+
+          const transformedData = await transformToObjectsFile3(detailedFileJson[0], detailedFileJson, allmap);
+          console.log("Transformed data:", transformedData);
+          const check = await postData(detailPostUrl, transformedData, detailedFileName);
+          if (check) {
+            await postVendorName();
+          }
+
         }
       } catch (error) {
         console.error("Error during transformation:", error);
@@ -964,7 +1037,7 @@ const Import = () => {
   }));
 
   const contentStyle: React.CSSProperties = {
-    height: "360px",
+    height: "380px",
     borderRadius: token.borderRadiusLG,
     border: `2px solid ${token.colorBorder}`,
     marginTop: 16,
@@ -1067,8 +1140,8 @@ const Import = () => {
       <Modal
         title={`Preview ${customFileName}`}
         open={open}
-        onCancel={()=> setOpen(false)}
-        style={{ padding: "10px",top:"0px" }}
+        onCancel={() => setOpen(false)}
+        style={{ padding: "10px", top: "0px" }}
         width={"100%"}
         okButtonProps={{ style: { display: "none" } }}
         // zIndex={10000}
@@ -1101,10 +1174,10 @@ const Import = () => {
       >
         <MappingHeadersTable contents={resmappingprevdata} />
       </Modal >
-      <Modal title='Do You Want To Reset Document Mapping?' 
-        open={DocModel} 
-        onOk={() => {setMappings([{ Column: '', Type: '', Method: '', Value: '' },]),  setDocModel(false)}} 
-        onCancel={()=> setDocModel(false)}>
+      <Modal title='Do You Want To Reset Document Mapping?'
+        open={DocModel}
+        onOk={() => { setMappings([{ Column: '', Type: '', Method: '', Value: '' },]), setDocModel(false) }}
+        onCancel={() => setDocModel(false)}>
       </Modal>
     </>
   );
