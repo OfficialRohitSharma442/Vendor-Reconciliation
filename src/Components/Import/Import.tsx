@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ArrowRightOutlined, DownloadOutlined, EyeOutlined, FileExcelOutlined, ReloadOutlined } from "@ant-design/icons";
-import { Button, Checkbox, DatePicker, DatePickerProps, Drawer, Input, Modal, Select, Space, Steps, UploadProps, message, theme, } from "antd";
+import { Button, Checkbox, DatePicker, DatePickerProps, Drawer, Input, Modal, Select, Space, Steps, Tooltip, UploadProps, message, theme, } from "antd";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import Dragger from "antd/es/upload/Dragger";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import DragAndDrop from "../utils/Drag-and-Drop";
 import MappingHeadersTable from "../utils/antTable";
@@ -96,18 +96,20 @@ const Import = () => {
   const [Mappings, setMappings] = useState([{ Column: '', Type: '', Method: '', Value: '' },]);
   const [DocModel, setDocModel] = useState(false);
   //***********for loading state */
-  const [resetMapLoading, setresetMapLoading] = useState("");
   const [loading, setloading] = React.useState(false);
   const [disable, setdisable] = React.useState(false);
   /******** state for Reset mapping preview***************/
-  const [resmappingprevdata, setResMappingPrevdata] = React.useState<any>([])
+  const [ResMappingPrevdata, setResMappingPrevdata] = React.useState<any>([])
+  const [ResMappingPrevdata1, setResMappingPrevdata1] = React.useState<any>([])
+  const [ResMappingPrevdata2, setResMappingPrevdata2] = React.useState<any>([])
+  const [ResMappingPrevdata3, setResMappingPrevdata3] = React.useState<any>([])
   const [mappingModal, setMappingModal] = React.useState(false);
   // *************delete mapping***************
   const [deleteMapping, setDeleteMapping] = useState<string[]>([]);
   const [deleteMappingLoading, setDeleteMappingLoading] = useState(false);
   // **************for model delete ************
+  const [OptionsId, setOptionsId] = useState({ "Company Open": "", "Vendor Open": "", "Company SOA": "" });
   const [openDeleteMapping, setOpenDeleteMapping] = useState(false);
-  const plainOptions = ["First File", "Second File", "Third File"];
   function onChange(checkedValues) {
     setDeleteMapping(checkedValues);
   }
@@ -120,11 +122,11 @@ const Import = () => {
   };
   function Thresholdcheck(value) {
     const newValue = parseInt(value, 10);
-      if (newValue >= 0) {
-        setThreshold(newValue);
-      }else{
-        setThreshold(0);
-      }
+    if (newValue >= 0) {
+      setThreshold(newValue);
+    } else {
+      setThreshold(0);
+    }
   }
   // **************for get mapping id********
   async function deleteMappings(url: any) {
@@ -144,49 +146,62 @@ const Import = () => {
   async function getMappingID() {
     if (deleteMapping.length > 0) {
       setDeleteMappingLoading(true);
-      if (deleteMapping.includes("First File")) {
-        const data = await getMapping(companyMappingUrl);
-        if (data?._id != undefined && data?._id != "" && data?._id != null) {
-          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${data?._id}`);
+      if (deleteMapping.includes("Company Open")) {
+        if (OptionsId["Company Open"] != "") {
+          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/master-mapping/${OptionsId["Company Open"]}`);
         }
       }
-      if (deleteMapping.includes("Second File")) {
-        const data = await getMapping(vendorMappingUrl);
-        if (data?._id != undefined && data?._id != "" && data?._id != null) {
-          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${data?._id}`);
+      if (deleteMapping.includes("Vendor Open")) {
+        if (OptionsId["Vendor Open"] != "") {
+          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/vendor-mapping/${OptionsId["Vendor Open"]}`);
         }
       }
-      if (deleteMapping.includes("Third File")) {
-        const data = await getMapping(detailMappingUrl);
-        if (data?._id != undefined && data?._id != "" && data?._id != null) {
-          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${data?._id}`);
+      if (deleteMapping.includes("Company SOA")) {
+        if (OptionsId["Company SOA"] != "") {
+          deleteMappings(`https://concerned-plum-crayfish.cyclic.app/api/mapping/complete-mapping/${OptionsId["Company SOA"]}`);
         }
       }
       setTimeout(() => {
         message.success("Reset Mapping Successfully")
         setDeleteMappingLoading(false);
         setOpenDeleteMapping(false);
-      }, 1000);
+      }, 2000);
     } else {
       message.error("Please Select File");
     }
   }
+  useEffect(() => {
+    const fetchData = async () => {
+        const res1 = await getMapping(companyMappingUrl);
+        if (res1?._id) {
+          setOptionsId(prevOptionsId => ({ ...prevOptionsId, "Company Open": res1._id }));
+          setResMappingPrevdata1(Object.entries(res1).filter(([key]) => key !== "_id"))
+        }
+        const res2 = await getMapping(vendorMappingUrl);
+        if (res2?._id) {
+          setOptionsId(prevOptionsId => ({ ...prevOptionsId, "Vendor Open": res2._id }));
+          setResMappingPrevdata2(Object.entries(res2).filter(([key]) => key !== "_id"))
+        }
+        const res3 = await getMapping(detailMappingUrl);
+        if (res3?._id) {
+          setOptionsId(prevOptionsId => ({ ...prevOptionsId, "Company SOA": res3._id }));
+          setResMappingPrevdata3(Object.entries(res3).filter(([key]) => key !== "_id"))
+        }
+    };
+    fetchData();
+  }, [current])
+
   async function resetMappingView(filetype) {
-    setresetMapLoading(filetype);
     if (filetype === "First File") {
-      const res = await getMapping(companyMappingUrl);
-      setResMappingPrevdata(Object.entries(res).filter(([key]) => key !== "_id"))
+      setResMappingPrevdata(ResMappingPrevdata1);
       setMappingModal(true)
     } else if (filetype === "Second File") {
-      const res = await getMapping(vendorMappingUrl);
-      setResMappingPrevdata(Object.entries(res).filter(([key]) => key !== "_id"))
+      setResMappingPrevdata(ResMappingPrevdata2);
       setMappingModal(true)
     } else {
-      const res = await getMapping(detailMappingUrl);
-      setResMappingPrevdata(Object.entries(res).filter(([key]) => key !== "_id"))
+      setResMappingPrevdata(ResMappingPrevdata3);
       setMappingModal(true)
     }
-    setresetMapLoading("");
   }
   // ********************for uplode every file***************
   const props: UploadProps = {
@@ -379,10 +394,10 @@ const Import = () => {
                     value={Threshold}
                   />
                 </div>
-              
+
               </div>
-              <div style={{display:"flex",gap:"12px",alignItems:"center"}}>
-              <Button onClick={() => { setDocModel(true) }} type="primary">
+              <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                <Button onClick={() => { setDocModel(true) }} type="primary">
                   <ReloadOutlined title="Reset Mapping" />
                 </Button>
                 <Button onClick={showfiles} type="primary">
@@ -1040,7 +1055,7 @@ const Import = () => {
   }));
 
   const contentStyle: React.CSSProperties = {
-    height: "380px",
+    height: `${current==3 ? "450px" : "370px"}`,
     borderRadius: token.borderRadiusLG,
     border: `2px solid ${token.colorBorder}`,
     marginTop: 16,
@@ -1070,18 +1085,30 @@ const Import = () => {
       message.error("Please Upload file");
     }
   }
-  const optionsWithButtons = plainOptions.map((option) => ({
-    label: (
-      <div>
-        <span>{option}</span>
-        <Button loading={resetMapLoading == option} type="link">
-          <EyeOutlined onClick={() => { resetMappingView(option) }} />
-        </Button>
-      </div>
-    ),
-    value: option,
-  }));
 
+  const optionsWithButtons = Object.entries(OptionsId).map(([key, value]) => {
+    return {
+      label: (
+        <Tooltip title={value !== "" ? "" : "Mapping not available"}>
+          <span>
+            {key}
+            {value !== "" ?
+              (
+                <EyeOutlined onClick={() => { resetMappingView(key) }}
+                  style={{ marginLeft: 8, color: '#1677ff' }}
+                />
+              ) : (
+                <EyeOutlined
+                  style={{ marginLeft: 12, color: 'gray', cursor: 'not-allowed' }}
+                />
+              )}
+          </span>
+        </Tooltip>
+      ),
+      value: key,
+      disabled: value === "",
+    };
+  });
   return (
     <>
       <div style={{ margin: "20px" }}>
@@ -1164,18 +1191,19 @@ const Import = () => {
         confirmLoading={deleteMappingLoading}
       >
         <p style={{ margin: "0", fontWeight: "500" }}>Select File :</p>
-        <Checkbox.Group options={optionsWithButtons} onChange={onChange} style={{ margin: "10px 0px" }} />
+        <Checkbox.Group options={optionsWithButtons} onChange={onChange} style={{ margin: "10px 0px 30px 0px  ", display: "flex", alignItems: "center", gap: "10px" }} />
       </Modal>
       <Modal
         title="Saved Mapping"
         open={mappingModal}
+        style={{ textAlign: "center" }}
         onCancel={() => setMappingModal(false)}
         width={800}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
         zIndex={10000}
       >
-        <MappingHeadersTable contents={resmappingprevdata} />
+        <MappingHeadersTable contents={ResMappingPrevdata} />
       </Modal >
       <Modal title='Do You Want To Reset Document Mapping?'
         open={DocModel}

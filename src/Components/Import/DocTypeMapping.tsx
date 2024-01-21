@@ -48,7 +48,7 @@ const DocTypeMapping = ({ Mappings, setMappings }: any) => {
     return (
         <>
             <h3 style={{ textAlign: "center", fontWeight: "600" }}>Create Mapppings</h3>
-            <div style={{ height: "270px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "100%" }}>
+            <div style={{ height: "320px", padding: "20px 20px", overflow: "scroll", border: "1px solid black", width: "100%" }}>
                 {Mappings?.map((mapping, index) => (
                     <div key={index} style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
                         <Select
