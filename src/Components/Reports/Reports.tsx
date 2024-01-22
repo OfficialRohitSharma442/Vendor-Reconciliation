@@ -37,6 +37,7 @@ const Reports = () => {
         { url: '/i-two-case', sheetName: 'I2' },
         { url: '/i-three-case', sheetName: 'I3' },
         { url: '/threshold-one-case', sheetName: 'Threshold' },
+        { url: '/summary-case', sheetName: 'Summary Report' },
     ];
     const [AllReports, setAllReports] = useState<Report[]>([]);
     const [sendEmailModel, setsendEmailModel] = useState(false);
