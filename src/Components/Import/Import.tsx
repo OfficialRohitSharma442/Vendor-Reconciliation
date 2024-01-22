@@ -294,17 +294,23 @@ const Import = () => {
       <div style={{ margin: "20px" }}>
         <div className="mainstep">
           <div>
-            <Button type="primary" icon={<DownloadOutlined />} size={size}>
-              Sample file
-            </Button>
+            <Tooltip title={"Download Sample File"}>
+              <Button type="primary" icon={<DownloadOutlined />} size={size}>
+                Sample file
+              </Button>
+            </Tooltip>
           </div>
           <div style={{ display: "flex", gap: "20px" }}>
-            <Button onClick={() => { setOpenDeleteMapping(true) }} type="primary">
-              <ReloadOutlined title="Reset Mapping" />
-            </Button>
-            <Button onClick={showfiles} type="primary">
-              <EyeOutlined title="View Excle File" />
-            </Button>
+            <Tooltip title={"Reset Mapping"}>
+              <Button onClick={() => { setOpenDeleteMapping(true) }} type="primary">
+                <ReloadOutlined title="Reset Mapping" />
+              </Button>
+            </Tooltip>
+            <Tooltip title={"View Excle File"}>
+              <Button onClick={showfiles} type="primary">
+                <EyeOutlined title="View Excle File" />
+              </Button>
+            </Tooltip>
             <Button loading={loading} type="primary" size={size} onClick={() => next()}>
               Next <ArrowRightOutlined />
             </Button>
@@ -1136,9 +1142,11 @@ const Import = () => {
         className="drag-n-drop-Drawer"
         extra={
           <Space>
-            <Button onClick={showfiles} type="primary">
-              <EyeOutlined />
-            </Button>
+            <Tooltip placement="bottom" title={"Show File Preview"}>
+              <Button onClick={showfiles} type="primary">
+                <EyeOutlined />
+              </Button>
+            </Tooltip>
             <Button loading={loading} onClick={MappingCheck} type="primary">
               Save
             </Button>

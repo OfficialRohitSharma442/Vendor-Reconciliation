@@ -4,9 +4,19 @@ import Cookies from "js-cookie";
 import axios from 'axios';
 import Meta from 'antd/es/card/Meta';
 import * as XLSX from "xlsx";
-import { Button, Card, Input, Modal, message } from 'antd';
-import moment from 'moment';
+import { Button, Card, Input, Layout, Modal, message } from 'antd';
+import moment, { Moment } from 'moment';
 import * as ExcelJS from 'exceljs';
+import Search from 'antd/es/input/Search';
+import { DatePicker } from 'antd';
+import type { PaginationProps } from 'antd';
+import { Pagination } from 'antd';
+import { Footer, Header } from 'antd/es/layout/layout';
+
+
+
+const { RangePicker } = DatePicker;
+
 interface Report {
     reportId: string;
 }
@@ -39,10 +49,31 @@ const Reports = () => {
         { url: '/threshold-one-case', sheetName: 'Threshold' },
         { url: '/summary-case', sheetName: 'Summary Report' },
     ];
-    const [AllReports, setAllReports] = useState<Report[]>([]);
+    const [AllReports, setAllReports] = useState<any[]>([]);
     const [sendEmailModel, setsendEmailModel] = useState(false);
     const [Email, setEmail] = useState("");
     const [file, setFile] = useState<Blob | null>(null);
+    const [FilteredReport, setFilteredReport] = useState<any>([]);
+    const itemsPerPage = 8;
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const itemRender: PaginationProps['itemRender'] = (_, type, originalElement) => {
+        if (type === 'prev') {
+            return <a>Previous</a>;
+        }
+        if (type === 'next') {
+            return <a>Next</a>;
+        }
+        return originalElement;
+    };
+    const handlePageChange = (pageNumber) => {
+
+        const startIndex = (pageNumber - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const newFilteredReport = AllReports.slice(startIndex, endIndex);
+        setFilteredReport(newFilteredReport);
+        setCurrentPage(pageNumber);
+    };
 
     async function getReportList() {
         const alldata: any = Cookies.get("VR-user_Role");
@@ -55,16 +86,24 @@ const Reports = () => {
                 },
             });
             if (response?.data?.data) {
+                console.log({ "response?.data?.data": response?.data?.data })
                 setAllReports(response?.data?.data);
+                setFilteredReport(response?.data?.data?.slice(0, 8))
+
+
             }
         } catch (error) {
             console.error(error);
             return error;
         }
+
     }
     useEffect(() => {
         getReportList()
     }, [])
+
+
+
 
     async function getReport(url, sheetName, ID: any, isreco: boolean) {
         const alldata: any = Cookies.get("VR-user_Role");
@@ -253,12 +292,44 @@ const Reports = () => {
         if (newFile != null && newFile != undefined)
             setFile(newFile);
     }
+    const handleOnChageDateChange = (dates) => {
+        console.log(AllReports);
+
+        if (!dates || !dates[0] || !dates[1]) {
+            // Handle the case when dates are not selected or incomplete
+            setFilteredReport(AllReports);
+            return;
+        }
+        debugger
+        const filteredData = AllReports.filter(item => {
+            const itemDate = moment(item.createdAt);
+            return itemDate.isValid() && itemDate.isSameOrAfter(dates[0].$d) && itemDate.isSameOrBefore(dates[1].$d);
+        });
+        setFilteredReport(filteredData);
+    };
+
     return (
-        <>
-            <div style={{ margin: '16px' }}>
-                {AllReports.length > 0?
+        <Layout style={{ minHeight: "100vh", marginLeft: "10px" }}>
+            <div>
+                <Header style={{ display: 'flex', justifyContent: "space-between", backgroundColor: '#f5f5f5' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%' }}>
+                        <RangePicker size="large"
+                            onCalendarChange={handleOnChageDateChange}
+                            format="MM/DD/YYYY"
+                        />
+                        <Search
+                            size="large"
+                            placeholder="Input search text"
+                            allowClear
+                            onSearch={(e) => console.log(e)}
+                            style={{ marginLeft: '10px', width: "unset" }}
+                        />
+                    </div>
+
+                </Header>
+                {FilteredReport.length > 0 ?
                     <div className='' style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                        {AllReports?.map((item: any) => {
+                        {FilteredReport?.map((item: any) => {
                             return (
                                 <>
                                     <Card
@@ -281,12 +352,14 @@ const Reports = () => {
                                             style={{ padding: 0, height: 100, }}
                                         />
                                     </Card>
+
                                 </>
                             )
                         })
                         }
+
                     </div>
-                    : <div style={{display:"grid",alignItems:"center",justifyContent:"center",height:"100vh"}}><div>No Report Found</div></div>
+                    : <div style={{ display: "grid", alignItems: "center", justifyContent: "center", height: "100vh" }}><div>No Report Found</div></div>
                 }
             </div>
             {/* <List
@@ -332,8 +405,16 @@ const Reports = () => {
                     value={Email}
                 />
             </Modal>
-        </>
+            <Footer style={{ display: 'flex', flexDirection: "row-reverse" }}>
+
+
+                <Pagination onChange={handlePageChange} showTitle responsive hideOnSinglePage total={AllReports?.length} defaultPageSize={8} itemRender={itemRender} />
+
+            </Footer>
+        </Layout>
     )
 }
 
 export default Reports
+
+

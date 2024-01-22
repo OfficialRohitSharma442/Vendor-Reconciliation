@@ -54,7 +54,7 @@ const App = () => {
           token: {
             colorPrimary: '#00b96b',
             borderRadius: 2,
-            colorBgSpotlight: "red"
+            // colorBgSpotlight: "yellow"
           },
 
         }}>
