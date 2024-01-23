@@ -52,6 +52,7 @@ const Reports = () => {
     const [FilteredReport, setFilteredReport] = useState<any>([]);
     const itemsPerPage = 8;
     const [currentPage, setCurrentPage] = useState(1);
+    const [downloadLoading, setDownloadLoading] = useState({});
 
     const itemRender: PaginationProps['itemRender'] = (_, type, originalElement) => {
         if (type === 'prev') {
@@ -125,6 +126,7 @@ const Reports = () => {
     }
     async function downloadExcelFile(ID, sendmail) {
         console.log(ID);
+        setDownloadLoading({ ...downloadLoading, [ID]: true });
         try {
             const promises = allurl.map(({ url, sheetName }) => getReport(url, sheetName, ID, false));
             const results = await Promise.allSettled(promises);
@@ -227,6 +229,7 @@ const Reports = () => {
             } else {
                 console.log("No data available for any sheets");
             }
+            setDownloadLoading({ ...downloadLoading, [ID]: false });
         } catch (error) {
             console.error("Error generating Excel file:", error);
         }
@@ -335,7 +338,6 @@ const Reports = () => {
                             style={{ marginLeft: '10px', width: "unset" }}
                         />
                     </div>
-
                 </Header>
                 {FilteredReport.length > 0 ?
                     <div className='' style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
@@ -345,7 +347,7 @@ const Reports = () => {
                                     <Card
                                         style={{ width: "17rem", borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
                                         actions={[
-                                            <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={() => downloadExcelFile(item?.reportId, false)} key="download" />,
+                                            <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={() => downloadExcelFile(item?.reportId, false)} loading={downloadLoading[item?.reportId]} key="download" />,
                                             <Button style={{ border: "none" }} icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
                                             <Button style={{ border: "none" }} icon={<ShareAltOutlined />} onClick={() => prepareFile(item?.reportId)} key="preview" />,
                                         ]}
