@@ -499,6 +499,7 @@ const Import = () => {
         setThreshold(0);
         setcompanyFileDataPost([]);
         setcompanyFileHeaderPost([]);
+        SetvendorName("");
       }
     } catch (error) {
       console.log(error);
