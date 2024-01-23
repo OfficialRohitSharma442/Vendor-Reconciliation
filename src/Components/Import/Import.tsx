@@ -288,7 +288,7 @@ const Import = () => {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
-  //************************for first all three step *******************8
+  //************************for first all three step *******************
   const FirstThreeStep = (filename) => (
     <>
       <div style={{ margin: "20px" }}>
