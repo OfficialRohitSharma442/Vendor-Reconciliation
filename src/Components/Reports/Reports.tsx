@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { DownloadOutlined, ShareAltOutlined, DeleteOutlined, FileExcelOutlined } from "@ant-design/icons";
+import { DownloadOutlined, StopOutlined, PlayCircleOutlined, ShareAltOutlined, DeleteOutlined, FileExcelOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
 import axios from 'axios';
 import Meta from 'antd/es/card/Meta';
 import * as XLSX from "xlsx";
-import { Button, Card, Input, Layout, Modal, message } from 'antd';
+import { Button, Card, Input, Layout, Modal, Radio, message } from 'antd';
 import moment from 'moment';
 import * as ExcelJS from 'exceljs';
 import Search from 'antd/es/input/Search';
@@ -302,6 +302,26 @@ const Reports = () => {
         <Layout style={{ minHeight: "100vh", marginLeft: "10px" }}>
             <div>
                 <Header style={{ display: 'flex', justifyContent: "space-between", backgroundColor: '#f5f5f5' }}>
+                    <Radio.Group
+                        defaultValue="center"
+                        buttonStyle="solid"
+                        style={{ display: 'flex', alignItems: 'center' }}
+                        onChange={(e) => console.log(e.target.value)}
+                    >
+                        <Radio.Button value="start">
+                            <div style={{ display: 'flex', gap: 5 }}>
+
+                                <PlayCircleOutlined /> Start
+                            </div>
+                        </Radio.Button>
+                        <Radio.Button value="center">
+                            <div style={{ display: 'flex', gap: 5 }}>
+
+                                <PlayCircleOutlined /> Center
+                            </div>
+                        </Radio.Button>
+
+                    </Radio.Group>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', width: '100%' }}>
                         <RangePicker size="large"
                             onCalendarChange={handleOnChageDateChange}
@@ -323,7 +343,7 @@ const Reports = () => {
                             return (
                                 <>
                                     <Card
-                                        style={{ width: 270, borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                                        style={{ width: "17rem", borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
                                         actions={[
                                             <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={() => downloadExcelFile(item?.reportId, false)} key="download" />,
                                             <Button style={{ border: "none" }} icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
