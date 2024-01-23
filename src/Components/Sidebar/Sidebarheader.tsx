@@ -1,7 +1,5 @@
-
 import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import myImage from "./../../assets/vendor-reconciliation-high-resolution-logo-black-transparent.png";
-
 const SidebarHeader = ({ collapsed, setCollapsed }: any) => (
     <div style={{ marginTop: "15px", margin: "auto", transition: 'width 0.2s' }}>
         <div>
@@ -15,8 +13,9 @@ const SidebarHeader = ({ collapsed, setCollapsed }: any) => (
                         <img src={myImage} style={{ width: "145px", height: "45px" }}></img>
                         <CloseOutlined className='closeIcone' onClick={() => setCollapsed(!collapsed)} style={{ fontSize: '17px' }} />
                     </div>
-
-                }</div>}
+                }
+            </div>
+            }
         </div >
     </div >
 );

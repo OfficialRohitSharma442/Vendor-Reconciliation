@@ -364,13 +364,9 @@ const Import = () => {
         <>
           <div style={{ margin: "10px 20px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              {/* <div>
-                <h2 style={{ textAlign: "center", fontWeight: "600",whiteSpace:"nowrap"}}>Create Mapppings</h2>
-              </div> */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div>
                   <label style={{ marginRight: "5px", fontWeight: "500" }}>Vendor Name :</label>
-                  {/* <span style={{color:"red"}}>*</span> */}
                   <Select
                     // className="Dropdown"
                     style={{ width: "300" }}
@@ -384,13 +380,12 @@ const Import = () => {
                     ))}
                   </Select>
                 </div>
-                {/* <span style={{color:"red"}}>*</span> */}
                 <div>
                   <label style={{ marginRight: "5px", fontWeight: "500" }}>Select Date :</label>
                   <DatePicker format="MM/DD/YYYY" onChange={onChangeDate} />
                 </div>
                 <div>
-                  <label style={{ marginRight: "5px", fontWeight: "500" }}>Select Date :</label>
+                  <label style={{ marginRight: "5px", fontWeight: "500" }}>Threshold :</label>
                   <Input
                     style={{ width: "10px" }}
                     placeholder="Enter your threshold"
@@ -400,7 +395,6 @@ const Import = () => {
                     value={Threshold}
                   />
                 </div>
-
               </div>
               <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                 <Button onClick={() => { setDocModel(true) }} type="primary">

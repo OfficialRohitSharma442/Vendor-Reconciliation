@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import React, { useState } from 'react';
-import { Affix, Button, Layout } from 'antd';
-import { MenuFoldOutlined, ArrowLeftOutlined, ArrowRightOutlined, PoweroffOutlined, LogoutOutlined, CloseOutlined } from '@ant-design/icons';
+import {Button, Layout } from 'antd';
+import { LogoutOutlined} from '@ant-design/icons';
 import SidebarHeader from './Sidebarheader';
 import SidebarMenu from './SidebarMenu';
 import RoutesPage from './RoutesPage';
@@ -17,9 +17,6 @@ const Sidebar = () => {
     const [loading, setloading] = React.useState(false);
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            {/* Universal Header */}
-
-
             <Sider
                 collapsible
                 collapsed={collapsed}
@@ -34,7 +31,6 @@ const Sidebar = () => {
                 <SidebarMenu />
                 <div className='sidebar_footer'>
                     <div className={`sidebar_footer_content ${!collapsed ? "f-sidegap" : "j_center"}`}>
-
                         <Button
                             type="primary"
                             icon={<LogoutOutlined />}
@@ -51,19 +47,10 @@ const Sidebar = () => {
                         >
                         </Button>
                         <div className='sideFooter_userName'>{!collapsed && JSON.parse(Cookies.get('VR-user_Role') || "null")?.username}</div>
-
                     </div>
                 </div>
             </Sider>
-
             <Layout className="site-layout">
-                {/* <div style={{ background: "#ffffff", padding: '16px', width: '100%', borderBottom: "1px solid #dcd2d2", display: "flex", justifyContent: "space-between" }}>
-
-                    <div>
-
-                    </div>
-
-                </div> */}
                 <Content>
                     <div style={{ overflow: "auto", maxHeight: "100vh" }}>
                         <RoutesPage />

@@ -2,17 +2,14 @@ import { DownloadOutlined, InboxOutlined } from "@ant-design/icons";
 import { Button, Drawer, Space, Upload, message } from "antd";
 import { useState } from "react";
 const { Dragger } = Upload;
-
 const Bulkaddvendor = ({ bulkVenderOpen, bulkVendorOpenClose }: any) => {
   const [uploadedFile, setUploadedFile] = useState<any | null>(null);
-
   const props = {
     name: "file",
     multiple: false,
     maxCount: 1,
     showUploadList: true, // To hide the default antd upload list
     customRequest: ({ file, onSuccess }: any) => {
-      // Simulate a successful file upload without making a request
       setUploadedFile(file);
       onSuccess();
       // onError();
@@ -33,7 +30,6 @@ const Bulkaddvendor = ({ bulkVenderOpen, bulkVendorOpenClose }: any) => {
     },
   };
   console.log(uploadedFile);
-
   return (
     <>
       <Drawer

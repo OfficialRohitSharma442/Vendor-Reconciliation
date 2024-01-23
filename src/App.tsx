@@ -1,4 +1,3 @@
-
 import { ConfigProvider, theme } from 'antd';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
@@ -13,10 +12,8 @@ const App = () => {
   const [loading, setloading] = React.useState(true);
   const [token, setToken] = React.useState("");
   const [reload, setReload] = React.useState(false);
-
   React.useEffect(() => {
     const fetchRole = async () => {
-
       const storedRole = Cookies.get('VR-user_Role');
       if (storedRole) {
         const parsedData = JSON.parse(storedRole);
@@ -32,7 +29,6 @@ const App = () => {
     };
     fetchRole();
   }, [reload])
-
   return (
     <Context.Provider
       value={{
@@ -44,7 +40,6 @@ const App = () => {
       }}
     >
       {loading ? (
-        // Show a loading indicator here if needed
         <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: 'center', justifyContent: "center" }}>
           <LoaderSVG />
         </div>
@@ -54,9 +49,7 @@ const App = () => {
           token: {
             colorPrimary: '#00b96b',
             borderRadius: 2,
-            // colorBgSpotlight: "yellow"
           },
-
         }}>
           {role ? <Sidebar /> : <Login />}
         </ConfigProvider>
@@ -64,5 +57,4 @@ const App = () => {
     </Context.Provider>
   )
 }
-
 export default App

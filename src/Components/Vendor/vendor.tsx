@@ -7,7 +7,6 @@ import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import Addvendor from "./Addvendor";
 import Bulkaddvendor from "./Bulkaddvendor";
-
 interface DataType {
   key: string;
   name: string;
@@ -16,25 +15,21 @@ interface DataType {
 }
 
 type DataIndex = keyof DataType;
-
 const Vendor: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
   const [open, setOpen] = useState<any>(false);
   const [bulkVenderOpen, setbulkVenderOpen] = React.useState(false);
-
   const showDrawer = () => {
     setOpen(true);
   };
   const bulkVendorOpenClose = () => {
     setbulkVenderOpen(false);
   };
-
   const onClose = () => {
     setOpen(false);
   };
-
   const data: DataType[] = [
     {
       key: "1",

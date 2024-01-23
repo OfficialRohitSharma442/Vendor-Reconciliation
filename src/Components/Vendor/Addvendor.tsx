@@ -1,16 +1,4 @@
-import {
-  message,
-  Button,
-  Col,
-  DatePicker,
-  Drawer,
-  Form,
-  Input,
-  Row,
-  Select,
-  Space,
-} from "antd";
-
+import {message,Button,Col,DatePicker,Drawer,Form,Input,Row,Select,Space,} from "antd";
 const { Option } = Select;
 interface AddAdminProps {
   open: boolean;
@@ -18,7 +6,6 @@ interface AddAdminProps {
 }
 const Addvendor: React.FC<AddAdminProps> = ({ open, onClose }: any) => {
   const [messageApi, contextHolder] = message.useMessage();
-
   const success = () => {
     messageApi.open({
       type: "success",
