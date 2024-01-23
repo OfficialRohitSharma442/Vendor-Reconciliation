@@ -681,6 +681,7 @@ const Import = () => {
         setloading(false);
         onClose();
         setCurrent(current + 1);
+        setUpdateHeader([]);
         message.success(`File uploaded successfully. Upload your next file.`);
         // try {
         //   const transformedData = await transformToObjectsFile1(

@@ -5,18 +5,14 @@ import axios from 'axios';
 import Meta from 'antd/es/card/Meta';
 import * as XLSX from "xlsx";
 import { Button, Card, Input, Layout, Modal, message } from 'antd';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import * as ExcelJS from 'exceljs';
 import Search from 'antd/es/input/Search';
 import { DatePicker } from 'antd';
 import type { PaginationProps } from 'antd';
 import { Pagination } from 'antd';
 import { Footer, Header } from 'antd/es/layout/layout';
-
-
-
 const { RangePicker } = DatePicker;
-
 interface Report {
     reportId: string;
 }
@@ -67,14 +63,12 @@ const Reports = () => {
         return originalElement;
     };
     const handlePageChange = (pageNumber) => {
-
         const startIndex = (pageNumber - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const newFilteredReport = AllReports.slice(startIndex, endIndex);
         setFilteredReport(newFilteredReport);
         setCurrentPage(pageNumber);
     };
-
     async function getReportList() {
         const alldata: any = Cookies.get("VR-user_Role");
         const tokens = JSON.parse(alldata).token;
@@ -101,10 +95,6 @@ const Reports = () => {
     useEffect(() => {
         getReportList()
     }, [])
-
-
-
-
     async function getReport(url, sheetName, ID: any, isreco: boolean) {
         const alldata: any = Cookies.get("VR-user_Role");
         const tokens = JSON.parse(alldata).token;
@@ -244,7 +234,6 @@ const Reports = () => {
     function deleteExcelFile() {
         throw new Error('Function not implemented.');
     }
-
     async function SendMail() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!Email) {
@@ -272,6 +261,7 @@ const Reports = () => {
                         if (response?.status == 200) {
                             console.log(response);
                             setsendEmailModel(false);
+                            setEmail("");
                             message.success("Thank you! Your message has been successfully sent.")
                         }
                     }
@@ -362,36 +352,6 @@ const Reports = () => {
                     : <div style={{ display: "grid", alignItems: "center", justifyContent: "center", height: "100vh" }}><div>No Report Found</div></div>
                 }
             </div>
-            {/* <List
-                grid={{ gutter: 16, column: 4 }}
-                dataSource={AllReports}
-                style={{margin:"0"}}
-                renderItem={(item:any) => (
-                    <List.Item>
-                        <Card
-                            style={{ width: 270, borderRadius: 10, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
-                            actions={[
-                                <Button style={{ border: "none" }} icon={<DownloadOutlined />} onClick={() => downloadExcelFile(item?.reportId, false)} key="download" />,
-                                <Button style={{ border: "none" }} icon={<DeleteOutlined />} onClick={deleteExcelFile} key="delete" />,
-                                <Button style={{ border: "none" }} icon={<ShareAltOutlined />} onClick={() => prepareFile(item?.reportId)} key="preview" />,
-                            ]}
-                        >
-                            <Meta
-                                avatar={
-                                    <FileExcelOutlined style={{ fontSize: "40px", color: "green" }} />
-                                }
-                                title="Excel File.xlsx"
-                                description={
-                                    <span style={{ display: "flex", alignItems: "center" }}><b style={{ color: "black", marginRight: "2px", fontWeight: "400" }}>Created Date: </b> <span>{moment(item?.createdAt).format('MM/DD/YYYY')}</span></span>
-                                }
-                                style={{ padding: 0, height: 100, }}
-                            />
-                        </Card>
-                    </List.Item>
-                )}
-            /> */}
-
-
             <Modal title='Share Report'
                 open={sendEmailModel}
                 onOk={SendMail}
@@ -406,10 +366,7 @@ const Reports = () => {
                 />
             </Modal>
             <Footer style={{ display: 'flex', flexDirection: "row-reverse" }}>
-
-
                 <Pagination onChange={handlePageChange} showTitle responsive hideOnSinglePage total={AllReports?.length} defaultPageSize={8} itemRender={itemRender} />
-
             </Footer>
         </Layout>
     )
